@@ -1,0 +1,31 @@
+<nav class="header" id="styleguideheader" role="navigation">
+    <div class="container-fluid">
+        <div class="header-panels">
+            <div class="header-panel hidden-md-down">
+                <a class="header__logo" href="http://www.cisco.com" target="_blank">
+                    <span class="icon-cisco"></span>
+                </a>
+                <h1 class="header__title">
+                    <span routerLink="health">dbConnector</span>
+                </h1>
+            </div>
+            <div class="header-panel header-panel--center base-margin-left base-margin-right hidden-lg-up">
+                <a class="header__logo" href="http://www.cisco.com" target="_blank">
+                    <span class="icon-cisco"></span>
+                </a>
+            </div>
+            <div class="header-panel header-panel--right hidden-md-down">
+                
+                <a *ngIf="isLoggedIn" routerLink="connector" class="header-item">Connector</a>
+                <a *ngIf="isLoggedIn" routerLink="endpoint" class="header-item">Endpoints</a>
+                <a *ngIf="isLoggedIn" routerLink="GridView" class="header-item">Grid View</a>
+                <a routerLink="help" class="header-item">Help</a>
+                <a routerLink="support" class="header-item">Support</a>
+                <a routerLink="about" class="header-item">About</a>
+                <a *ngIf="isLoggedIn" routerLink="logout" class="header-item">Logout</a>
+                <a *ngIf="!isLoggedIn" (click)="loginButton($event)" class="header-item">Login</a>
+            </div>
+        </div>
+    </div>
+</nav>
+<router-outlet></router-outlet>

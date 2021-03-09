@@ -1,0 +1,56 @@
+filesystem:
+  dataDirectory: data
+#  fileSystemInterface : fileSystemAWSS3
+  fileSystemInterface : fileSystemLocalhost
+
+fileSystemAWSS3:
+  accessKey : your_accessKey
+  secretKey : your_secretKey
+  bucketName : your_bucketName
+
+server:
+  port: 443
+  ssl:
+    enabled: true
+    key-alias: your_key-alias
+    key-store: properties/keystore/your_key-store.p12
+    key-store-password: your_key-store-password
+    key-store-type: PKCS12
+  servlet:
+    session:
+      cookie:
+         max-age: -1
+      timeout: -1
+#server:
+#  port: 80
+#  forward-headers-strategy: native
+
+logging:
+       level:
+#              org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+              org.springframework: INFO
+              com.mchange: INFO
+              com.cisco: INFO
+
+spring:
+  cache:
+    type: NONE
+
+
+# CI client
+oauth:
+  client:
+    clientName: OauthClient
+    clientId: your_clientId
+    clientSecret: your_clientSecret
+    serviceScopes: Identity:SCIM
+    identityServiceUrl: https://identity.webex.com
+    identityBrokerUrl: https://idbroker.webex.com
+    authorizationUri: /idb/oauth2/v1/authorize
+    userProfileUri: /identity/scim/v1/Users/me
+    accessTokenUri: /idb/oauth2/v1/access_token
+    validateTokenUri: /idb/oauth2/v1/tokeninfo
+    revokeTokenUri: /idb/oauth2/v1/revoke
+    logoutUri: /idb/oauth2/v1/logout
+    redirectUrl: http://localhost/login/oauth2/code/dbconnector
+

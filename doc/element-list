@@ -1,0 +1,10 @@
+com.cisco.app.dbconnector
+com.cisco.app.dbconnector.controller
+com.cisco.app.dbconnector.model
+com.cisco.app.dbconnector.service
+com.cisco.app.dbconnector.util
+com.cisco.app.oauth.config
+com.cisco.app.oauth.controller
+com.cisco.app.oauth.providers
+com.cisco.app.oauth.resolvers
+com.cisco.app.util

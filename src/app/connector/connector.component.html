@@ -1,0 +1,186 @@
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<div *ngIf="isLoggedIn" class="container">
+	<div *ngIf="isworking" class="loader" aria-label="Loading, please wait..."
+		style="position: absolute;  width: 70px;  height: 70px;  z-index: 15;  top: 50%;  left: 50%;  margin: -100px 0 0 -150px;">
+		<div class="wrapper">
+			<div class="wheel"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div class="panel panel--loose panel--raised base-margin-bottom">
+				<h2 class="subtitle">Connector</h2>
+				<hr>
+				<div class="form-group base-margin-bottom">
+					<div class="form-group__text select">
+						<select (change)="onOptionsSelected($event)" [(ngModel)]="connector.type" id="input-type-select">
+							<option value="MySQL">MySQL</option>
+							<option value="SQL_Server">SQL Server</option>
+						</select>
+						<!-- <label for="input-type-select">Connector</label> -->
+					</div>
+				</div>
+				<!--  -->
+				<hr>
+				<div class="section">
+					<ul id="embossed" class="tabs tabs--embossed">
+						<li (click)="showServerTabButton('Server')" id="embossed-1" class="tab ">
+							<a tabindex="0">Server</a>
+						</li>
+						<li (click)="showServerTabButton('ConnectionPool')" id="embossed-2" class="tab">
+							<a tabindex="0">Connection Pool</a>
+						</li>
+					</ul>
+					<div id="embossed-content" class="tab-content">
+						<div *ngIf="showTab1" id="embossed-1-content" class="tab-pane active">
+							<div class="panel panel--loose panel--raised base-margin-bottom">
+								<h2 class="subtitle">Connector</h2>
+								<hr>
+								<form name="form">
+
+									<div class="form-group base-margin-bottom">
+										<!--  -->
+										<div class="form-group__text">
+											<input id="input-type-Host" (change)="updateConnectionString()"
+												[(ngModel)]="connector.hostname" [ngModelOptions]="{standalone: true}"
+												required type="text">
+											<label for="input-type-Host"
+												[ngClass]="{'text-danger': connector.hostname.length < 1}">Host</label>
+										</div>
+										<!--  -->
+										<div class="form-group__text">
+											<input id="input-type-DatabaseName" (change)="updateConnectionString()"
+												[(ngModel)]="connector.database" [ngModelOptions]="{standalone: true}"
+												type="text">
+											<label for="input-type-DatabaseName"
+												[ngClass]="{'text-danger': connector.database.length < 1}">Database
+												Name</label>
+										</div>
+										<!--  -->
+										<div class="form-group__text">
+											<input id="input-type-Port" (change)="updateConnectionString()"
+												[(ngModel)]="connector.port" [ngModelOptions]="{standalone: true}"
+												required type="text">
+											<label for="input-type-Port"
+												[ngClass]="{'text-danger': connector.port < 1}">Port</label>
+										</div>
+										<!--  -->
+										<div class="form-group__text">
+											<input id="input-type-Username" (change)="updateConnectionString()"
+												[(ngModel)]="connector.username" [ngModelOptions]="{standalone: true}"
+												required type="text">
+											<label for="input-type-Username"
+												[ngClass]="{'text-danger': connector.username < 1}">Username</label>
+										</div>
+										<!--  -->
+										<div class="form-group__text">
+											<input id="input-type-Password" (change)="updateConnectionString()"
+												[(ngModel)]="connector.password" [ngModelOptions]="{standalone: true}"
+												required type="text">
+											<label for="input-type-Password"
+												[ngClass]="{'text-danger': connector.password < 1}">Password</label>
+										</div>
+										<!--  -->
+										<div class="form-group__text">
+											<input id="input-type-ConnectionString"
+												[(ngModel)]="connector.connectionString"
+												[ngModelOptions]="{standalone: true}" required type="text">
+											<label for="input-type-ConnectionString"
+												[ngClass]="{'text-danger': connector.connectionString < 1}">Connection
+												String</label>
+										</div>
+										<!--  -->
+										<div class="form-group__text">
+											<button (click)="saveConnection()" class="btn btn--ghost" [disabled]="isworking">Test
+												Connection</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div *ngIf="showTab2" id="embossed-2-content" class="tab-pane active">
+							<div class="panel panel--loose panel--raised base-margin-bottom">
+								<h2 class="subtitle">Connection Pool</h2>
+								<hr>
+								<!--  -->
+
+								<div class="form-group base-margin-bottom">
+									<div class="form-group__text">
+										<input id="input-type-InitialPoolSize"
+											[(ngModel)]="connector.connectionPool.initialPoolSize"
+											[ngModelOptions]="{standalone: true}" required type="text">
+										<label for="input-type-InitialPoolSize"
+											[ngClass]="{'text-danger': connector.connectionPool.initialPoolSize < 1}">Initial
+											Pool Size</label>
+									</div>
+									<!--  -->
+									<div class="form-group__text">
+										<input id="input-type-MaxStatements"
+											[(ngModel)]="connector.connectionPool.maxStatements"
+											[ngModelOptions]="{standalone: true}" required type="text">
+										<label for="input-type-MaxStatements"
+											[ngClass]="{'text-danger': connector.connectionPool.maxStatements < 1}">Max
+											Statements</label>
+									</div>
+									<!--  -->
+									<div class="form-group__text">
+										<input id="input-type-MinPoolSize"
+											[(ngModel)]="connector.connectionPool.minPoolSize"
+											[ngModelOptions]="{standalone: true}" required type="text">
+										<label for="input-type-MinPoolSize"
+											[ngClass]="{'text-danger': connector.connectionPool.minPoolSize < 1}">Min
+											Pool Size</label>
+									</div>
+									<!--  -->
+									<div class="form-group__text">
+										<input id="input-type-MaxPoolSize"
+											[(ngModel)]="connector.connectionPool.maxPoolSize"
+											[ngModelOptions]="{standalone: true}" required type="text">
+										<label for="input-type-MaxPoolSize"
+											[ngClass]="{'text-danger': connector.connectionPool.maxPoolSize < 1}">Max
+											Pool Size</label>
+									</div>
+									<!--  -->
+									<div class="form-group__text">
+										<input id="input-type-AcquireIncrement"
+											[(ngModel)]="connector.connectionPool.acquireIncrement"
+											[ngModelOptions]="{standalone: true}" required type="text">
+										<label for="input-type-AcquireIncrement"
+											[ngClass]="{'text-danger': connector.connectionPool.acquireIncrement < 1}">Acquire
+											Increment</label>
+									</div>
+									<!--  -->
+									<div class="form-group__text">
+										<input id="input-type-ConnectionTimeout"
+											[(ngModel)]="connector.connectionPool.unreturnedConnectionTimeout"
+											[ngModelOptions]="{standalone: true}" required type="text">
+										<label for="input-type-ConnectionTimeout"
+											[ngClass]="{'text-danger': connector.connectionPool.unreturnedConnectionTimeout < 1}">Connection
+											Timeout</label>
+									</div>
+									<!--  -->
+									<div class="form-group__text">
+										<button (click)="saveConnection()" class="btn btn--ghost">Save Connection
+											Pool</button>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col">
+			<label for="textarea-state-default">Console</label>
+			<div class="form-group__text">
+				<textarea id="textarea-state-default" class="text-white"
+					style="background-color: #000000;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;"
+					rows="41">{{myConsole}}</textarea>
+			</div>
+		</div>
+
+	</div>
+</div>
