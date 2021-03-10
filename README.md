@@ -24,6 +24,7 @@ To start,
 java dbConnector-0.0.1-SNAPSHOT.jar
 
 ## Contributing
+- Jim Wyatt
 
 ## Maintainers
 
