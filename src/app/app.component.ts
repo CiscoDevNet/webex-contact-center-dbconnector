@@ -15,7 +15,7 @@ export class AppComponent implements OnInit, OnChanges {
   constructor(private restService: RestserviceService) {
     this.restService.onLoginChange.subscribe({
       next: (event: any) => {
-        console.log('Received message  ', event);
+        console.log('AppComponent Received message  ', event);
         this.isLoggedIn = event;
         GlobalConstants.isLoggedIn = this.isLoggedIn;
       }
@@ -36,8 +36,10 @@ export class AppComponent implements OnInit, OnChanges {
     console.log('AppComponent: loginButton');
     if (this.isLoggedIn) {
       // life is good
+      this.restService.logout();
+//      location.assign('/mylogout');
     } else {
-      location.assign('/oauth2/authorization/dbconnector');
+      location.assign('/');
     }
   }
 }

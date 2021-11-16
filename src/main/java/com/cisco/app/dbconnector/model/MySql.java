@@ -23,9 +23,9 @@ public class MySql implements Serializable, DbConnection {
 	private String port = "3306";
 	private String database = "test";
 	private String username = "test";
-	private String password = "test";
+	private String password = "test1234";
 	private String driver = "mysql-connector-java-8.0.20.jar";
-	private String connectionString = "jdbc:mysql://localhost:3306/test?user=test&password=test&serverTimezone=UTC&useLegacyDatetimeCode=false&useSSL=FALSE";
+	private String connectionString = "jdbc:mysql://localhost:3306/test?user=test&password=test1234&serverTimezone=UTC&useLegacyDatetimeCode=false&useSSL=FALSE";
 
 	@JsonDeserialize(as = ConnectionPoolC3p0.class)
 	private ConnectionPoolDb connectionPool = new ConnectionPoolC3p0();
