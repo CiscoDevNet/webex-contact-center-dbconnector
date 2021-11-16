@@ -45,7 +45,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<!-- <app-endpoint></app-endpoint> -->\n<!-- <<app-connector></app-connector> -->\n\n<nav class=\"header\" id=\"styleguideheader\" role=\"navigation\">\n    <div class=\"container-fluid\">\n        <div class=\"header-panels\">\n            <div class=\"header-panel hidden-md-down\">\n                <a class=\"header__logo\" href=\"http://www.cisco.com\" target=\"_blank\">\n                    <span class=\"icon-cisco\"></span>\n                </a>\n                <h1 class=\"header__title\">\n                    <span routerLink=\"health\">dbConnector</span>\n                </h1>\n            </div>\n            <div class=\"header-panel header-panel--center base-margin-left base-margin-right hidden-lg-up\">\n                <a class=\"header__logo\" href=\"http://www.cisco.com\" target=\"_blank\">\n                    <span class=\"icon-cisco\"></span>\n                </a>\n            </div>\n            <div class=\"header-panel header-panel--right hidden-md-down\">\n                \n                <a *ngIf=\"isLoggedIn\" routerLink=\"connector\" class=\"header-item\">Connector</a>\n                <a *ngIf=\"isLoggedIn\" routerLink=\"endpoint\" class=\"header-item\">Endpoints</a>\n                <a *ngIf=\"isLoggedIn\" routerLink=\"GridView\" class=\"header-item\">Grid View</a>\n                <a routerLink=\"help\" class=\"header-item\">Help</a>\n                <a routerLink=\"support\" class=\"header-item\">Support</a>\n                <a routerLink=\"about\" class=\"header-item\">About</a>\n                <a *ngIf=\"isLoggedIn\" routerLink=\"logout\" class=\"header-item\">Logout</a>\n                <a *ngIf=\"!isLoggedIn\" (click)=\"loginButton($event)\" class=\"header-item\">Login</a>\n            </div>\n        </div>\n    </div>\n</nav>\n<router-outlet></router-outlet>");
+/* harmony default export */ __webpack_exports__["default"] = ("<nav class=\"header\" id=\"styleguideheader\" role=\"navigation\">\n    <div class=\"container-fluid\">\n        <div class=\"header-panels\">\n            <div class=\"header-panel hidden-md-down\">\n                <a class=\"header__logo\" href=\"http://www.cisco.com\" target=\"_blank\">\n                    <span class=\"icon-cisco\"></span>\n                </a>\n                <h1 class=\"header__title\">\n                    <span routerLink=\"health\">dbConnector</span>\n                </h1>\n            </div>\n            <div class=\"header-panel header-panel--center base-margin-left base-margin-right hidden-lg-up\">\n                <a class=\"header__logo\" href=\"http://www.cisco.com\" target=\"_blank\">\n                    <span class=\"icon-cisco\"></span>\n                </a>\n            </div>\n            <div class=\"header-panel header-panel--right hidden-md-down\">\n                \n                <a *ngIf=\"isLoggedIn\" routerLink=\"connector\" class=\"header-item\">Connector</a>\n                <a *ngIf=\"isLoggedIn\" routerLink=\"endpoint\" class=\"header-item\">Endpoints</a>\n                <a *ngIf=\"isLoggedIn\" routerLink=\"GridView\" class=\"header-item\">Grid View</a>\n                <a routerLink=\"help\" class=\"header-item\">Help</a>\n                <a routerLink=\"support\" class=\"header-item\">Support</a>\n                <a routerLink=\"about\" class=\"header-item\">About</a>\n                <a *ngIf=\"isLoggedIn\"  (click)=\"loginButton($event)\"  class=\"header-item\">Logout</a>\n                <a *ngIf=\"!isLoggedIn\" (click)=\"loginButton($event)\" class=\"header-item\">Login</a>\n            </div>\n        </div>\n    </div>\n</nav>\n<router-outlet></router-outlet>");
 
 /***/ }),
 
@@ -58,7 +58,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<p>&nbsp;</p>\n<p>&nbsp;</p>\n\n<div *ngIf=\"isLoggedIn\" class=\"container\">\n\t<div *ngIf=\"isworking\" class=\"loader\" aria-label=\"Loading, please wait...\"\n\t\tstyle=\"position: absolute;  width: 70px;  height: 70px;  z-index: 15;  top: 50%;  left: 50%;  margin: -100px 0 0 -150px;\">\n\t\t<div class=\"wrapper\">\n\t\t\t<div class=\"wheel\"></div>\n\t\t</div>\n\t</div>\n\t<div class=\"row\">\n\t\t<div class=\"col\">\n\t\t\t<div class=\"panel panel--loose panel--raised base-margin-bottom\">\n\t\t\t\t<h2 class=\"subtitle\">Connector</h2>\n\t\t\t\t<hr>\n\t\t\t\t<div class=\"form-group base-margin-bottom\">\n\t\t\t\t\t<div class=\"form-group__text select\">\n\t\t\t\t\t\t<select (change)=\"onOptionsSelected($event)\" [(ngModel)]=\"connector.type\" id=\"input-type-select\">\n\t\t\t\t\t\t\t<option value=\"MySQL\">MySQL</option>\n\t\t\t\t\t\t\t<option value=\"SQL_Server\">SQL Server</option>\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<!-- <label for=\"input-type-select\">Connector</label> -->\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<!--  -->\n\t\t\t\t<hr>\n\t\t\t\t<div class=\"section\">\n\t\t\t\t\t<ul id=\"embossed\" class=\"tabs tabs--embossed\">\n\t\t\t\t\t\t<li (click)=\"showServerTabButton('Server')\" id=\"embossed-1\" class=\"tab \">\n\t\t\t\t\t\t\t<a tabindex=\"0\">Server</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li (click)=\"showServerTabButton('ConnectionPool')\" id=\"embossed-2\" class=\"tab\">\n\t\t\t\t\t\t\t<a tabindex=\"0\">Connection Pool</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t\t<div id=\"embossed-content\" class=\"tab-content\">\n\t\t\t\t\t\t<div *ngIf=\"showTab1\" id=\"embossed-1-content\" class=\"tab-pane active\">\n\t\t\t\t\t\t\t<div class=\"panel panel--loose panel--raised base-margin-bottom\">\n\t\t\t\t\t\t\t\t<h2 class=\"subtitle\">Connector</h2>\n\t\t\t\t\t\t\t\t<hr>\n\t\t\t\t\t\t\t\t<form name=\"form\">\n\n\t\t\t\t\t\t\t\t\t<div class=\"form-group base-margin-bottom\">\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Host\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.hostname\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Host\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.hostname.length < 1}\">Host</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-DatabaseName\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.database\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\ttype=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-DatabaseName\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.database.length < 1}\">Database\n\t\t\t\t\t\t\t\t\t\t\t\tName</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Port\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.port\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Port\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.port < 1}\">Port</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Username\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.username\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Username\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.username < 1}\">Username</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Password\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.password\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Password\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.password < 1}\">Password</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-ConnectionString\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionString\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-ConnectionString\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionString < 1}\">Connection\n\t\t\t\t\t\t\t\t\t\t\t\tString</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<button (click)=\"saveConnection()\" class=\"btn btn--ghost\" [disabled]=\"isworking\">Test\n\t\t\t\t\t\t\t\t\t\t\t\tConnection</button>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</form>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div *ngIf=\"showTab2\" id=\"embossed-2-content\" class=\"tab-pane active\">\n\t\t\t\t\t\t\t<div class=\"panel panel--loose panel--raised base-margin-bottom\">\n\t\t\t\t\t\t\t\t<h2 class=\"subtitle\">Connection Pool</h2>\n\t\t\t\t\t\t\t\t<hr>\n\t\t\t\t\t\t\t\t<!--  -->\n\n\t\t\t\t\t\t\t\t<div class=\"form-group base-margin-bottom\">\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-InitialPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.initialPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-InitialPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.initialPoolSize < 1}\">Initial\n\t\t\t\t\t\t\t\t\t\t\tPool Size</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-MaxStatements\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.maxStatements\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-MaxStatements\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.maxStatements < 1}\">Max\n\t\t\t\t\t\t\t\t\t\t\tStatements</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-MinPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.minPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-MinPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.minPoolSize < 1}\">Min\n\t\t\t\t\t\t\t\t\t\t\tPool Size</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-MaxPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.maxPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-MaxPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.maxPoolSize < 1}\">Max\n\t\t\t\t\t\t\t\t\t\t\tPool Size</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-AcquireIncrement\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.acquireIncrement\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-AcquireIncrement\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.acquireIncrement < 1}\">Acquire\n\t\t\t\t\t\t\t\t\t\t\tIncrement</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-ConnectionTimeout\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.unreturnedConnectionTimeout\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-ConnectionTimeout\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.unreturnedConnectionTimeout < 1}\">Connection\n\t\t\t\t\t\t\t\t\t\t\tTimeout</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<button (click)=\"saveConnection()\" class=\"btn btn--ghost\">Save Connection\n\t\t\t\t\t\t\t\t\t\t\tPool</button>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t<div class=\"col\">\n\t\t\t<label for=\"textarea-state-default\">Console</label>\n\t\t\t<div class=\"form-group__text\">\n\t\t\t\t<textarea id=\"textarea-state-default\" class=\"text-white\"\n\t\t\t\t\tstyle=\"background-color: #000000;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;\"\n\t\t\t\t\trows=\"41\">{{myConsole}}</textarea>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n</div>");
+/* harmony default export */ __webpack_exports__["default"] = ("<p>&nbsp;</p>\n<p>&nbsp;</p>\n\n<div *ngIf=\"isLoggedIn\" class=\"container\">\n\t<div *ngIf=\"isworking\" class=\"loader\" aria-label=\"Loading, please wait...\"\n\t\tstyle=\"position: absolute;  width: 70px;  height: 70px;  z-index: 15;  top: 50%;  left: 50%;  margin: -100px 0 0 -150px;\">\n\t\t<div class=\"wrapper\">\n\t\t\t<div class=\"wheel\"></div>\n\t\t</div>\n\t</div>\n\t<div class=\"row\">\n\t\t<div class=\"col\">\n\t\t\t<div class=\"panel panel--loose panel--raised base-margin-bottom\">\n\t\t\t\t<h2 class=\"subtitle\">Connector</h2>\n\t\t\t\t<hr>\n\t\t\t\t<div class=\"form-group base-margin-bottom\">\n\t\t\t\t\t<div class=\"form-group__text select\">\n\t\t\t\t\t\t<select (change)=\"onOptionsSelected($event)\" [(ngModel)]=\"connector.type\" id=\"input-type-select\">\n\t\t\t\t\t\t\t<option value=\"MySQL\">MySQL</option>\n\t\t\t\t\t\t\t<option value=\"SQL_Server\">SQL Server</option>\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<!-- <label for=\"input-type-select\">Connector</label> -->\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<!--  -->\n\t\t\t\t<hr>\n\t\t\t\t<div class=\"section\">\n\t\t\t\t\t<ul id=\"embossed\" class=\"tabs tabs--embossed\">\n\t\t\t\t\t\t<li (click)=\"showServerTabButton('Server')\" id=\"embossed-1\" class=\"tab \">\n\t\t\t\t\t\t\t<a tabindex=\"0\">Server</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li (click)=\"showServerTabButton('ConnectionPool')\" id=\"embossed-2\" class=\"tab\">\n\t\t\t\t\t\t\t<a tabindex=\"0\">Connection Pool</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t\t<div id=\"embossed-content\" class=\"tab-content\" >\n\t\t\t\t\t\t<div *ngIf=\"showTab1\" id=\"embossed-1-content\" class=\"tab-pane active\">\n\t\t\t\t\t\t\t<div class=\"panel panel--loose panel--raised base-margin-bottom\">\n\t\t\t\t\t\t\t\t<h2 class=\"subtitle\">Connector</h2>\n\t\t\t\t\t\t\t\t<hr>\n\t\t\t\t\t\t\t\t<form name=\"form\" >\n\n\t\t\t\t\t\t\t\t\t<div class=\"form-group base-margin-bottom\">\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Host\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.hostname\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Host\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.hostname.length < 1}\">Host</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-DatabaseName\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.database\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\ttype=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-DatabaseName\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.database.length < 1}\">Database\n\t\t\t\t\t\t\t\t\t\t\t\tName</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Port\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.port\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Port\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.port < 1}\">Port</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Username\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.username\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Username\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.username < 1}\">Username</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-Password\" (change)=\"updateConnectionString()\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.password\" [ngModelOptions]=\"{standalone: true}\"\n\t\t\t\t\t\t\t\t\t\t\t\trequired type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-Password\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.password < 1}\">Password</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-ConnectionString\"\n\t\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionString\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-ConnectionString\"\n\t\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionString < 1}\">Connection\n\t\t\t\t\t\t\t\t\t\t\t\tString</label>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t\t<button (click)=\"saveConnection()\" class=\"btn btn--ghost\" [disabled]=\"isworking\">Test\n\t\t\t\t\t\t\t\t\t\t\t\tConnection</button>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</form>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div *ngIf=\"showTab2\" id=\"embossed-2-content\" class=\"tab-pane active\">\n\t\t\t\t\t\t\t<div class=\"panel panel--loose panel--raised base-margin-bottom\">\n\t\t\t\t\t\t\t\t<h2 class=\"subtitle\">Connection Pool</h2>\n\t\t\t\t\t\t\t\t<hr>\n\t\t\t\t\t\t\t\t<!--  -->\n\n\t\t\t\t\t\t\t\t<div class=\"form-group base-margin-bottom\">\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-InitialPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.initialPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-InitialPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.initialPoolSize < 1}\">Initial\n\t\t\t\t\t\t\t\t\t\t\tPool Size</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-MaxStatements\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.maxStatements\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-MaxStatements\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.maxStatements < 1}\">Max\n\t\t\t\t\t\t\t\t\t\t\tStatements</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-MinPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.minPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-MinPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.minPoolSize < 1}\">Min\n\t\t\t\t\t\t\t\t\t\t\tPool Size</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-MaxPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.maxPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-MaxPoolSize\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.maxPoolSize < 1}\">Max\n\t\t\t\t\t\t\t\t\t\t\tPool Size</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-AcquireIncrement\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.acquireIncrement\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-AcquireIncrement\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.acquireIncrement < 1}\">Acquire\n\t\t\t\t\t\t\t\t\t\t\tIncrement</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<input id=\"input-type-ConnectionTimeout\"\n\t\t\t\t\t\t\t\t\t\t\t[(ngModel)]=\"connector.connectionPool.unreturnedConnectionTimeout\"\n\t\t\t\t\t\t\t\t\t\t\t[ngModelOptions]=\"{standalone: true}\" required type=\"text\">\n\t\t\t\t\t\t\t\t\t\t<label for=\"input-type-ConnectionTimeout\"\n\t\t\t\t\t\t\t\t\t\t\t[ngClass]=\"{'text-danger': connector.connectionPool.unreturnedConnectionTimeout < 1}\">Connection\n\t\t\t\t\t\t\t\t\t\t\tTimeout</label>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<!--  -->\n\t\t\t\t\t\t\t\t\t<div class=\"form-group__text\">\n\t\t\t\t\t\t\t\t\t\t<button (click)=\"saveConnection()\" class=\"btn btn--ghost\">Save Connection\n\t\t\t\t\t\t\t\t\t\t\tPool</button>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t<div class=\"col\">\n\t\t\t<label for=\"textarea-state-default\">Console</label>\n\t\t\t<div class=\"form-group__text\">\n\t\t\t\t<textarea id=\"textarea-state-default\" class=\"text-white\"\n\t\t\t\t\tstyle=\"background-color: #000000;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;\"\n\t\t\t\t\trows=\"41\">{{myConsole}}</textarea>\n\t\t\t</div>\n\t\t</div>\n\n\t</div>\n</div>");
 
 /***/ }),
 
@@ -84,7 +84,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<p>&nbsp;</p>\n<p>&nbsp;</p>\n<div class=\"container\">\n\n\n  <div class=\"row\">\n    <div class=\"col-sm\">\n    </div>\n    <div class=\"col-sm\">\n      <div class=\"input-group mb-3\">\n        <div class=\"input-group-prepend\">\n          <label class=\"input-group-text\" for=\"inputGroupSelect01\">Select endPoint</label>\n        </div>\n        <!-- <select  (change)=\"executeEndPoint(endpoint)\" class=\"custom-select\" id=\"inputGroupSelect01\">\n          <option >Choose...</option>\n          <option *ngFor=\"let endpoint of endpoints; index as i;\" [value]=\"endpoint\">{{endpoint.description}}</option>\n\n        </select> -->\n\n        <select (change)=\"executeEndPoint($event)\" [(ngModel)]=\"selectedEndPoint\" id=\"input-type-select\">\n          <option value=\"Choose\">Choose...</option>\n          <option *ngFor=\"let endpoint of endpoints; index as i;\" value=\"{{endpoint.name}}\">{{endpoint.description}}\n          </option>\n        </select>\n\n      </div>\n    </div>\n    <div class=\"col-sm\">\n    </div>\n  </div>\n  <p>&nbsp;</p>\n  <div class=\"row text-left\">\n    <div class=\"col\">&nbsp;</div>\n    <div class=\"col\">\n      <table *ngIf=\"headers.length > 0\" class=\"table table--lined table--selectable\" aria-label=\"Selectable rows table example\">\n        <thead>\n          <tr>\n            <th scope=\"col\">#</th>\n            <th *ngFor=\"let header of headers;\" scope=\"col\">{{header}}</th>\n          </tr>\n        </thead>\n        <tbody>\n          <tr *ngFor=\"let record of records; index as i;\">\n            <th scope=\"row\">{{(i + 1)}}</th>\n          <td *ngFor=\"let column of record; index as i2;\">{{column}} </td>\n          </tr>\n\n        </tbody>\n      </table>\n    </div>\n    <div class=\"col\">&nbsp;</div>\n  </div>\n</div>");
+/* harmony default export */ __webpack_exports__["default"] = ("<p>&nbsp;</p>\n<p>&nbsp;</p>\n<div class=\"container\">\n\n\n  <div class=\"row\">\n    <div class=\"col-sm\">\n    </div>\n    <div class=\"col-sm\">\n      <div class=\"input-group mb-3\">\n        <div class=\"input-group-prepend\">\n          <label class=\"input-group-text\" for=\"inputGroupSelect01\">Select endPoint</label>\n        </div>\n        <select (change)=\"executeEndPoint($event)\" [(ngModel)]=\"selectedEndPoint\" id=\"input-type-select\">\n          <option value=\"Choose\">Choose...</option>\n          <option *ngFor=\"let endpoint of endpoints; index as i;\" value=\"{{endpoint.name}}\">{{endpoint.description}}\n          </option>\n        </select>\n\n      </div>\n    </div>\n    <div class=\"col-sm\">\n    </div>\n  </div>\n  <p>&nbsp;</p>\n  <div class=\"row text-left\">\n    <div class=\"col\">&nbsp;</div>\n    <div class=\"col\">\n      <table *ngIf=\"headers.length > 0\" class=\"table table--lined table--selectable\" aria-label=\"Selectable rows table example\">\n        <thead>\n          <tr>\n            <th scope=\"col\">#</th>\n            <th *ngFor=\"let header of headers;\" scope=\"col\">{{header}}</th>\n          </tr>\n        </thead>\n        <tbody>\n          <tr *ngFor=\"let record of records; index as i;\">\n            <th scope=\"row\">{{(i + 1)}}</th>\n          <td *ngFor=\"let column of record; index as i2;\">{{column}} </td>\n          </tr>\n\n        </tbody>\n      </table>\n    </div>\n    <div class=\"col\">&nbsp;</div>\n  </div>\n</div>");
 
 /***/ }),
 
@@ -97,7 +97,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<p>&nbsp;</p>\n<p>&nbsp;</p>\n<p (click)=\"clickMe()\">help works!</p>\n");
+/* harmony default export */ __webpack_exports__["default"] = ("<p>&nbsp;</p>\n<p>&nbsp;</p>\n<p>help works!</p>\n");
 
 /***/ }),
 
@@ -495,7 +495,7 @@ let AppComponent = class AppComponent {
         this.isLoggedIn = false;
         this.restService.onLoginChange.subscribe({
             next: (event) => {
-                console.log('Received message  ', event);
+                console.log('AppComponent Received message  ', event);
                 this.isLoggedIn = event;
                 _global_constants__WEBPACK_IMPORTED_MODULE_3__["GlobalConstants"].isLoggedIn = this.isLoggedIn;
             }
@@ -512,9 +512,11 @@ let AppComponent = class AppComponent {
         console.log('AppComponent: loginButton');
         if (this.isLoggedIn) {
             // life is good
+            this.restService.logout();
+            //      location.assign('/mylogout');
         }
         else {
-            location.assign('/oauth2/authorization/dbconnector');
+            location.assign('/');
         }
     }
 };
@@ -1142,12 +1144,6 @@ let GridViewComponent = class GridViewComponent {
         this.restService.getBasicAuth()
             .subscribe(data => {
             this.basicAuth = data;
-            // if (this.basicAuth.Exception) {
-            //   this.myConsole = atob(this.myConsole.Exception);
-            // } else {
-            //   this.myConsole = 'Basic authentication was loaded.\n';
-            // }
-            // this.updateBasicAuthValue();
         });
     }
     getEndpoints() {
@@ -1156,39 +1152,23 @@ let GridViewComponent = class GridViewComponent {
             .subscribe(data => {
             this.endpoints = data;
             console.log('GridViewComponent: getEndpoints', this.endpoints);
-            // if (this.endpoints.Exception) {
-            //   this.myConsole = atob(this.myConsole.Exception);
-            // } else {
-            //   this.myConsole += 'Endpoints were loaded.\n';
-            // }
-            // if (this.endpoints[0] != null) {
-            //   this.endpoint = this.endpoints[0];
-            //   this.endpoint.isHighlighted = true;
-            // }
             this.isLoggedIn = true;
             this.isworking = false;
         });
     }
     executeEndPoint(event) {
         console.log('GridViewComponent: executeEndPoint', event.target.value);
-        // console.log('GridViewComponent: executeEndPoint', this.selectedEndPoint);
         let tmp = [];
         this.records = [];
         this.restService.executeEndPoint(event.target.value)
             .subscribe(data => {
-            // console.log('GridViewComponent: executeEndPoint', data);
             const check = data;
-            // try {
             if (check.length > 0) {
                 tmp = data;
             }
             else {
                 tmp.push(data);
             }
-            // } catch (error) {
-            //   this.records.push(data);
-            // }
-            // console.log('GridViewComponent: executeEndPoint: length:', this.records.length);
             let count = 0;
             tmp.forEach((element) => {
                 if (count++ === 0) {
@@ -1251,10 +1231,6 @@ let HelpComponent = class HelpComponent {
     ngOnInit() {
         console.log('HelpComponent: ngOnInit', this.isLoggedIn);
         this.isLoggedIn = _global_constants__WEBPACK_IMPORTED_MODULE_2__["GlobalConstants"].isLoggedIn;
-    }
-    clickMe() {
-        // const answer = window.confirm('Are sure you want to delete this item ?');
-        // console.log('clickMe', answer);
     }
 };
 HelpComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
@@ -1464,9 +1440,18 @@ let RestserviceService = RestserviceService_1 = class RestserviceService {
         this.http = http;
         this.onLoginChange = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
     }
+    logout() {
+        console.log('RestserviceService: mylogout');
+        return this.http.get('/mylogout').subscribe(response => {
+            RestserviceService_1.isLoggedIn = false;
+            this.onLoginChange.emit(RestserviceService_1.isLoggedIn);
+        });
+    }
     getUser() {
         console.log('RestserviceService: getUser');
-        return this.http.get('/user/user').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["catchError"])(this.handleError));
+        return this.http.get('/user').pipe(
+        //catchError(this.handleError)
+        );
     }
     isAuthenticated() {
         console.log('RestserviceService: isAuthenticated');
@@ -1477,11 +1462,14 @@ let RestserviceService = RestserviceService_1 = class RestserviceService {
             }
             else {
                 const response = data;
-                console.warn('restService.getUser: data', data);
-                if (response.response === 'true') {
+                // console.log('RestserviceService.getUser: data', data, response);
+                if (response === true) {
+                    // console.log('RestserviceService: isAuthenticated: YES');
                     RestserviceService_1.isLoggedIn = true;
+                    // this.onLoginChange.emit(true);
                 }
                 else {
+                    // console.log('RestserviceService: isAuthenticated: NO');
                     RestserviceService_1.isLoggedIn = false;
                 }
             }
@@ -1667,10 +1655,10 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_2__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/jiwyatt/git/ps/dbconnector/src/main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! /Users/jiwyatt/Documents/workspace2/dbConnectorGitHub2/src/main.ts */"./src/main.ts");
 
 
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main-es2015.js.map
+//# sourceMappingURL=main.js.map
