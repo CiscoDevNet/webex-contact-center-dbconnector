@@ -1,0 +1,44 @@
+{
+  "properties": [
+    {
+      "name": "baseURL",
+      "type": "java.lang.String",
+      "description": "A description for 'baseURL'"
+    },
+    {
+      "name": "response_type",
+      "type": "java.lang.String",
+      "description": "A description for 'response_type'"
+    },
+    {
+      "name": "client_id",
+      "type": "java.lang.String",
+      "description": "A description for 'response_type'"
+    },
+    {
+      "name": "client_secret",
+      "type": "java.lang.String",
+      "description": "A description for 'response_type'"
+    },
+    {
+      "name": "redirect_uri",
+      "type": "java.lang.String",
+      "description": "A description for 'response_type'"
+    },
+    {
+      "name": "scope",
+      "type": "java.lang.String",
+      "description": "A description for 'response_type'"
+    },
+    {
+      "name": "state",
+      "type": "java.lang.String",
+      "description": "A description for 'response_type'"
+    },
+    {
+      "name": "grant_type",
+      "type": "java.lang.String",
+      "description": "A description for 'response_type'"
+    }
+  ]
+}
