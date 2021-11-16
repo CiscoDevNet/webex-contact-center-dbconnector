@@ -23,10 +23,21 @@ export class RestserviceService {
   public onLoginChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 
+
+
+  public logout() {
+    console.log('RestserviceService: mylogout');
+    return this.http.get<any[]>('/mylogout').subscribe(response => {
+        RestserviceService.isLoggedIn = false;
+        this.onLoginChange.emit(RestserviceService.isLoggedIn);
+    });
+  }
+
+
   public getUser() {
     console.log('RestserviceService: getUser');
-    return this.http.get<any[]>('/user/user').pipe(
-      catchError(this.handleError)
+    return this.http.get<any[]>('/user').pipe(
+      //catchError(this.handleError)
     );
   }
 
@@ -38,11 +49,13 @@ export class RestserviceService {
         RestserviceService.isLoggedIn = false;
       } else {
         const response: any = data;
-        console.warn('restService.getUser: data', data);
-        if (response.response === 'true') {
+        // console.log('RestserviceService.getUser: data', data, response);
+        if (response === true) {
+          // console.log('RestserviceService: isAuthenticated: YES');
           RestserviceService.isLoggedIn = true;
-
+          // this.onLoginChange.emit(true);
         } else {
+          // console.log('RestserviceService: isAuthenticated: NO');
           RestserviceService.isLoggedIn = false;
         }
       }
