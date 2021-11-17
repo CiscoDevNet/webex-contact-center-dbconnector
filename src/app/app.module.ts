@@ -16,6 +16,8 @@ import { AboutComponent } from './about/about.component';
 import { LoginComponent } from './login/login.component';
 import { LoggedinComponent } from './loggedin/loggedin.component';
 import { GridViewComponent } from './grid-view/grid-view.component';
+import { SqlserverComponent } from './connector/sqlserver/sqlserver.component';
+import { MysqlComponent } from './connector/mysql/mysql.component';
 // import { GlobalConstants } from './global-constants';
 
 
@@ -32,6 +34,8 @@ import { GridViewComponent } from './grid-view/grid-view.component';
     LoginComponent,
     LoggedinComponent,
     GridViewComponent,
+    SqlserverComponent,
+    MysqlComponent,
   ],
   imports: [
     BrowserModule,
