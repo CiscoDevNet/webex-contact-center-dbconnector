@@ -1,12 +1,12 @@
-filesystem:
-  dataDirectory: data
-#  fileSystemInterface : fileSystemAWSS3
-  fileSystemInterface : fileSystemLocalhost
-
-fileSystemAWSS3:
-  accessKey : your_accessKey
-  secretKey : your_secretKey
-  bucketName : your_bucketName
+#filesystem:
+#  dataDirectory: data
+##  fileSystemInterface : fileSystemAWSS3
+#  fileSystemInterface : fileSystemLocalhost
+#
+#fileSystemAWSS3:
+#  accessKey : your_accessKey
+#  secretKey : your_secretKey
+#  bucketName : your_bucketName
 
 #server:
 #  port: 443
@@ -21,20 +21,20 @@ fileSystemAWSS3:
 #      cookie:
 #         max-age: -1
 #      timeout: -1
-server:
-  port: 8080
-  forward-headers-strategy: native
+#server:
+#  port: 8080
+#  forward-headers-strategy: native
 
-logging:
- level:
-#              org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
-  org.springframework: INFO
-  com.mchange: INFO
-  com.cisco: INFO
+#logging:
+# level:
+##              org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+#  org.springframework: INFO
+#  com.mchange: INFO
+#  com.cisco: INFO
 
-spring:
-  cache:
-    type: NONE
+#spring:
+#  cache:
+#    type: NONE
 
 
 # CI client
