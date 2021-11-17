@@ -66605,4 +66605,4 @@ function innerSubscribe(result, innerSubscriber) {
 /***/ })
 
 }]);
-//# sourceMappingURL=vendor-es2015.js.map
+//# sourceMappingURL=vendor.js.map
