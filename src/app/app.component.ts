@@ -37,7 +37,7 @@ export class AppComponent implements OnInit, OnChanges {
     if (this.isLoggedIn) {
       // life is good
       this.restService.logout();
-//      location.assign('/mylogout');
+      location.assign('/');
     } else {
       location.assign('/');
     }

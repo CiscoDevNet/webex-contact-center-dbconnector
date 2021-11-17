@@ -22,8 +22,8 @@
                 <a routerLink="help" class="header-item">Help</a>
                 <a routerLink="support" class="header-item">Support</a>
                 <a routerLink="about" class="header-item">About</a>
-                <a *ngIf="isLoggedIn"  (click)="loginButton($event)"  class="header-item">Logout</a>
-                <a *ngIf="!isLoggedIn" (click)="loginButton($event)" class="header-item">Login</a>
+                <a *ngIf="isLoggedIn"  (click)="loginButton()"  class="header-item">Logout</a>
+                <a *ngIf="!isLoggedIn" (click)="loginButton()" class="header-item">Login</a>
             </div>
         </div>
     </div>
