@@ -10,5 +10,6 @@ public class Authentication{
  public String refresh_token_expires_in;
  public String token_type;
  public String orginzationId;
+ public String scope;
 }
 
