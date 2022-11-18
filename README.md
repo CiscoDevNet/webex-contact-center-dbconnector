@@ -99,9 +99,9 @@ Under `src > main > java > application.yml`
 
 ## Security & Production Deployment
 
-For DB Connector to work effectively in production behind your premise firewall, there are 3 requirements:
+For DB Connector to work effectively in production behind your premise firewall, there are 4 requirements:
 
-1. **Authentication:** Authentication of the REST API endpoint, configured in the Spring Security settings: By default, username and password authentication is supported, along with WebexCC OAuth2 for the administration portal.
+1. **Authentication:** Authentication of the REST API endpoint, configured in the Spring Security settings: By default, username and password authentication is supported, along with WebexCC OAuth2 for the administration portal. This is out of box and requires a configuration in the YAML settings.
 
 2. **Firewall Settings:** Allow list Webex Contact Center IP Addresses as the SRC (Source) IP Address. The block of IPs are listed in the Security Document.
    Link:
