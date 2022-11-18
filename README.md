@@ -9,7 +9,7 @@
 ### Connect SQL Servers with Webex Contact Center DB Connector
 
 - [Overview](#overview)
-- [Background of the Application](#background-of-the-application)
+- [Background](#background-of-the-application)
 - [Prerequisites](#prerequisites)
 - [Usage](#usage)
 - [Security & Production Deployment](#security--production-deployment)
