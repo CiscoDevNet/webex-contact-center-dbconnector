@@ -32,7 +32,7 @@
 
 ![dbconnector1](/images/3.png)
 
-> Once the DB Connector app is configured and hosted along with a publicly reachable IP address and secure connectivity (HTTPS - with CA Signed Certificates) - the Flow Designer Node is configured to reach your database. For more information on Firewall configurations, refer the **[Security]()** section.
+> Once the DB Connector app is configured and hosted along with a publicly reachable IP address and secure connectivity (HTTPS - with CA Signed Certificates) - the Flow Designer Node is configured to reach your database. For more information on Firewall configurations, refer the **[Security & Production Deployment](#security--production-deployment)** section.
 
 ## Background
 
@@ -104,7 +104,7 @@ For DB Connector to work effectively in production behind your premise firewall,
 1. **Authentication:** Authentication of the REST API endpoint, configured in the Spring Security settings: By default, username and password authentication is supported, along with WebexCC OAuth2 for the administration portal. This is out of box and requires a configuration in the YAML settings.
 
 2. **Firewall Settings:** Allow list Webex Contact Center IP Addresses as the SRC (Source) IP Address. The block of IPs are listed in the Security Document.
-   Link:
+   Link: **https://help.webex.com/en-us/article/3srgv1/Security-Settings-for-Webex-Contact-Center**
 
 3. **Reverse Proxy:** A reverse proxy is required for the DB Connector endpoint to be publicly reachable on the Cloud. This ensures that Webex Contact Center is able to reach your application over the public internet.
 
