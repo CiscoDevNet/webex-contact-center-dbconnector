@@ -34,9 +34,24 @@
 
 > Once the DB Connector app is configured and hosted along with a publicly reachable IP address and secure connectivity (HTTPS - with CA Signed Certificates) - the Flow Designer Node is configured to reach your database. For more information on Firewall configurations, refer the **[Security]()** section.
 
-## Background of the Application
+## Background
 
-The application code is available for extension and configuration
+The Webex Contact Center DB Connector is a full stack application that enables you to manage your SQL data source connectivity with Webex Contact Center.
+
+It is powered by a Spring Boot backend that enables JDBC to authenticated REST API interfaces that are configurable by the administrator for GET/PUT/POST use cases based on the SQL Queries configured.
+
+The frontend is built using Angular.
+
+The application code is available open source on GitHub for extension along with accompanying Readmes on hosting options.
+
+For the DB Connector to work effectively here is the 4 step process:
+
+1. Download, Build and Package the DB Connector JAR file or container - ready to be deployed and run on a production VM or container.
+
+2. Configure the properties of the production environment, including the Firewall settings, Reverse Proxy for reachability from the Internet, and CA Signed Certificates for HTTPS connectivity.
+
+3. Test using the DBConnector "TEST SQL Connectivity" and test the REST API calls using Postman.
+4. Configure your HTTP Node inside Flow designer to begin using the DB Connector application to query your SQL data sources.
 
 ## Prerequisites
 
