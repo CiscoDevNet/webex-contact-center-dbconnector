@@ -6,7 +6,17 @@
 
 # Webex Contact Center DB Connector
 
-#### Connect SQL Servers with Webex Contact Center DB Connector
+### Connect SQL Servers with Webex Contact Center DB Connector
+
+- [Overview](#overview)
+- [Background of the Application](#background-of-the-application)
+- [Prerequisites](#prerequisites)
+- [Usage](#usage)
+- [Security & Production Deployment](#security--production-deployment)
+- [Support](#support)
+- [Questions?](#questions)
+- [Change Log](#change-log)
+- [License](#license)
 
 ## Overview
 
@@ -72,10 +82,32 @@ Under `src > main > java > application.yml`
 
 10. Login with Webex and follow the detailed walkthrough at: [DB Connector - Walkthrough](./dbConnector.pptx)
 
-## License
+## Security & Production Deployment
 
-&copy; 2020 Cisco Systems, Inc. and/or its affiliates.
-All Rights Reserved. See [LICENSE](LICENSE) for details.
+For DB Connector to work effectively in production behind your premise firewall, there are 3 requirements:
+
+1. **Authentication:** Authentication of the REST API endpoint, configured in the Spring Security settings: By default, username and password authentication is supported, along with WebexCC OAuth2 for the administration portal.
+
+2. **Firewall Settings:** Allow list Webex Contact Center IP Addresses as the SRC (Source) IP Address. The block of IPs are listed in the Security Document.
+   Link:
+
+3. **Reverse Proxy:** A reverse proxy is required for the DB Connector endpoint to be publicly reachable on the Cloud. This ensures that Webex Contact Center is able to reach your application over the public internet.
+
+4. **CA Signed Certificates:** The Web application needs to be hosted with a CA signed certificate for this to work effectively. This is a pre-requisite for HTTPS traffic between the HTTPClient (HTTP Node) on Flow Designer and the DB Connector application.
+
+## Support
+
+> The DB Connector application is available for free, and the open source code is shared to be able to extend the functionality to support more data sources.
+
+> Once built and deployed, the support of the DB Connector application needs to be handled by the partner or customer hosting this application on-premise or in the cloud.
+
+## Questions?
+
+For Questions on building the application or best practices during deployment, please use the Cisco Developer Community Page:
+
+Need Help? Visit the **[Webex Contact Center APIs Developer Community](https://community.cisco.com/t5/contact-center/bd-p/j-disc-dev-contact-center)**
+
+Refer: **[How to Ask a Question or Initiate a Discussion](https://community.cisco.com/t5/contact-center/webex-contact-center-apis-developer-community-and-support/m-p/4558270)**
 
 ## Change Log
 
@@ -85,3 +117,8 @@ All Rights Reserved. See [LICENSE](LICENSE) for details.
 | November 2021 | Connector Refactoring | Connectors now have separate pages so it is easier to add additional connectors: /app/connector <- main page /app/connector/mysql <- mysql connector page /app/connector/sqlserver <- sql server connector page |
 | November 2021 | Refactoring           | Moved src/main/resources/application.yml out of the jar file and renamed application.yml to application.properties                                                                                              |
 | November 2022 | Updates               | Readme updates, installation updates                                                                                                                                                                            |
+
+## License
+
+&copy; 2020 Cisco Systems, Inc. and/or its affiliates.
+All Rights Reserved. See [LICENSE](LICENSE) for details.
