@@ -3,10 +3,6 @@
  */
 package com.cisco.app.dbconnector.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,28 +15,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cisco.app.dbconnector.model.Authentication;
 import com.cisco.app.dbconnector.model.BasicAuth;
-import com.cisco.app.dbconnector.model.DbConnection;
 import com.cisco.app.dbconnector.model.Endpoint;
-import com.cisco.app.dbconnector.model.MySql;
-import com.cisco.app.dbconnector.model.SqlServer;
 import com.cisco.app.dbconnector.service.DatabaseUtility;
 import com.cisco.app.dbconnector.service.FileSystemInterface;
 import com.cisco.app.util.Memory;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Controller for rest calls 
+ * Controller for rest calls from Webexcc 
  * @author jiwyatt
  * @since 12/12/2020
  *
@@ -49,6 +38,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/rest")
 public class WebControllerWebexCC {
 	Logger logger = LoggerFactory.getLogger(WebControllerWebexCC.class);
+
+	@Value("${redirect_uri}")
+	private String redirect_uri;
 	
  
 	@Resource(name="${filesystem.fileSystemInterface}")	
@@ -79,7 +71,15 @@ public class WebControllerWebexCC {
 		long tstart = System.currentTimeMillis();
 		logger.debug("webexcc/" + endpointName);
 		logger.debug("body:" + inboundParameters);
+		this.addHeaders(response);		
 		try {
+			if(endpointName.equals("reloadRules")) {
+				endpointMap.clear();
+				basicAuth = null;
+				logExecutionTime(request, tstart, "/webexcc/" + endpointName);				
+				return "{\"response\":\"success\"}";
+			}
+			
 			String authorization = request.getHeader("authorization");
 			try {
 				if (basicAuth == null) {
@@ -147,10 +147,10 @@ public class WebControllerWebexCC {
 	private void logExecutionTime(HttpServletRequest request, long tstart, String method) {
 		printMemoryCounter++;
 		if (printMemoryCounter % 1000 == 0) {
-			Memory.main(null);
+			Memory.logMemory();
 		}
 		try {
-			logger.info( "Done in " + (System.currentTimeMillis() - tstart) + " milli seconds"  + request.getSession().getId() + " - " + method + "");
+			logger.info( "Done in " + (System.currentTimeMillis() - tstart) + " milli seconds "  + request.getSession().getId() + " - " + method + "");
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
@@ -163,6 +163,14 @@ public class WebControllerWebexCC {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
+	}
+	
+	private void addHeaders(HttpServletResponse response) {
+		response.setHeader("Access-Control-Allow-Methods", "POST, GET,  DELETE");
+		response.setHeader("Access-Control-Max-Age", "3600");
+		response.setHeader("Access-Control-Allow-Headers", "x-requested-with, content-type");
+		response.setHeader("Access-Control-Allow-Origin", redirect_uri);
+		response.setHeader("Access-Control-Allow-Credentials", "true");
 	}
 
 }

@@ -3,7 +3,6 @@
  */
 package com.cisco.app.dbconnector.controller;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Base64;
@@ -19,13 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.cisco.app.dbconnector.model.Authentication;
 import com.cisco.app.dbconnector.model.BasicAuth;
@@ -40,20 +41,24 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Controller for rest calls 
+ * Controller for rest calls
+ * 
  * @author jiwyatt
  * @since 12/12/2020
  *
  */
 @RestController
 @RequestMapping("/rest")
+@CrossOrigin(origins = {"${redirect_uri}"})
 public class WebControllerRest {
 	Logger logger = LoggerFactory.getLogger(WebControllerRest.class);
-	
- 
-	@Resource(name="${filesystem.fileSystemInterface}")	
+
+	@Value("${redirect_uri}")
+	private String redirect_uri;
+
+	@Resource(name = "${filesystem.fileSystemInterface}")
 	private FileSystemInterface fileSystem;
-	
+
 	@Autowired
 	private DatabaseUtility db;
 	private BasicAuth basicAuth;
@@ -64,10 +69,8 @@ public class WebControllerRest {
 		logger.info("public WebControllerRest");
 	}
 
-
-
 	/**
-	 * get the active connector AKA data/connector.obj
+	 * get the active connector AKA data/Connector.obj
 	 * 
 	 * @param request
 	 * @param response
@@ -77,9 +80,11 @@ public class WebControllerRest {
 	@ResponseBody
 	public Object getConnector(HttpServletRequest request, HttpServletResponse response) {
 		long tstart = System.currentTimeMillis();
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		this.addHeaders(response);
+
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
-		
+
 		try {
 			return fileSystem.readConnectorFromFile();
 		} catch (Exception e) {
@@ -103,10 +108,12 @@ public class WebControllerRest {
 	 */
 	@RequestMapping(value = "/connector/{serverType}", method = RequestMethod.GET)
 	@ResponseBody
-	public Object getConnectorByServerType(HttpServletRequest request, HttpServletResponse response, @PathVariable String serverType) {
+	public Object getConnectorByServerType(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable String serverType) {
 		long tstart = System.currentTimeMillis();
+		this.addHeaders(response);
 		logger.info("serverType:" + serverType);
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
 
 		try {
@@ -141,17 +148,19 @@ public class WebControllerRest {
 	@ResponseBody
 	public Object postConnector(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
 		long tstart = System.currentTimeMillis();
+		this.addHeaders(response);
 		logger.info("body:" + body);
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
-		
+
 		try {
 //			java.util.LinkedHashMap<?, ?> map = (java.util.LinkedHashMap<?, ?>) body;
 			ObjectMapper mapper = new ObjectMapper();
 			DbConnection oDbConnection = mapper.convertValue(body, new TypeReference<MySql>() {
 			});
 			if (!db.dbConnectionIsValid(oDbConnection)) {
-				String encoded = new String(Base64.getEncoder().encode("Invalid Connection Pool setting".toString().getBytes()));
+				String encoded = new String(
+						Base64.getEncoder().encode("Invalid Connection Pool setting".toString().getBytes()));
 				return "{\"Exception\":\"" + encoded + "\"}";
 			}
 			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_SQL_SERVER)) {
@@ -167,6 +176,7 @@ public class WebControllerRest {
 			 * write Connector to file
 			 */
 			fileSystem.writeConnectorToFile(oDbConnection);
+			reloadRules();
 
 			logger.info("oDbConnection:" + oDbConnection);
 //			db.setDataSource(oConnector);
@@ -191,7 +201,8 @@ public class WebControllerRest {
 	@ResponseBody
 	public Object getEndpoints(HttpServletRequest request, HttpServletResponse response) {
 		long tstart = System.currentTimeMillis();
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		this.addHeaders(response);
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
 
 		try {
@@ -211,10 +222,11 @@ public class WebControllerRest {
 	@ResponseBody
 	public Object postEndpoint(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
 		long tstart = System.currentTimeMillis();
+		this.addHeaders(response);
 		logger.info("body:" + body);
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
-		
+
 		try {
 			// java.util.LinkedHashMap<?, ?> map = (java.util.LinkedHashMap<?, ?>) body;
 			ObjectMapper mapper = new ObjectMapper();
@@ -250,7 +262,10 @@ public class WebControllerRest {
 				}
 			}
 			endpointMap.clear();
-			return "{\"response\":\"SUCCESS\",\"jsonResponse\":\"" + jsonResponse + "\",\"httpParams\":\"" + httpParams + "\",\"sqlStatement\":\"" + sqlStatement + "\",\"authentication\":\"" + basicAuth.getIsBasicAuthenticationRequired() + "\"}";
+			reloadRules();
+			return "{\"response\":\"SUCCESS\",\"jsonResponse\":\"" + jsonResponse + "\",\"httpParams\":\"" + httpParams
+					+ "\",\"sqlStatement\":\"" + sqlStatement + "\",\"authentication\":\""
+					+ basicAuth.getIsBasicAuthenticationRequired() + "\"}";
 
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -265,11 +280,13 @@ public class WebControllerRest {
 
 	@ResponseBody
 	@RequestMapping(value = "/endpoint/{endpointName}", method = RequestMethod.DELETE)
-	public Object deleteEndpoint(HttpServletRequest request, HttpServletResponse response, @PathVariable String endpointName) {
+	public Object deleteEndpoint(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable String endpointName) {
 		long tstart = System.currentTimeMillis();
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		this.addHeaders(response);
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
-		
+
 		try {
 			logger.info("endpointName:" + endpointName);
 			List<Endpoint> lists = fileSystem.loadEndpointsFromFile();
@@ -278,8 +295,9 @@ public class WebControllerRest {
 					fileSystem.deleteEndpoint(endpointName);
 				}
 			}
-			//clear the map. it will get reloaded automatically 
-			endpointMap.clear();			
+			// clear the map. it will get reloaded automatically
+			endpointMap.clear();
+			reloadRules();
 			return fileSystem.loadEndpointsFromFile();
 		} catch (java.io.FileNotFoundException e) {
 			return "{\"Exception\":\"Connector not found\"}";
@@ -289,16 +307,15 @@ public class WebControllerRest {
 		} finally {
 			logExecutionTime(request, tstart, "/deleteEndpoint");
 		}
-	}	
-	
+	}
+
 	@RequestMapping(value = "/basicauth", method = RequestMethod.GET)
 	@ResponseBody
-
 	public Object getBasicAuth(HttpServletRequest request, HttpServletResponse response) {
 		long tstart = System.currentTimeMillis();
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
-		
+
 		try {
 			return fileSystem.readBasicAuthFromFile();
 		} catch (Exception e) {
@@ -312,13 +329,21 @@ public class WebControllerRest {
 		}
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @param body
+	 * @return
+	 */
 	@RequestMapping(value = "/basicauth", method = RequestMethod.POST)
 	@ResponseBody
 	public Object postBasicAuth(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
 		long tstart = System.currentTimeMillis();
-		Authentication check = (Authentication) request.getSession().getAttribute("oAuthentication");
+		this.addHeaders(response);
+		Authentication check = (Authentication) request.getSession().getAttribute("Authentication");
 		logger.info("root:check:{}", check);
-		
+
 		logger.info("body:" + body);
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -330,6 +355,8 @@ public class WebControllerRest {
 			 */
 			fileSystem.writeBasicAuthToFile(oBasicAuth);
 			basicAuth = oBasicAuth;
+
+			reloadRules();
 
 			logger.info("oBasicAuth:" + oBasicAuth);
 			return "{\"response\":\"Global setting for Basic Authentication for endpoints has been updated\"}";
@@ -345,6 +372,10 @@ public class WebControllerRest {
 		}
 	}
 
+	private void reloadRules() throws Exception {
+		// reload the rules & BasicAuth setting
+		new RestTemplate().getForObject("http://localhost:8080/rest/webexcc/reloadRules", String.class);
+	}
 
 	private long printMemoryCounter = 0;
 
@@ -358,10 +389,11 @@ public class WebControllerRest {
 	private void logExecutionTime(HttpServletRequest request, long tstart, String method) {
 		printMemoryCounter++;
 		if (printMemoryCounter % 1000 == 0) {
-			Memory.main(null);
+			Memory.logMemory();
 		}
 		try {
-			logger.info( "Done in " + (System.currentTimeMillis() - tstart) + " milli seconds"  + request.getSession().getId() + " - " + method + "");
+			logger.info("Done in " + (System.currentTimeMillis() - tstart) + " milli seconds "
+					+ request.getSession().getId() + " - " + method + "");
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
@@ -376,9 +408,16 @@ public class WebControllerRest {
 		}
 	}
 
-	@RequestMapping(value = "/help", method = RequestMethod.GET)
-	public String jim(HttpServletRequest request, HttpServletResponse response) {
-		return "forward:/index.html";
+	/**
+	 * 
+	 * @param response
+	 */
+	private void addHeaders(HttpServletResponse response) {
+		response.setHeader("Access-Control-Allow-Methods", "POST, GET,  DELETE");
+		response.setHeader("Access-Control-Max-Age", "3600");
+		response.setHeader("Access-Control-Allow-Headers", "x-requested-with, content-type");
+		response.setHeader("Access-Control-Allow-Origin", redirect_uri);
+		response.setHeader("Access-Control-Allow-Credentials", "true");
 	}
 
 }

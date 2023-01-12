@@ -249,7 +249,7 @@ public class DatabaseUtility {
 	}
 
 	private void logExecutionTime(long tstart, String method) {
-		logger.info( "Done in " + (System.currentTimeMillis() - tstart) + " milli seconds"  + "" + " - " + method + "");
+		logger.info( "Done in " + (System.currentTimeMillis() - tstart) + " milli seconds "  + "" + " - " + method + "");
 	}
 
 }
