@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cisco.app.dbconnector.model.Authentication;
@@ -28,7 +28,7 @@ public class WebControllerUI {
 		logger.info("public WebControllerUI");
 	}
 
-	@RequestMapping({ "/index", "/logout", "/help", "/support", "/about", "/loggedin", "/endpoint", "/connector", "/GridView" })
+	@GetMapping({ "/", "/logout", "/help", "/support", "/about", "/loggedin", "/endpoint", "/connector", "/grid-view", "mylogin" })
 	public String angularRoutes(HttpServletRequest request, HttpServletResponse response) {
 		request.getAttribute("access_token");
 		Authentication check = (Authentication) request.getAttribute("oAuthentication");
@@ -39,7 +39,7 @@ public class WebControllerUI {
 //		return "forward:/";
 	}
 	
-	@RequestMapping({ "/mylogout"})
+	@GetMapping({ "/mylogout"})
 	@ResponseBody
 	public Object mylogout(HttpServletRequest request, HttpServletResponse response) {
 		logger.info("WebControllerUI");

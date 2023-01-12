@@ -22,10 +22,10 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -40,9 +40,11 @@ import com.cisco.app.dbconnector.model.DbConnection;
 import com.cisco.app.dbconnector.model.Endpoint;
 import com.cisco.app.dbconnector.model.MySql;
 import com.cisco.app.dbconnector.model.SqlServer;
+import com.cisco.app.dbconnector.util.Cypher2021;
 
 /**
  * AWS file system storage AKA bucket
+ * 
  * @author jiwyatt
  * @since 12/12/2020
  *
@@ -65,6 +67,9 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 	@Value("${filesystem.dataDirectory}")
 	private String dataDirectory;
 
+	@Autowired
+	Cypher2021 cypher2021;
+
 	public FileSystemAWSS3() {
 		super();
 	}
@@ -77,36 +82,39 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			// this is the active connection
 			// create file so it can be sent to S3
 
-			File oFile = new File(this.dataDirectory + "/connector.obj");
+			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
 			f = new FileOutputStream(oFile);
 			o = new ObjectOutputStream(f);
 			o.writeObject(oDbConnection);
 			o.close();
 			f.close();
+			cypher2021.encrypt(oFile);
 			// copy file to S3
 			this.putFile(oFile.getAbsolutePath());
 
 			// this is the MySQL connection
 			// create file so it can be sent to S3
 			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_MYSQL)) {
-				oFile = new File(this.dataDirectory + "/MySql.obj");
+				oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(oDbConnection);
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
 			// this is the SQL Server connection
 			// create file so it can be sent to S3
 			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_SQL_SERVER)) {
-				oFile = new File(this.dataDirectory + "/SqlServer.obj");
+				oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(oDbConnection);
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
@@ -125,8 +133,8 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 	public DbConnection readConnectorFromFile() throws Exception {
 		// get file from S3
 		try {
-			byte[] bytes = this.getFile("connector.obj");
-			Files.write(Paths.get(this.dataDirectory + "/connector.obj"), bytes);
+			byte[] bytes = this.getFile(DbConnection.FILE_NAME);
+			Files.write(Paths.get(this.dataDirectory + "/" + DbConnection.FILE_NAME), bytes);
 		} catch (Exception e) {
 			this.seedDataFiles();
 		}
@@ -137,9 +145,11 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 		DbConnection oDbConnection = null;
 
 		try {
-			File oFile = new File(this.dataDirectory + "/connector.obj");
+			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
+			cypher2021.decrypt(oFile);
 			FileInputStream fi = new FileInputStream(oFile);
 			oi = new ObjectInputStream(fi);
+			cypher2021.encrypt(oFile);
 			// Read objects
 			oDbConnection = (DbConnection) oi.readObject();
 		} catch (FileNotFoundException e) {
@@ -170,47 +180,51 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 		ObjectOutputStream o = null;
 		try {
 			// this is the active connection
-			File oFile = new File(this.dataDirectory + "/connector.obj");
+			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/connector.obj");
+				logger.info("CREATING " + this.dataDirectory + "/" + DbConnection.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new MySql());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
-			oFile = new File(this.dataDirectory + "/MySql.obj");
+			oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/MySql.obj");
+				logger.info("CREATING " + this.dataDirectory + "/" + MySql.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new MySql());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
-			oFile = new File(this.dataDirectory + "/SqlServer.obj");
+			oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/SqlServer.obj");
+				logger.info("CREATING " + this.dataDirectory + "/" + SqlServer.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new SqlServer());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
-			oFile = new File(this.dataDirectory + "/BasicAuth.obj");
+			oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/BasicAuth.obj");
+				logger.info("CREATING " + this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new BasicAuth());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
@@ -234,27 +248,33 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 
 		try {
 			if (DbConnection.SERVER_TYPE_MYSQL.equals(serverType)) {
+				//why did i do this start?
 				try {
-					byte[] bytes = this.getFile("MySql.obj");
-					Files.write(Paths.get(this.dataDirectory + "/MySql.obj"), bytes);
+					byte[] bytes = this.getFile(MySql.FILE_NAME);
+					Files.write(Paths.get(this.dataDirectory + "/" + MySql.FILE_NAME), bytes);
 				} catch (Exception e) {
 					this.seedDataFiles();
 				}
-				File oFile = new File(this.dataDirectory + "/MySql.obj");
+				//why did i do this stop?
+				File oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
+				cypher2021.decrypt(oFile);
 				FileInputStream fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);
+				cypher2021.encrypt(oFile);
 				// Read objects
 				return (DbConnection) oi.readObject();
 			} else if (DbConnection.SERVER_TYPE_SQL_SERVER.equals(serverType)) {
 				try {
-					byte[] bytes = this.getFile("SqlServer.obj");
-					Files.write(Paths.get(this.dataDirectory + "/SqlServer.obj"), bytes);
+					byte[] bytes = this.getFile(SqlServer.FILE_NAME);
+					Files.write(Paths.get(this.dataDirectory + "/" + SqlServer.FILE_NAME), bytes);
 				} catch (Exception e) {
 					this.seedDataFiles();
 				}
-				File oFile = new File(this.dataDirectory + "/SqlServer.obj");
+				File oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
+				cypher2021.decrypt(oFile);
 				FileInputStream fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);
+				cypher2021.encrypt(oFile);
 				// Read objects
 				return (DbConnection) oi.readObject();
 			} else {
@@ -287,6 +307,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			o.writeObject(oEndpoint);
 			o.close();
 			f.close();
+			cypher2021.encrypt(oFile);
 			// copy file to S3
 			this.putFile(oFile.getAbsolutePath());
 
@@ -301,11 +322,11 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 
 	}
 
-	private Endpoint readEndpointFromFile(File fileName) throws Exception {
+	private Endpoint readEndpointFromFile(File oFile) throws Exception {
 		// get file from S3
 		try {
-			byte[] bytes = this.getFile(fileName.getName());
-			Files.write(Paths.get(this.dataDirectory + "/" + fileName), bytes);
+			byte[] bytes = this.getFile(oFile.getName());
+			Files.write(Paths.get(this.dataDirectory + "/" + oFile), bytes);
 		} catch (Exception e) {
 //			this.seedDataFiles();
 		}
@@ -316,8 +337,10 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 		// Read objects
 		Endpoint oEndpoint = null;
 		try {
-			FileInputStream fi = new FileInputStream(fileName);
+			cypher2021.decrypt(oFile);
+			FileInputStream fi = new FileInputStream(oFile);
 			oi = new ObjectInputStream(fi);
+			cypher2021.encrypt(oFile);
 			// Read objects
 			oEndpoint = (Endpoint) oi.readObject();
 
@@ -338,7 +361,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			Files.write(Paths.get(this.dataDirectory + "/" + file), bytes);
 		}
 		/**
-		 * get Endpoints from filesystem
+		 * get Endpoints from file system
 		 */
 		List<Endpoint> lists = new ArrayList<Endpoint>();
 		File[] files = new File(this.dataDirectory).listFiles(new FilenameFilter() {
@@ -367,8 +390,8 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 	public BasicAuth readBasicAuthFromFile() throws Exception {
 		// get file from S3
 		try {
-			byte[] bytes = this.getFile("BasicAuth.obj");
-			Files.write(Paths.get(this.dataDirectory + "/BasicAuth.obj"), bytes);
+			byte[] bytes = this.getFile(BasicAuth.FILE_NAME);
+			Files.write(Paths.get(this.dataDirectory + "/" + BasicAuth.FILE_NAME), bytes);
 		} catch (Exception e) {
 			this.seedDataFiles();
 			return new BasicAuth();
@@ -378,9 +401,11 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 		 */
 		ObjectInputStream oi = null;
 		try {
-			File oFile = new File(this.dataDirectory + "/BasicAuth.obj");
+			File oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
+			cypher2021.decrypt(oFile);
 			FileInputStream fi = new FileInputStream(oFile);
 			oi = new ObjectInputStream(fi);
+			cypher2021.encrypt(oFile);
 			// Read objects
 			return (BasicAuth) oi.readObject();
 		} catch (FileNotFoundException e) {
@@ -402,12 +427,13 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 
 		try {
 			// create file so it can be sent to S3
-			File oFile = new File(this.dataDirectory + "/BasicAuth.obj");
+			File oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			f = new FileOutputStream(oFile);
 			o = new ObjectOutputStream(f);
 			o.writeObject(basicAuth);
 			o.close();
 			f.close();
+			cypher2021.encrypt(oFile);
 			// copy file to S3
 			this.putFile(oFile.getAbsolutePath());
 		} finally {
@@ -475,7 +501,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 		new File(this.dataDirectory + "/" + endpointName + ".obj").delete();
 		s3Client.deleteObject(bucketName, endpointName + ".obj");
 	}
-	
+
 	@PostConstruct
 	private void createConnection() {
 		s3Client = new AmazonS3Client(new BasicAWSCredentials(accessKey, secretKey));

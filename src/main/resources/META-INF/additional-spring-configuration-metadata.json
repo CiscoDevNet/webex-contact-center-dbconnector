@@ -12,32 +12,37 @@
   {
     "name": "client_id",
     "type": "java.lang.String",
-    "description": "A description for 'response_type'"
+    "description": "A description for 'client_id'"
   },
   {
     "name": "client_secret",
     "type": "java.lang.String",
-    "description": "A description for 'response_type'"
+    "description": "A description for 'client_secret'"
   },
   {
     "name": "redirect_uri",
     "type": "java.lang.String",
-    "description": "A description for 'response_type'"
+    "description": "A description for 'redirect_uri'"
   },
   {
     "name": "scope",
     "type": "java.lang.String",
-    "description": "A description for 'response_type'"
+    "description": "A description for 'scope'"
   },
   {
     "name": "state",
     "type": "java.lang.String",
-    "description": "A description for 'response_type'"
+    "description": "A description for 'state'"
   },
   {
     "name": "grant_type",
     "type": "java.lang.String",
-    "description": "A description for 'response_type'"
+    "description": "A description for 'grant_type'"
+  },
+  {
+    "name": "filesystem.dataDirectory",
+    "type": "java.lang.String",
+    "description": "A description for 'filesystem.dataDirectory'"
   },
   {
     "name": "filesystem.fileSystemInterface",
@@ -50,23 +55,13 @@
     "description": "A description for 'fileSystemAWSS3.accessKey'"
   },
   {
-    "name": "fileSystemAWSS3.bucketName",
-    "type": "java.lang.String",
-    "description": "A description for 'fileSystemAWSS3.bucketName'"
-  },
-  {
     "name": "fileSystemAWSS3.secretKey",
     "type": "java.lang.String",
     "description": "A description for 'fileSystemAWSS3.secretKey'"
   },
   {
-    "name": "filesystem.dataDirectory",
+    "name": "fileSystemAWSS3.bucketName",
     "type": "java.lang.String",
-    "description": "A description for 'filesystem.dataDirectory'"
-  },
-  {
-    "name": "filesystem.dataDirectory",
-    "type": "java.lang.String",
-    "description": "A description for 'filesystem.dataDirectory'"
+    "description": "A description for 'fileSystemAWSS3.bucketName'"
   }
 ]}

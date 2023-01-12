@@ -13,6 +13,7 @@ import java.io.Serializable;
 public class BasicAuth implements Serializable {
 
 	private static final long serialVersionUID = -7243048278496580603L;
+	public static final String FILE_NAME = "BasicAuth.obj";
 
 	private String username = "";
 	private String password = "";

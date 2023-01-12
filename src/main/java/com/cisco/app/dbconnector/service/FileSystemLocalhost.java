@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,18 +25,23 @@ import com.cisco.app.dbconnector.model.DbConnection;
 import com.cisco.app.dbconnector.model.Endpoint;
 import com.cisco.app.dbconnector.model.MySql;
 import com.cisco.app.dbconnector.model.SqlServer;
+import com.cisco.app.dbconnector.util.Cypher2021;
 
 /**
- * localhost file system storage 
+ * localhost file system storage
+ * 
  * @author jiwyatt
  * @since 12/12/2020
  *
  */
-@Component(value="fileSystemLocalhost")
+@Component(value = "fileSystemLocalhost")
 public class FileSystemLocalhost implements FileSystemInterface {
 	Logger logger = LoggerFactory.getLogger(FileSystemLocalhost.class);
 	@Value("${filesystem.dataDirectory}")
 	private String dataDirectory;
+
+	@Autowired
+	Cypher2021 cypher2021;
 
 	public FileSystemLocalhost() {
 		super();
@@ -48,32 +53,35 @@ public class FileSystemLocalhost implements FileSystemInterface {
 		ObjectOutputStream o = null;
 		try {
 			// this is the active connection
-			File oFile = new File(this.dataDirectory + "/connector.obj");
+			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
 			oFile.getParentFile().mkdirs();
 			f = new FileOutputStream(oFile);
 			o = new ObjectOutputStream(f);
 			o.writeObject(oDbConnection);
 			o.close();
 			f.close();
+			cypher2021.encrypt(oFile);
 
 			// this is the MySQL connection
 			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_MYSQL)) {
-				oFile = new File(this.dataDirectory + "/MySql.obj");
+				oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(oDbConnection);
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 			}
 			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_SQL_SERVER)) {
-				oFile = new File(this.dataDirectory + "/SqlServer.obj");
+				oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(oDbConnection);
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 			}
 			// this is the SQL connection
 
@@ -96,8 +104,10 @@ public class FileSystemLocalhost implements FileSystemInterface {
 		DbConnection oDbConnection = null;
 
 		try {
-			File oFile = new File(this.dataDirectory + "/connector.obj");
+			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
+			cypher2021.decrypt(oFile);
 			FileInputStream fi = new FileInputStream(oFile);
+			cypher2021.encrypt(oFile);
 			oi = new ObjectInputStream(fi);
 			// Read objects
 			oDbConnection = (DbConnection) oi.readObject();
@@ -129,45 +139,49 @@ public class FileSystemLocalhost implements FileSystemInterface {
 		ObjectOutputStream o = null;
 		try {
 			// this is the active connection
-			File oFile = new File(this.dataDirectory + "/connector.obj");
+			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/connector.obj");
+				logger.info("CREATING " + this.dataDirectory + "/" + DbConnection.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new MySql());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 			}
-			oFile = new File(this.dataDirectory + "/MySql.obj");
+			oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/MySql.obj");
+				logger.info("CREATING " + MySql.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new MySql());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 			}
-			oFile = new File(this.dataDirectory + "/SqlServer.obj");
+			oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/SqlServer.obj");
+				logger.info("CREATING " + SqlServer.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new SqlServer());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 			}
-			oFile = new File(this.dataDirectory + "/BasicAuth.obj");
+			oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING data/BasicAuth.obj");
+				logger.info("CREATING " + BasicAuth.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new BasicAuth());
 				o.close();
 				f.close();
+				cypher2021.encrypt(oFile);
 			}
 		} finally {
 			if (o != null) {
@@ -188,15 +202,19 @@ public class FileSystemLocalhost implements FileSystemInterface {
 
 		try {
 			if (DbConnection.SERVER_TYPE_MYSQL.equals(serverType)) {
-				File oFile = new File(this.dataDirectory + "/MySql.obj");
+				File oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
+				cypher2021.decrypt(oFile);
 				FileInputStream fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);
+				cypher2021.encrypt(oFile);
 				// Read objects
 				return (DbConnection) oi.readObject();
 			} else if (DbConnection.SERVER_TYPE_SQL_SERVER.equals(serverType)) {
-				File oFile = new File(this.dataDirectory + "/SqlServer.obj");
+				File oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
+				cypher2021.decrypt(oFile);
 				FileInputStream fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);
+				cypher2021.encrypt(oFile);
 				// Read objects
 				return (DbConnection) oi.readObject();
 			} else {
@@ -230,6 +248,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			o.writeObject(oEndpoint);
 			o.close();
 			f.close();
+			cypher2021.encrypt(oFile);
 		} finally {
 			if (o != null) {
 				o.close();
@@ -241,7 +260,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 
 	}
 
-	private Endpoint readEndpointFromFile(File fileName) throws Exception {
+	private Endpoint readEndpointFromFile(File oFile) throws Exception {
 		/**
 		 * read Connector from file
 		 */
@@ -250,8 +269,10 @@ public class FileSystemLocalhost implements FileSystemInterface {
 		Endpoint oEndpoint = null;
 
 		try {
-			FileInputStream fi = new FileInputStream(fileName);
+			cypher2021.decrypt(oFile);
+			FileInputStream fi = new FileInputStream(oFile);
 			oi = new ObjectInputStream(fi);
+			cypher2021.encrypt(oFile);
 			// Read objects
 			oEndpoint = (Endpoint) oi.readObject();
 
@@ -266,7 +287,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 	@Override
 	public List<Endpoint> loadEndpointsFromFile() throws Exception {
 		/**
-		 * get Endpoints from filesystem
+		 * get Endpoints from file system
 		 */
 		List<Endpoint> lists = new ArrayList<Endpoint>();
 		File[] files = new File(this.dataDirectory).listFiles(new FilenameFilter() {
@@ -297,9 +318,11 @@ public class FileSystemLocalhost implements FileSystemInterface {
 		 */
 		ObjectInputStream oi = null;
 		try {
-			File oFile = new File(this.dataDirectory + "/BasicAuth.obj");
+			File oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
+			cypher2021.decrypt(oFile);
 			FileInputStream fi = new FileInputStream(oFile);
 			oi = new ObjectInputStream(fi);
+			cypher2021.encrypt(oFile);
 			// Read objects
 			return (BasicAuth) oi.readObject();
 		} catch (FileNotFoundException e) {
@@ -320,13 +343,14 @@ public class FileSystemLocalhost implements FileSystemInterface {
 		ObjectOutputStream o = null;
 
 		try {
-			File oFile = new File(this.dataDirectory + "/BasicAuth.obj");
+			File oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			oFile.getParentFile().mkdirs();
 			f = new FileOutputStream(oFile);
 			o = new ObjectOutputStream(f);
 			o.writeObject(basicAuth);
 			o.close();
 			f.close();
+			cypher2021.encrypt(oFile);
 		} finally {
 			if (o != null) {
 				o.close();

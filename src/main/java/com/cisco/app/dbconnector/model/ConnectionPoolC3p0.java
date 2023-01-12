@@ -27,10 +27,7 @@ public class ConnectionPoolC3p0 implements Serializable, ConnectionPoolDb {
 		super();
 	}
 
-	public static void main(String[] args) {
-
-	}
-
+ 
 	@Override
 	public String getInitialPoolSize() {
 		return initialPoolSize;

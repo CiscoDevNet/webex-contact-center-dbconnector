@@ -17,6 +17,7 @@ public class SqlServer implements Serializable, DbConnection {
 
 
 	private static final long serialVersionUID = 506087301723961948L;
+	public static final String FILE_NAME = "SqlServer.obj";
 	private String type = DbConnection.SERVER_TYPE_SQL_SERVER;
 	private String version = "-";
 	private String hostname = "localhost";
@@ -34,10 +35,7 @@ public class SqlServer implements Serializable, DbConnection {
 		super();
 	}
 
-	public static void main(String[] args) {
-
-	}
-
+ 
 	@Override
 	public String getType() {
 		return type;

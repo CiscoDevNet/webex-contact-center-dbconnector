@@ -13,6 +13,7 @@ public interface DbConnection {
 
 	public static final String SERVER_TYPE_MYSQL = "MySQL";
 	public static final String SERVER_TYPE_SQL_SERVER = "SQL_Server";
+	public static final String FILE_NAME = "Connector.obj";
 
 	ConnectionPoolDb getConnectionPool();
 

@@ -17,6 +17,7 @@ public class MySql implements Serializable, DbConnection {
 
 
 	private static final long serialVersionUID = -7986723323564998747L;
+	public static final String FILE_NAME = "MySql.obj";
 	private String type = DbConnection.SERVER_TYPE_MYSQL;
 	private String version = "5.7.23";
 	private String hostname = "localhost";
@@ -34,10 +35,7 @@ public class MySql implements Serializable, DbConnection {
 		super();
 	}
 
-	public static void main(String[] args) {
-
-	}
-
+ 
 	@Override
 	public String getType() {
 		return type;
