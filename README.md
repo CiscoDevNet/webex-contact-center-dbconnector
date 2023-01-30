@@ -55,7 +55,7 @@ For the DB Connector to work effectively here is the 4 step process:
 
 ## Prerequisites
 
-- Java 1.8
+- Java 1.9+
 
 `$ java --version`
 
