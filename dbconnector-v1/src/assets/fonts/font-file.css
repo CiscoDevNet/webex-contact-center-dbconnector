@@ -1,0 +1,4 @@
+@font-face {
+  font-family: "my_custom_font";
+  src: url("./custom_font.ttf") format("opentype");
+}
