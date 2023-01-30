@@ -1,7 +1,7 @@
 #values are defined via https://developer.webex-cx.com/my-apps and must be associated to a tenant
 baseURL: https://webexapis.com/v1
-client_id: Cf71c589fe56180d158e155d504882357189ea33949c4e14bc8bfc46381df2a27
-client_secret: 948903f38349525728bb612053d38dfa4453a659db22712c49252f317552aa89
+client_id: Cfxxcxxxfexxxxxdxxxexxxdxxxxxxxxxxxxeaxxxxxcxexxbcxbfcxxxxxdfxaxx
+client_secret: xxxxxxfxxxxxxxxxxxbbxxxxxxdxxdfaxxxxaxxxdbxxxxxcxxxxxfxxxxxxaaxx
 redirect_uri: http://localhost:4200
 response_type: code
 scope: cjp:config_read
