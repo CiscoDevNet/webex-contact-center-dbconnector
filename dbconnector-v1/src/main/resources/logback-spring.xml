@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - line: %line  %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="TOFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>logs/dbconnector.log</file>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - line: %line  %msg%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>logs/dbconnector.%d{yyyyMMdd}.%i.log</fileNamePattern>
+			<maxFileSize>10MB</maxFileSize>
+        	<maxHistory>10</maxHistory>
+        	<totalSizeCap>10MB</totalSizeCap>
+		</rollingPolicy>
+	</appender>
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="TOFILE" />
+	</root>
+</configuration>

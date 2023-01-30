@@ -1,0 +1,58 @@
+#Version 1.0
+
+#settings.server.backend.url:http://localhost:8080
+#settings.server.ui.url:http://localhost:4200
+
+
+
+
+#base URL for webexcc 'stuff'
+baseURL=https://webexapis.com/v1
+
+#webexcc authentication registration information 
+response_type=code
+client_id=Cf71c589fe56180d158e155d504882357189ea33949c4e14bc8bfc46381df2a27
+client_secret=948903f38349525728bb612053d38dfa4453a659db22712c49252f317552aa89
+redirect_uri=http://localhost:4200
+scope=cjp:config_read
+state=test
+grant_type=authorization_code
+
+
+
+filesystem.dataDirectory=data
+
+# filesystem is the location where your configuration will be stored
+# fileSystemLocalhost OR fileSystemAWSS3
+filesystem.fileSystemInterface=fileSystemAWSS3
+
+# fileSystemAWSS3 requires  authentication & location
+#filesystem.fileSystemInterface : fileSystemAWSS3
+fileSystemAWSS3.accessKey=AKIAWRBVTTFCSDITXPDT
+fileSystemAWSS3.secretKey=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
+fileSystemAWSS3.bucketName=jiwyatt-poc
+
+server.forward-headers-strategy=native
+logging.level.org.springframework=INFO
+logging.level.com.mchange=INFO
+logging.level.com.cisco=INFO
+spring.cache.type=NONE
+
+
+server.port=8080
+
+#server.port=443
+#server.ssl.enabled=true
+#server.ssl.key-alias=your_key-alias
+#server.ssl.key-store=properties/keystore/your_key-store.p12
+#server.ssl.key-store-password=your_key-store-password
+#server.ssl.key-store-type=PKCS12
+#server.servlet.session.cookie.max-age=-1
+#server.servlet.session.timeout=-1
+
+
+#spring.web.cors.enabled=false
+#spring.web.cors.mappings.anyName.paths=/path/to/api, /path/to/api/**
+#spring.web.cors.mappings.anyName.allowed-methods=GET
+#spring.web.cors.mappings.anyName.allowed-origin-patterns=.*
+

@@ -1,0 +1,14 @@
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<section *ngIf="message.length == 0" class="text-center">
+	<form>
+		<h2 class="form-signin-heading">Are you sure you want to log out?</h2>
+		<input name="_csrf" type="hidden" value="${_csrf.token}">
+		<button (click)="myLogout()" class="btn btn-lg btn-primary btn-block" type="button">Log Out</button>
+	</form>
+</section>
+<section *ngIf="message.length > 0" class="text-center">
+	{{message}}
+</section>
+<router-outlet></router-outlet>
