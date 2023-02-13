@@ -1,0 +1,47 @@
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div class="container">
+
+
+  <div class="row">
+    <div class="col-sm">
+    </div>
+    <div class="col-sm">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="inputGroupSelect01">Select endPoint</label>
+        </div>
+        <select (change)="executeEndPoint($event)" [(ngModel)]="selectedEndPoint" id="input-type-select">
+          <option value="Choose">Choose...</option>
+          <option *ngFor="let endpoint of endpoints; index as i;" value="{{endpoint.name}}">{{endpoint.description}}
+          </option>
+        </select>
+
+      </div>
+    </div>
+    <div class="col-sm">
+    </div>
+  </div>
+  <p>&nbsp;</p>
+  <div class="row text-left">
+    <div class="col">&nbsp;</div>
+    <div class="col">
+      <table *ngIf="headers.length > 0" class="table table--lined table--selectable" aria-label="Selectable rows table example">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th *ngFor="let header of headers;" scope="col">{{header}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of records; index as i;">
+            <th scope="row">{{(i + 1)}}</th>
+          <td *ngFor="let column of record; index as i2;">{{column}} </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+    <div class="col">&nbsp;</div>
+  </div>
+</div>

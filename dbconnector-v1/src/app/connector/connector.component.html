@@ -1,0 +1,46 @@
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<div *ngIf="isLoggedIn" class="container">
+	<div *ngIf="isworking" class="loader" aria-label="Loading, please wait..."
+		style="position: absolute;  width: 70px;  height: 70px;  z-index: 15;  top: 50%;  left: 50%;  margin: -100px 0 0 -150px;">
+		<div class="wrapper">
+			<div class="wheel"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div class="panel panel--loose panel--raised base-margin-bottom">
+				<h2 class="subtitle">Connector</h2>
+				<hr>
+				<div class="form-group base-margin-bottom">
+					<div class="form-group__text select">
+						<select (change)="onOptionsSelected($event)" [(ngModel)]="connector.type"
+							id="input-type-select">
+							<option value="MySQL">MySQL</option>
+							<option value="SQL_Server">SQL Server</option>
+						</select>
+						<!-- <label for="input-type-select">Connector</label> -->
+					</div>
+				</div>
+				<!--  -->
+				<hr>
+				<div *ngIf="connector.type === 'MySQL'">
+					<app-mysql [connector]="connectorMySql" (onDataChange)="onDataChange($event)"></app-mysql>
+				</div>
+				<div *ngIf="connector.type === 'SQL_Server'">
+					<app-sqlserver [connector]="connectorSqlServer" (onDataChange)="onDataChange($event)"></app-sqlserver>
+				</div>
+
+			</div>
+		</div>
+		<div class="col">
+			<label for="textarea-state-default">Console</label>
+			<div class="form-group__text">
+				<textarea id="textarea-state-default" class="text-white"
+					style="background-color: #000000;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;"
+					rows="41">{{myConsole}}</textarea>
+			</div>
+		</div>
+	</div>
+</div>
