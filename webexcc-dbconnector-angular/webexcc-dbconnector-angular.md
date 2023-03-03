@@ -1,4 +1,5 @@
 
+
 # webexcc-dbconnector-angular
 
 This is a Angular web application that has been written to be the UI front-end to the webexcc-dbconnector-springboot project.
@@ -98,11 +99,11 @@ ng serve --open
 
 # add new connector
 open terminal
-cd to project (webexcc-dbconnector-angular) root directory
+cd to project root directory  (**webexcc-dbconnector-angular**)
 > ng generate component connector/oracle
 
 
 # add new connector page
 refer to src/app/connector for connector selections (pulldown)
-refer to src/app/connector/mysql for adding connector page
+refer to src/app/connector/oracle for adding connector page
 
