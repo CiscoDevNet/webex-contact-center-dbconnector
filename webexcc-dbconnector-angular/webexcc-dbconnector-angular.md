@@ -88,11 +88,17 @@ If you don't have angular skill set, you can write your own UI web pages.
 
 
 # compile & run
+
 nvm install v14.20
+
 nvm use v14.20
+
 npm install
+
 npm audit fix
+
 ng build
+
 ng serve --open
 
 
@@ -104,6 +110,8 @@ cd to project root directory  (**webexcc-dbconnector-angular**)
 
 
 # add new connector page
+
 refer to src/app/connector for connector selections (pulldown)
+
 refer to src/app/connector/oracle for adding connector page
 
