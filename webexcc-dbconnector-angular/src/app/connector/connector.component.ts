@@ -35,6 +35,7 @@ export class ConnectorComponent implements OnInit {
   };
   connectorMySql: any;
   connectorSqlServer: any;
+  connectorOracle: any;
   myConsole: any = '';
 
   constructor(private restService: RestserviceService) {
@@ -47,6 +48,7 @@ export class ConnectorComponent implements OnInit {
     // get all connectors so you switch between connectors and you don't have to retype everything
     this.connectorMySql = this.getConnectorByServerType('MySQL');
     this.connectorSqlServer = this.getConnectorByServerType('SQL_Server');
+    this.connectorOracle = this.getConnectorByServerType('Oracle');
     // get current connector
     this.getConnector();
 
@@ -61,12 +63,14 @@ export class ConnectorComponent implements OnInit {
     console.log('ConnectorComponent: getConnector');
     this.restService.getConnector()
       .subscribe((data: any) => {
-        // - console.log('ConnectorComponent: getConnector', data);
+        - console.log('ConnectorComponent: getConnector', data);
         this.connector = data;
         if (this.connector.type === 'MySQL') {
           this.connectorMySql = this.connector;
         } else if (this.connector.type === 'SQL_Server') {
           this.connectorSqlServer = this.connector;
+        } else if (this.connector.type === 'Oracle') {
+          this.connectorOracle = this.connector;
         } else {
           this.myConsole = 'Not a valid connector type';
         }
@@ -83,6 +87,8 @@ export class ConnectorComponent implements OnInit {
           this.connectorMySql = data;
         } else if (serverType === 'SQL_Server') {
           this.connectorSqlServer = data;
+        } else if (serverType === 'Oracle') {
+          this.connectorOracle = data;
         } else {
           this.myConsole = 'Not a valid connector type';
         }

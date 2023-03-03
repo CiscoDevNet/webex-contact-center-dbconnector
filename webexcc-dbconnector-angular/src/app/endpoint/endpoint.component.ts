@@ -20,6 +20,10 @@ export class EndpointComponent implements OnInit {
   base64ValuePlaceholder: any = '';
   private config = require("../../assets/env.json");
 
+  connector: any = {
+    type: ''
+  };
+
   constructor(private restService: RestserviceService) {
     console.log('EndpointComponent : constructor');
     this.addonTokenChangeListener();
@@ -31,10 +35,11 @@ export class EndpointComponent implements OnInit {
     this.myConsole = '';
     this.getBasicAuth();
     this.getEndpoints();
+    this.getConnector();
   }
 
-  showServerTabButton(tab: string): void {
-    console.log('EndpointComponent: showServerTabButton');
+  showAuthenticatioTabButton(tab: string): void {
+    console.log('EndpointComponent: showAuthenticatioTabButton');
     this.myConsole = '';
     this.showTab1 = false;
     this.showTab2 = false;
@@ -50,14 +55,17 @@ export class EndpointComponent implements OnInit {
   addEndpoint(): void {
     console.log('EndpointComponent: addEndpoint');
     this.myConsole = '';
-    this.showServerTabButton('tab1');
+    this.showAuthenticatioTabButton('tab1');
     const newEndpoint: any = {};
     newEndpoint.name = this.uuidv4();
     newEndpoint.endpoint = '/rest/webexcc/' + newEndpoint.name;
     newEndpoint.nameValueList = [];
     this.endpoints.push(newEndpoint);
     this.endpoint = newEndpoint;
-    this.endpoint.query = 'select ${ani}';
+    this.endpoint.query = 'select ${ani} as ani';
+    if (this.connector.type === 'Oracle') {
+      this.endpoint.query = 'select ${ani} as ani from DUAL';
+    }
     this.addNameValuePair({ name: 'ani', value: '1234567890' });
     this.highlightEndpoint();
   }
@@ -105,6 +113,7 @@ export class EndpointComponent implements OnInit {
 
   getBasicAuth(): void {
     console.log('EndpointComponent: getBasicAuth');
+    this.isworking = true;
     this.myConsole = '';
     this.restService.getBasicAuth()
       .subscribe(data => {
@@ -115,11 +124,13 @@ export class EndpointComponent implements OnInit {
           this.myConsole = 'Basic authentication was loaded.\n';
         }
         this.updateBasicAuthValue();
+        this.isworking = false;
       });
   }
 
   getEndpoints(): void {
     console.log('EndpointComponent: getEndpoints');
+    this.isworking = true;
     this.myConsole = '';
     this.restService.getEndpoints()
       .subscribe(data => {
@@ -261,5 +272,16 @@ export class EndpointComponent implements OnInit {
         this.isLoggedIn = false;
       }
     });
+  }
+
+  getConnector(): void {
+    console.log('EndpointComponent: getConnector');
+    this.isworking = true;
+    this.restService.getConnector()
+      .subscribe((data: any) => {
+        - console.log('EndpointComponent: getConnector', data);
+        this.connector = data;
+        this.isworking = false;
+      });
   }
 }

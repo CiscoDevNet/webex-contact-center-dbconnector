@@ -24,6 +24,7 @@ import com.cisco.app.dbconnector.model.BasicAuth;
 import com.cisco.app.dbconnector.model.DbConnection;
 import com.cisco.app.dbconnector.model.Endpoint;
 import com.cisco.app.dbconnector.model.MySql;
+import com.cisco.app.dbconnector.model.Oracle;
 import com.cisco.app.dbconnector.model.SqlServer;
 import com.cisco.app.dbconnector.util.Cypher2021;
 
@@ -83,6 +84,16 @@ public class FileSystemLocalhost implements FileSystemInterface {
 				f.close();
 				cypher2021.encrypt(oFile);
 			}
+			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_ORACLE)) {
+				oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
+				oFile.getParentFile().mkdirs();
+				f = new FileOutputStream(oFile);
+				o = new ObjectOutputStream(f);
+				o.writeObject(oDbConnection);
+				o.close();
+				f.close();
+				cypher2021.encrypt(oFile);
+			}			
 			// this is the SQL connection
 
 		} finally {
@@ -173,6 +184,18 @@ public class FileSystemLocalhost implements FileSystemInterface {
 				f.close();
 				cypher2021.encrypt(oFile);
 			}
+			oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
+			if (!oFile.exists()) {
+				logger.info("CREATING {}/{}", this.dataDirectory, Oracle.FILE_NAME);
+				oFile.getParentFile().mkdirs();
+				f = new FileOutputStream(oFile);
+				o = new ObjectOutputStream(f);
+				Oracle oDbServer = new Oracle();
+				o.writeObject(oDbServer);
+				o.close();
+				f.close();
+				cypher2021.encrypt(oFile);
+			}			
 			oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			if (!oFile.exists()) {
 				logger.info("CREATING {}/{}", this.dataDirectory, BasicAuth.FILE_NAME);
@@ -210,7 +233,8 @@ public class FileSystemLocalhost implements FileSystemInterface {
 				cypher2021.encrypt(oFile);
 				// Read objects
 				return (DbConnection) oi.readObject();
-			} else if (DbConnection.SERVER_TYPE_SQL_SERVER.equals(serverType)) {
+			} 
+			else if (DbConnection.SERVER_TYPE_SQL_SERVER.equals(serverType)) {
 				File oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 				cypher2021.decrypt(oFile);
 				FileInputStream fi = new FileInputStream(oFile);
@@ -218,7 +242,17 @@ public class FileSystemLocalhost implements FileSystemInterface {
 				cypher2021.encrypt(oFile);
 				// Read objects
 				return (DbConnection) oi.readObject();
-			} else {
+			} 
+			else if (DbConnection.SERVER_TYPE_ORACLE.equals(serverType)) {
+				File oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
+				cypher2021.decrypt(oFile);
+				FileInputStream fi = new FileInputStream(oFile);
+				oi = new ObjectInputStream(fi);
+				cypher2021.encrypt(oFile);
+				// Read objects
+				return (DbConnection) oi.readObject();
+			} 
+			else {
 				logger.warn("NOT a valid SERVER_TYPE {}:", serverType);
 			}
 		} catch (FileNotFoundException e) {

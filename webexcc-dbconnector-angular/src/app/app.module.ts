@@ -13,6 +13,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MysqlComponent } from './connector/mysql/mysql.component';
 import { SqlserverComponent } from './connector/sqlserver/sqlserver.component';
+import { OracleComponent } from './connector/oracle/oracle.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { SqlserverComponent } from './connector/sqlserver/sqlserver.component';
     LogoutComponent,
     SqlserverComponent,
     MysqlComponent,
+    OracleComponent,
   ],
   imports: [
     BrowserModule,

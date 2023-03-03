@@ -46,6 +46,8 @@ public class WebControllerWebexCC {
 	private BasicAuth basicAuth;
 	private Map<String, Object> endpointMap = new ConcurrentHashMap<>();
 
+	private long printMemoryCounter = 0;
+
 	public WebControllerWebexCC() {
 		super();
 		logger.info("public WebControllerRest");
@@ -67,7 +69,7 @@ public class WebControllerWebexCC {
 	public Object webexccEndpoint(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable String endpointName, @RequestParam final Map<String, String> inboundParameters) {
 		long tstart = System.currentTimeMillis();
-		logger.info("webexcc/{}", endpointName);
+		logger.debug("webexcc/{}", endpointName);
 		logger.debug("inboundParameters:{}", inboundParameters);
 		this.addHeaders(response);
 		try {
@@ -116,7 +118,7 @@ public class WebControllerWebexCC {
 				}
 			}
 			Endpoint oEndpoint = (Endpoint) endpointMap.get(endpointName);
-			logger.info("oEndpoint/webexcc/:{}", oEndpoint);
+//			logger.info("oEndpoint/webexcc/:{}", oEndpoint);
 			if (oEndpoint == null) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return "{\"Exception\":\"BAD END POINT\"}";
@@ -134,7 +136,6 @@ public class WebControllerWebexCC {
 		}
 	}
 
-	private long printMemoryCounter = 0;
 
 	/**
 	 * log each request for performance print java VM memory every 1000 request
@@ -149,8 +150,7 @@ public class WebControllerWebexCC {
 			Memory.logMemory();
 		}
 		try {
-			logger.info("Done in {} milli seconds {} - {}", (System.currentTimeMillis() - tstart),
-					request.getSession().getId(), method);
+			logger.info("Done in {} milli seconds {} - {}", (System.currentTimeMillis() - tstart), request.getSession().getId(), method);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}

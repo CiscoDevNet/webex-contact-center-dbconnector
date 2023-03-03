@@ -84,3 +84,25 @@ webexcc-dbconnector-angular is the UI project for this application.
 For the low code approach, we have provided it for you. 
 If you don't have angular skill set, you can write your own UI web pages.
 
+
+
+# compile & run
+nvm install v14.20
+nvm use v14.20
+npm install
+npm audit fix
+ng build
+ng serve --open
+
+
+
+# add new connector
+open terminal
+cd to project (webexcc-dbconnector-angular) root directory
+> ng generate component connector/oracle
+
+
+# add new connector page
+refer to src/app/connector for connector selections (pulldown)
+refer to src/app/connector/mysql for adding connector page
+

@@ -20,15 +20,20 @@
                         [(ngModel)]="connector.type">
                         <option value="MySQL">MySQL</option>
                         <option value="SQL_Server">SQL Server</option>
+                        <option value="Oracle">Oracle</option>
                     </select>
                 </div>
-                <!-- load the correct page -->
+                <!-- load the correct connector page -->
                 <div *ngIf="connector.type === 'MySQL'">
                     <app-mysql [connector]="connectorMySql" (onDataChange)="onDataChange($event)"></app-mysql>
                 </div>
                 <div *ngIf="connector.type === 'SQL_Server'">
                     <app-sqlserver [connector]="connectorSqlServer" (onDataChange)="onDataChange($event)">
                     </app-sqlserver>
+                </div>
+                <div *ngIf="connector.type === 'Oracle'">
+                    <app-oracle [connector]="connectorOracle" (onDataChange)="onDataChange($event)">
+                    </app-oracle>
                 </div>
 
             </div>

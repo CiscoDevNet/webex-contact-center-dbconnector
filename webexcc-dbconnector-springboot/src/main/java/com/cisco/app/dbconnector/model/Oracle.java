@@ -14,24 +14,24 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * @since 12/12/2020
  *
  */
-public class SqlServer implements Serializable, DbConnection {
+public class Oracle implements Serializable, DbConnection {
 
 	private static final long serialVersionUID = 506087301723961948L;
-	public static final String FILE_NAME = "SqlServer.obj";
-	private String type = DbConnection.SERVER_TYPE_SQL_SERVER;
+	public static final String FILE_NAME = "Oracle.obj";
+	private String type = DbConnection.SERVER_TYPE_ORACLE;
 	private String version = "-";
-	private String hostname = "localhost";
-	private String port = "1433";
-	private String database = "test";
-	private String username = "test";
-	private String password = "test";
-	private String driver = "sqljdbc42.jar";
-	private String connectionString = "jdbc:sqlserver://localhost:1433;databaseName=test;user=test;password=test;";
+	private String hostname = "192.168.1.11";
+	private String port = "1521";
+	private String database = "xe";
+	private String username = "system";
+	private String password = "oracle";
+	private String driver = "ojdbc11-21.5.0.0.jar";
+	private String connectionString = "jdbc:oracle:thin:@192.168.1.11:1521:xe";
 
 	@JsonDeserialize(as = ConnectionPoolC3p0.class)
 	private ConnectionPoolDb connectionPool = new ConnectionPoolC3p0();
 
-	public SqlServer() {
+	public Oracle() {
 		super();
 	}
 
@@ -138,7 +138,7 @@ public class SqlServer implements Serializable, DbConnection {
 	@Override
 	public String toString() {
 		// @formatter:off
-		return "SqlServer ["
+		return "Oracle ["
 				+ "type=" + type + ", "
 				+ "version=" + version + ", "
 				+ "hostname=" + hostname + ", "
@@ -150,7 +150,6 @@ public class SqlServer implements Serializable, DbConnection {
 				+ "connectionString=" + connectionString + ", "
 				+ "connectionPool=" + connectionPool + "]";
 		// @formatter:on
-
 	}
 
 }

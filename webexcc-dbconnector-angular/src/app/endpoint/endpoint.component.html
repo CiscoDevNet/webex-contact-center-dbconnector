@@ -23,7 +23,7 @@
                             <input type="checkbox" class="form-check-input" id="BasicAuthenticationisRequired"
                                 [checked]="basicAuth.isBasicAuthenticationRequired"
                                 [(ngModel)]="basicAuth.isBasicAuthenticationRequired"
-                                (change)="setBasicAuthenticationRequired($event);showServerTabButton('tab1'); "
+                                (change)="setBasicAuthenticationRequired($event);showAuthenticatioTabButton('tab1'); "
                                 [ngModelOptions]="{standalone: true}">&nbsp; &nbsp;
                             <label class="form-check-label" for="BasicAuthenticationisRequired">Basic Authentication is
                                 Required</label>
@@ -35,12 +35,12 @@
 
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
-                                <span (click)="showServerTabButton('tab1')" class="nav-link btn-outline-primary btn-sm"
-                                    aria-current="page">Endpoint</span>
+                                <span (click)="showAuthenticatioTabButton('tab1')"
+                                    class="nav-link btn-outline-primary btn-sm" aria-current="page">Endpoint</span>
                             </li>
                             <li class="nav-item">
                                 <span *ngIf="basicAuth.isBasicAuthenticationRequired"
-                                    (click)="showServerTabButton('tab2')"
+                                    (click)="showAuthenticatioTabButton('tab2')"
                                     class="nav-link btn-outline-primary btn-sm">Authentication</span>
                             </li>
                         </ul>
@@ -110,8 +110,7 @@
                                         <p></p>
                                     </div>
                                     <div class="form-group">
-                                        <label for="exampleInputQuery1">SQL
-                                            Query Statement </label>
+                                        <label for="exampleInputQuery1">SQL Query Statement </label>
                                         <textarea class="form-control" placeholder="Enter SQL statement"
                                             [(ngModel)]="endpoint.query" id="exampleInputQuery1"
                                             aria-describedby="QueryHelp"></textarea>
@@ -154,7 +153,7 @@
                                         <input type="text" class="form-control" id="exampleInputBasicAuthUserName1"
                                             maxlength="120" aria-describedby="BasicAuthUserNameHelp"
                                             (change)="updateBasicAuthValue()" [(ngModel)]="basicAuth.username"
-                                            placeholder="Enter BasicAuthUserName">
+                                            placeholder="Enter Basic Auth Username">
                                     </div>
                                     <!--  -->
                                     <div class="form-group">
@@ -163,7 +162,7 @@
                                         <input type="text" class="form-control" id="exampleInputBasicAuthPassword1"
                                             maxlength="120" aria-describedby="BasicAuthPasswordHelp"
                                             (change)="updateBasicAuthValue()" [(ngModel)]="basicAuth.password"
-                                            placeholder="Enter BasicAuthPassword">
+                                            placeholder="Enter Basic Auth Password">
                                     </div>
                                     <!--  -->
                                     <div class="form-group">
