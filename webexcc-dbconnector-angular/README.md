@@ -41,6 +41,5 @@ ng generate component modules/help123
 ng generate component modules/support
 ng generate component modules/about
 
-https://webexapis.com/v1/authorize?client_id=C742904541c47aa1bd95014237fea094664ea178cb1264b983061d9b79ecd484a&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A4200&scope=cjp%3Auser%20spark%3Apeople_read%20cjp%3Aconfig_write%20cjp%3Aconfig%20cjp%3Aconfig_read&state=set_state_here
 
  
