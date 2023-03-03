@@ -15,6 +15,7 @@ public interface  DbConnection extends Serializable {
 
 	public static final String SERVER_TYPE_MYSQL = "MySQL";
 	public static final String SERVER_TYPE_SQL_SERVER = "SQL_Server";
+	public static final String SERVER_TYPE_ORACLE = "Oracle";
 	public static final String FILE_NAME = "Connector.obj";
 
 	ConnectionPoolDb getConnectionPool();

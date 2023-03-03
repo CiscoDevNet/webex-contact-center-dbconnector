@@ -102,8 +102,21 @@ public class DatabaseUtility {
 			cpds.setUnreturnedConnectionTimeout(Integer.parseInt(oDbConnection.getConnectionPool().getUnreturnedConnectionTimeout()));
 			this.dataSource = cpds;
 			return cpds;
-		} else {
-			throw new Exception("Not a valid DataSource type");
+		} else if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_ORACLE)) {
+			ComboPooledDataSource cpds = new ComboPooledDataSource();
+			cpds.setJdbcUrl(oDbConnection.getConnectionString());
+			cpds.setUser(oDbConnection.getUsername());
+			cpds.setPassword(oDbConnection.getPassword());
+
+			cpds.setInitialPoolSize(Integer.parseInt(oDbConnection.getConnectionPool().getInitialPoolSize()));
+			cpds.setMinPoolSize(Integer.parseInt(oDbConnection.getConnectionPool().getMinPoolSize()));
+			cpds.setAcquireIncrement(Integer.parseInt(oDbConnection.getConnectionPool().getAcquireIncrement()));
+			cpds.setMaxPoolSize(Integer.parseInt(oDbConnection.getConnectionPool().getMaxPoolSize()));
+			cpds.setMaxStatements(Integer.parseInt(oDbConnection.getConnectionPool().getMaxStatements()));
+			cpds.setUnreturnedConnectionTimeout(Integer.parseInt(oDbConnection.getConnectionPool().getUnreturnedConnectionTimeout()));
+			this.dataSource = cpds;
+			return cpds;
+		} else {			throw new Exception("Not a valid DataSource type");
 		}
 	}
 
@@ -230,6 +243,18 @@ public class DatabaseUtility {
 				}
 			}
 		} else if (oConnector.getType().equals(DbConnection.SERVER_TYPE_SQL_SERVER)) {
+			// Creating connection
+			Connection connection = null;
+			try {
+				connection = DriverManager.getConnection(oConnector.getConnectionString(), oConnector.getUsername(), oConnector.getPassword());
+				// Getting DatabaseMetaData object
+				connection.getMetaData();
+			} finally {
+				if (connection != null) {
+					connection.close();
+				}
+			}
+		} else if (oConnector.getType().equals(DbConnection.SERVER_TYPE_ORACLE)) {
 			// Creating connection
 			Connection connection = null;
 			try {
