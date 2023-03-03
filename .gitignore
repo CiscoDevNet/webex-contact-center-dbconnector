@@ -2,3 +2,5 @@
 .mvn/
 .metadata/
 webexcc-dbconnector-springboot/application.yml.jiwyatt
+webexcc-dbconnector-angular/package-lock.json
+webexcc-dbconnector-angular/src.zip
