@@ -94,8 +94,7 @@ public class WebControllerWebexCC {
 			}
 			if (basicAuth.getIsBasicAuthenticationRequired()) {
 				// - note
-				// - String encoding = "Basic " +
-				// - Base64.getEncoder().encodeToString("ivrincontact:ivrincontact!01".getBytes("UTF-8"));
+				// - String encoding = "Basic " + Base64.getEncoder().encodeToString("username:password".getBytes("UTF-8"));
 				logger.debug("authorization:{}", authorization);
 				logger.debug("encoding     :{}", basicAuth.getValue());
 				if (!basicAuth.getValue().equals(authorization)) {
