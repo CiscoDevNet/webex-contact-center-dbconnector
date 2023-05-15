@@ -67,7 +67,7 @@ public class WebController {
 	private String clientSecret;
 
 	private static final String REDIRECT_CNT = "redirectCount";
-	private static final String AUTHENTICATFION = "Authentication";
+	private static final String AUTHENTICATION = "Authentication";
 	private static final String EXCEPTION = "Exception";
 	private static final String ERROR = "error_description";
 
@@ -103,7 +103,7 @@ public class WebController {
 				 * STEP 3 - already logged in STEP 2 only if authorized STEP 1 only if it is the
 				 * 1st time to the web page
 				 */
-				Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
+				Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATION);
 				logger.debug("check:{}", check);
 
 				if (check != null) {
@@ -137,10 +137,8 @@ public class WebController {
 				params.add("code", map.get("code").toString());
 				params.add("redirect_uri", redirectUri);
 
-				HttpEntity<MultiValueMap<String, String>> request2 = new HttpEntity<MultiValueMap<String, String>>(
-						params, headers);
-				ResponseEntity<String> response2 = new RestTemplate().postForEntity(baseURL + "/access_token", request2,
-						String.class);
+				HttpEntity<MultiValueMap<String, String>> request2 = new HttpEntity<MultiValueMap<String, String>>( params, headers);
+				ResponseEntity<String> response2 = new RestTemplate().postForEntity(baseURL + "/access_token", request2, String.class);
 				logger.info("response2: {}", response2.getBody());
 				ObjectMapper om = new ObjectMapper();
 				Authentication oAuthentication = om.readValue(response2.getBody(), Authentication.class);
@@ -163,8 +161,12 @@ public class WebController {
 
 				String redirectUriEncode = URLEncoder.encode(redirectUri, StandardCharsets.US_ASCII);
 				String scopeEncode = URLEncoder.encode(scope, StandardCharsets.US_ASCII);
-				String login = baseURL + "/authorize?response_type=" + responseType + "&client_id=" + clientId
-						+ "&redirect_uri=" + redirectUriEncode + "&scope=" + scopeEncode + "&state=" + state;
+				String login = baseURL + "/authorize"
+						+ "?response_type=" + responseType 
+						+ "&client_id=" + clientId
+						+ "&redirect_uri=" + redirectUriEncode 
+						+ "&scope=" + scopeEncode 
+						+ "&state=" + state;
 				logger.info("login:{}", login);
 			}
 		} catch (Exception e) {
@@ -190,7 +192,7 @@ public class WebController {
 			this.addHeaders(response);
 
 			try {
-				Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
+				Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATION);
 				logger.debug("check:{}", check);
 				if (check != null) {
 					return "{}";
@@ -217,7 +219,7 @@ public class WebController {
 	public Object userV2(HttpServletRequest request, HttpServletResponse response) {
 		logger.info("userV2");
 		this.addHeaders(response);
-		Authentication oAuthentication = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
+		Authentication oAuthentication = (Authentication) request.getSession().getAttribute(AUTHENTICATION);
 		logger.info("userV2 :oAuthentication {},{}", request.getSession().getId(), oAuthentication);
 		return oAuthentication;
 	}
@@ -270,10 +272,9 @@ public class WebController {
 
 				String url = baseURL + "/access_token";
 				logger.info("response2:url: {}", url);
-				logger.info("response2:params {}", params);
+				logger.debug("response2:params {}", params);
 
-				HttpEntity<MultiValueMap<String, String>> request2 = new HttpEntity<MultiValueMap<String, String>>(
-						params, headers);
+				HttpEntity<MultiValueMap<String, String>> request2 = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 				ResponseEntity<String> response2 = new RestTemplate().postForEntity(url, request2, String.class);
 				logger.info("response2: {}", response2.getBody());
 				ObjectMapper om = new ObjectMapper();
@@ -284,10 +285,9 @@ public class WebController {
 				oAuthentication.orginzationId = orginzationId;
 
 				if (logger.isDebugEnabled()) {
-					logger.debug("response2:oAuthentication {},{}", request.getSession().getId(),
-							om.writeValueAsString(oAuthentication));
+					logger.debug("response2:oAuthentication {},{}", request.getSession().getId(), om.writeValueAsString(oAuthentication));
 				}
-				request.getSession().setAttribute(AUTHENTICATFION, oAuthentication);
+				request.getSession().setAttribute(AUTHENTICATION, oAuthentication);
 
 				return om.writeValueAsString(oAuthentication);
 			} catch (Exception e) {
@@ -298,15 +298,19 @@ public class WebController {
 
 				String redirectUriEncode = URLEncoder.encode(redirectUri, StandardCharsets.US_ASCII);
 				String scopeEncode = URLEncoder.encode(scope, StandardCharsets.US_ASCII);
-				loginUrl = baseURL + "/authorize?response_type=" + responseType + "&client_id=" + clientId
-						+ "&redirect_uri=" + redirectUriEncode + "&scope=" + scopeEncode + "&state=" + state;
+				loginUrl = baseURL + "/authorize?"
+						+ "client_id=" + clientId
+						+ "&response_type=" + responseType 
+						+ "&redirect_uri=" + redirectUriEncode 
+						+ "&scope=" + scopeEncode 
+						+ "&state=" + state;
 				logger.info("loginUrl:{}", loginUrl);
 			}
 		} catch (Exception e) {
 			return "{\"" + EXCEPTION + "\":\"" + e.getMessage() + "\"}";
 		}
 
-		Authentication oAuthentication = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
+		Authentication oAuthentication = (Authentication) request.getSession().getAttribute(AUTHENTICATION);
 		logger.info("final:oAuthentication {},{}", request.getSession().getId(), oAuthentication);
 		return oAuthentication;
 	}
@@ -316,8 +320,8 @@ public class WebController {
 			@RequestParam final Map<String, String> inboundParameters) {
 		logger.info("mylogoutV2");
 		this.addHeaders(response);
-		request.getSession().setAttribute(AUTHENTICATFION, null);
-		request.getSession().removeAttribute(AUTHENTICATFION);
+		request.getSession().setAttribute(AUTHENTICATION, null);
+		request.getSession().removeAttribute(AUTHENTICATION);
 		return "{}";
 	}
 
