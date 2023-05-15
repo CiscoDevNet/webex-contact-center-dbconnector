@@ -2,7 +2,7 @@
 baseURL: https://webexapis.com/v1
 client_id: C000000000c00aa0bd00000000fea000000ea000cb0000b000000d0b00ecd000a
 client_secret: 00ec0b000f000000e00e000000d00d00df000ed0000a0000f0e0cc000b000c00
-redirect_uri: http://localhost:4200
+redirect_uri: http://localhost:8080
 response_type: code
 scope: cjp:config_read
 state: test
