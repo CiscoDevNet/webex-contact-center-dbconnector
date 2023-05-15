@@ -39,6 +39,7 @@ import com.cisco.app.dbconnector.model.BasicAuth;
 import com.cisco.app.dbconnector.model.DbConnection;
 import com.cisco.app.dbconnector.model.Endpoint;
 import com.cisco.app.dbconnector.model.MySql;
+import com.cisco.app.dbconnector.model.Oracle;
 import com.cisco.app.dbconnector.model.SqlServer;
 import com.cisco.app.dbconnector.util.Cypher2021;
 
@@ -118,6 +119,17 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
+			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_ORACLE)) {
+				oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
+				f = new FileOutputStream(oFile);
+				o = new ObjectOutputStream(f);
+				o.writeObject(oDbConnection);
+				o.close();
+				f.close();
+				cypher2021.encrypt(oFile);
+				// copy file to S3
+				this.putFile(oFile.getAbsolutePath());
+			}			
 
 		} finally {
 			if (o != null) {
@@ -216,6 +228,18 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 				// copy file to S3
 				this.putFile(oFile.getAbsolutePath());
 			}
+			oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
+			if (!oFile.exists()) {
+				logger.info("CREATING {}/{}", this.dataDirectory, Oracle.FILE_NAME);
+				f = new FileOutputStream(oFile);
+				o = new ObjectOutputStream(f);
+				o.writeObject(new Oracle());
+				o.close();
+				f.close();
+				cypher2021.encrypt(oFile);
+				// copy file to S3
+				this.putFile(oFile.getAbsolutePath());
+			}			
 			oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			if (!oFile.exists()) {
 				logger.info("CREATING {}/{}", this.dataDirectory, BasicAuth.FILE_NAME);
@@ -271,6 +295,20 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 					this.seedDataFiles();
 				}
 				File oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
+				cypher2021.decrypt(oFile);
+				FileInputStream fi = new FileInputStream(oFile);
+				oi = new ObjectInputStream(fi);
+				cypher2021.encrypt(oFile);
+				// Read objects
+				return (DbConnection) oi.readObject();
+			} else if (DbConnection.SERVER_TYPE_ORACLE.equals(serverType)) {
+				try {
+					byte[] bytes = this.getFile(Oracle.FILE_NAME);
+					Files.write(Paths.get(this.dataDirectory + "/" + Oracle.FILE_NAME), bytes);
+				} catch (Exception e) {
+					this.seedDataFiles();
+				}
+				File oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
 				cypher2021.decrypt(oFile);
 				FileInputStream fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);

@@ -28,6 +28,7 @@ import com.cisco.app.dbconnector.model.DbConnection;
 import com.cisco.app.dbconnector.model.Endpoint;
 import com.cisco.app.dbconnector.model.MySql;
 import com.cisco.app.dbconnector.model.SqlServer;
+import com.cisco.app.dbconnector.model.Oracle;
 import com.cisco.app.dbconnector.service.DatabaseUtility;
 import com.cisco.app.dbconnector.service.FileSystemInterface;
 import com.cisco.app.util.Memory;
@@ -119,8 +120,10 @@ public class WebControllerRest {
 				return fileSystem.readConnectorFromFile(serverType);
 			} else if (DbConnection.SERVER_TYPE_SQL_SERVER.equals(serverType)) {
 				return fileSystem.readConnectorFromFile(serverType);
+			} else if (DbConnection.SERVER_TYPE_ORACLE.equals(serverType)) {
+				return fileSystem.readConnectorFromFile(serverType);
 			} else {
-				logger.warn("NOT a valid SERVER_TYPE {}:", serverType);
+				logger.error("NOT a valid SERVER_TYPE {}:", serverType);
 				return fileSystem.readConnectorFromFile();
 			}
 		} catch (Exception e) {
@@ -153,19 +156,17 @@ public class WebControllerRest {
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			DbConnection oDbConnection = mapper.convertValue(body, new TypeReference<MySql>() {
-			});
+			DbConnection oDbConnection = mapper.convertValue(body, new TypeReference<MySql>() { });
 			if (!db.dbConnectionIsValid(oDbConnection)) {
-				String encoded = new String(
-						Base64.getEncoder().encode("Invalid Connection Pool setting".getBytes()));
+				String encoded = new String( Base64.getEncoder().encode("Invalid Connection Pool setting".getBytes()));
 				return "{\"" + EXCEPTION + "\":\"" + encoded + "\"}";
 			}
 			if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_SQL_SERVER)) {
-				oDbConnection = mapper.convertValue(body, new TypeReference<SqlServer>() {
-				});
+				oDbConnection = mapper.convertValue(body, new TypeReference<SqlServer>() { });
 			} else if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_MYSQL)) {
-				oDbConnection = mapper.convertValue(body, new TypeReference<MySql>() {
-				});
+				oDbConnection = mapper.convertValue(body, new TypeReference<MySql>() { });
+			} else if (oDbConnection.getType().equals(DbConnection.SERVER_TYPE_ORACLE)) {
+				oDbConnection = mapper.convertValue(body, new TypeReference<Oracle>() { });
 			} else {
 				return "{\"" + EXCEPTION + "\";\"Not a valid server type\"}";
 			}

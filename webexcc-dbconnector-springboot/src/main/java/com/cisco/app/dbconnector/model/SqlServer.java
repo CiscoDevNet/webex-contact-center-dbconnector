@@ -9,12 +9,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Microsoft SQL Server class
+ * 
  * @author jiwyatt
  * @since 12/12/2020
  *
  */
 public class SqlServer implements Serializable, DbConnection {
-
 
 	private static final long serialVersionUID = 506087301723961948L;
 	public static final String FILE_NAME = "SqlServer.obj";
@@ -35,7 +35,6 @@ public class SqlServer implements Serializable, DbConnection {
 		super();
 	}
 
- 
 	@Override
 	public String getType() {
 		return type;
@@ -134,6 +133,24 @@ public class SqlServer implements Serializable, DbConnection {
 	@Override
 	public void setConnectionPool(ConnectionPoolDb connectionPool) {
 		this.connectionPool = connectionPool;
+	}
+
+	@Override
+	public String toString() {
+		// @formatter:off
+		return "SqlServer ["
+				+ "type=" + type + ", "
+				+ "version=" + version + ", "
+				+ "hostname=" + hostname + ", "
+				+ "port=" + port + ", "
+				+ "database=" + database + ", "
+				+ "username=" + username + ", "
+				+ "password=" + password + ", "
+				+ "driver=" + driver + ", "
+				+ "connectionString=" + connectionString + ", "
+				+ "connectionPool=" + connectionPool + "]";
+		// @formatter:on
+
 	}
 
 }

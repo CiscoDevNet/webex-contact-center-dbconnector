@@ -1,0 +1,182 @@
+<div class="section">
+    <div class="section border">
+        <div class="container text-left">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <div class="col-sm   btn-outline-primary btn-sm" (click)="showServerTabButton('Server')">
+                        Server Settings
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="col-sm   btn-outline-primary btn-sm" (click)="showServerTabButton('ConnectionPool')">
+                        Connection Pool Settings
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <hr>
+        <div id="embossed-content" class="tab-content">
+            <div *ngIf="showTab1" id="embossed-1-content" class="tab-pane active">
+                <div class="panel panel--loose panel--raised base-margin-bottom">
+                    <h3 class="text-center">Oracle Server</h3>
+
+
+                    <div>
+                        <div class="form-group">
+                            <label for="exampleInputHost1"
+                                [ngClass]="{'text-danger': connector.hostname.length < 1}">Host</label>
+                            <input type="text" class="form-control" id="exampleInputHost1" aria-describedby="HostHelp"
+                                (change)="updateConnectionString()" [(ngModel)]="connector.hostname"
+                                [ngModelOptions]="{standalone: true}" placeholder="Enter Host">
+                            <small id="HostHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp;IP Address or
+                                hostname of the DB
+                                Server</small>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="exampleInputDatabaseName1"
+                                [ngClass]="{'text-danger': connector.database.length < 1}">Database Name</label>
+                            <input type="text" class="form-control" id="exampleInputDatabaseName1"
+                                aria-describedby="DatabaseNameHelp" (change)="updateConnectionString()"
+                                [(ngModel)]="connector.database" placeholder="Enter Database Name">
+                            <small id="DatabaseNameHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp;Name of the
+                                Database</small>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label for="exampleInputPort1" [ngClass]="{'text-danger': connector.port < 1}">Port</label>
+                            <input type="text" class="form-control" id="exampleInputPort1" aria-describedby="PortHelp"
+                                (change)="updateConnectionString()" [(ngModel)]="connector.port"
+                                placeholder="Enter Port">
+                            <small id="PortHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp;Database Connection
+                                Port</small>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label for="exampleInputUsername1"
+                                [ngClass]="{'text-danger': connector.username < 1}">Username</label>
+                            <input type="text" class="form-control" id="exampleInputUsername1"
+                                aria-describedby="UsernameHelp" (change)="updateConnectionString()"
+                                [(ngModel)]="connector.username" placeholder="Enter Username">
+                            <small id="UsernameHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp;Database
+                                Username</small>
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <label for="exampleInputPassword1"
+                                [ngClass]="{'text-danger': connector.password < 1}">Password</label>
+                            <input type="text" class="form-control" id="exampleInputPassword1"
+                                aria-describedby="PasswordHelp" (change)="updateConnectionString()"
+                                [(ngModel)]="connector.password" placeholder="Enter Password">
+                            <small id="PasswordHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp;Database
+                                Password</small>
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <label for="exampleInputConnectionString1"
+                                [ngClass]="{'text-danger': connector.connectionString < 1}">ConnectionString</label>
+                            <input type="text" class="form-control" id="exampleInputConnectionString1"
+                                aria-describedby="ConnectionStringHelp" [(ngModel)]="connector.connectionString"
+                                placeholder="Enter ConnectionString">
+                            <small id="ConnectionStringHelp" class="form-text text-muted"> &nbsp; &nbsp;
+                                &nbsp;Dynamically Created
+                            </small>
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <button (click)="saveConnection()" class="btn btn--ghost" [disabled]="isworking">Test
+                                Connection</button>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+            <div *ngIf="showTab2" id="embossed-2-content" class="tab-pane active">
+                <div class="panel panel--loose panel--raised base-margin-bottom">
+                    <h3 class="text-center">MySql Connection Pool</h3>
+                    <hr>
+                    <!--  -->
+                    <div>
+                        <div class="form-group">
+                            <label for="exampleInputInitialPoolSize1"
+                                [ngClass]="{'text-danger': connector.connectionPool.initialPoolSize < 1}">Initial Pool
+                                Size</label>
+                            <input type="text" class="form-control" id="exampleInputInitialPoolSize1"
+                                aria-describedby="InitialPoolSizeHelp"
+                                [(ngModel)]="connector.connectionPool.initialPoolSize"
+                                placeholder="Enter InitialPoolSize">
+                            <small id="InitialPoolSizeHelp" class="form-text text-muted">help text</small>
+                        </div>
+
+                        <!--  -->
+                        <div class="form-group">
+                            <label for="exampleInputMinStatements1"
+                                [ngClass]="{'text-danger': connector.connectionPool.maxPoolSize < 1}">Min
+                                Statements</label>
+                            <input type="text" class="form-control" id="exampleInputMinStatements1"
+                                aria-describedby="MinStatementsHelp" [(ngModel)]="connector.connectionPool.maxPoolSize"
+                                placeholder="Enter MinStatements">
+                            <small id="MinStatementsHelp" class="form-text text-muted">help text</small>
+                        </div>
+
+                        <!--  -->
+                        <div class="form-group">
+                            <label for="exampleInputMaxStatements1"
+                                [ngClass]="{'text-danger': connector.connectionPool.minPoolSize < 1}">Max
+                                Statements</label>
+                            <input type="text" class="form-control" id="exampleInputMaxStatements1"
+                                aria-describedby="MaxStatementsHelp" [(ngModel)]="connector.connectionPool.minPoolSize"
+                                placeholder="Enter MaxStatements">
+                            <small id="MaxStatementsHelp" class="form-text text-muted">help text</small>
+                        </div>
+
+                        <!--  -->
+                        <div class="form-group">
+                            <label for="exampleInputAcquireIncrement1"
+                                [ngClass]="{'text-danger': connector.connectionPool.acquireIncrement < 1}">Acquire
+                                Increment</label>
+                            <input type="text" class="form-control" id="exampleInputAcquireIncrement1"
+                                aria-describedby="AcquireIncrementHelp"
+                                [(ngModel)]="connector.connectionPool.acquireIncrement"
+                                placeholder="Enter AcquireIncrement">
+                            <small id="AcquireIncrementHelp" class="form-text text-muted">help text</small>
+                        </div>
+
+                        <!--  -->
+                        <div class="form-group">
+                            <label for="exampleInputConnectionTimeout1"
+                                [ngClass]="{'text-danger': connector.connectionPool.unreturnedConnectionTimeout < 1}">Connection
+                                Timeout</label>
+                            <input type="text" class="form-control" id="exampleInputConnectionTimeout1"
+                                aria-describedby="ConnectionTimeoutHelp"
+                                [(ngModel)]="connector.connectionPool.unreturnedConnectionTimeout"
+                                placeholder="Enter ConnectionTimeout">
+                            <small id="ConnectionTimeoutHelp" class="form-text text-muted">help text</small>
+                        </div>
+
+                        <!--  -->
+                        <div class="form-group">
+                            <button (click)="saveConnection()" class="btn btn--ghost">Save Connection Pool</button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
