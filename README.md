@@ -6,9 +6,9 @@
 
 # Webex Contact Center DB Connector
 
-### Configuration Video 
+## Configuration Video 
 
-##### [Watch Now: WebexCC DB Connector Installation & Walkthrough](https://app.vidcast.io/share/b65cf961-def5-41bf-a9fb-cd7c88eb61b3)
+## [Watch Now: WebexCC DB Connector Installation & Walkthrough](https://app.vidcast.io/share/b65cf961-def5-41bf-a9fb-cd7c88eb61b3)
 
 ### Connect SQL Servers with Webex Contact Center DB Connector
 
