@@ -1,4 +1,5 @@
 
+
 # webexcc-dbconnector-angular
 
 This is a Angular web application that has been written to be the UI front-end to the webexcc-dbconnector-springboot project.
@@ -83,4 +84,34 @@ Docker two images - TODO
 webexcc-dbconnector-angular is the UI project for this application.
 For the low code approach, we have provided it for you. 
 If you don't have angular skill set, you can write your own UI web pages.
+
+
+
+# compile & run
+
+nvm install v14.20
+
+nvm use v14.20
+
+npm install
+
+npm audit fix
+
+ng build
+
+ng serve --open
+
+
+
+# add new connector
+open terminal
+cd to project root directory  (**webexcc-dbconnector-angular**)
+> ng generate component connector/oracle
+
+
+# add new connector page
+
+refer to src/app/connector for connector selections (pulldown)
+
+refer to src/app/connector/oracle for adding connector page
 
