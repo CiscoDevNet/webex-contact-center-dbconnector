@@ -70,14 +70,21 @@ Agent ->> Caller: Hi Jim, how do you like the new phone we sent you last week?
 
 ## Videos of different configurations 
 
-All on one server - TODO
-Two servers - TODO
-Docker one image - TODO
-Docker two images - TODO
+... All on one server - [dbConnector No Code Solution](https://app.vidcast.io/share/b65cf961-def5-41bf-a9fb-cd7c88eb61b3)
+
+... Two servers - TODO
+
+... Docker one image - TODO
+
+... Docker two images - TODO
+
 
 # webexcc-dbconnector-angular
 webexcc-dbconnector-angular is the UI project for this application.
 For the low code approach, we have provided it for you. 
 If you don't have angular skill set, you can write your own UI web pages.
 
+
+# Docker connection to localhost MySql
+set your Host == host.docker.internal
  
