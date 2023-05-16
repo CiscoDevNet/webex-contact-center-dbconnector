@@ -1,7 +1,7 @@
 FROM openjdk:11
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} dbconnector.jar
-COPY application.properties application.properties
+COPY application.yml application.yml
 
 ENTRYPOINT ["java","-jar","/dbconnector.jar"]
 
