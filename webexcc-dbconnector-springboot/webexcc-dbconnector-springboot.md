@@ -1,28 +1,54 @@
+
 # webexcc-dbconnector-springboot
 
+  
+
 This is a spring boot server application that has been written to be middle-ware between your database and WebexCC.
+
 This project was designed and tested to be ran as a:
+
 - Standalone server
+
 - Docker image
+
 - AWS cloud.
 
-The goal of this project is to provide a low code solution to extract data from your companies database so it can be integrated with the WebexCC flow designer. 
-Know your customer. When a call is received by your contact center, your call flow can make data dips to extract all the necessary information to route the most efficiently to the agent or provide self service , 
+  
 
+The goal of this project is to provide a low code solution to extract data from your companies database so it can be integrated with the WebexCC flow designer.
+
+Know your customer. When a call is received by your contact center, your call flow can make data dips to extract all the necessary information to route the most efficiently to the agent or provide self service ,
+
+  
+
+  
 
 ## Sequence diagram
+
 ```mermaid
+
 sequenceDiagram
+
 Caller ->> WebexCC: Incomming call
+
 WebexCC -->> dbConnector: Data dip
+
 dbConnector -->> WebexCC: json
+
 WebexCC->> Agent: CADs
-Agent ->> Caller: Hi Jim, how do you like the new phone we sent you last week?
+
+Agent ->> Caller: Hi  Jim, how do you like the new phone we sent you last week?
+
 ```
+
 ---
 
+  
+
+  
 
 # Files
+
 | | | |
 |-|-|-|
 |Directory|doc|documentation directory|
@@ -68,23 +94,34 @@ Agent ->> Caller: Hi Jim, how do you like the new phone we sent you last week?
 |Code|src/main/java/com/cisco/app/dbconnector/util/Cypher2021.java|encryption class|
 |Code|src/main/java/com/cisco/app/util/Memory.java|logs application memory usage|
 
-## Videos of different configurations 
+  
+
+## Videos of different configurations
+
+  
 
 ... All on one server - [dbConnector No Code Solution](https://app.vidcast.io/share/b65cf961-def5-41bf-a9fb-cd7c88eb61b3)
 
-... Two servers - TODO
+  
 
-... Docker one image - TODO
+... Docker Springboot container and Angular container - [dbConnector Docker Containers](https://app.vidcast.io/share/7fcb7a92-7a4c-41d4-b70e-e147b27af643)
 
-... Docker two images - TODO
+  
 
+  
 
 # webexcc-dbconnector-angular
+
 webexcc-dbconnector-angular is the UI project for this application.
-For the low code approach, we have provided it for you. 
+
+For the low code approach, we have provided it for you.
+
 If you don't have angular skill set, you can write your own UI web pages.
 
+  
+
+  
 
 # Docker connection to localhost MySql
+
 set your Host == host.docker.internal
- 
