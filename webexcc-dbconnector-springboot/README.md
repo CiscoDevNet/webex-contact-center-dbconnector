@@ -6,6 +6,8 @@
 
 # Webex Contact Center DB Connector
 
+## [Dockerizing the DbConnector](https://app.vidcast.io/share/7fcb7a92-7a4c-41d4-b70e-e147b27af643)
+
 ### Connect SQL Servers with Webex Contact Center DB Connector
 
 - [Overview](#overview)
