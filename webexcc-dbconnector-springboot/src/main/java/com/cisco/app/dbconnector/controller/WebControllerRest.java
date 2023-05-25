@@ -265,7 +265,7 @@ public class WebControllerRest {
 					+ basicAuth.getIsBasicAuthenticationRequired() + "\"}";
 
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("Exception", e);
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			String encoded = new String(Base64.getEncoder().encode(sw.toString().getBytes()));

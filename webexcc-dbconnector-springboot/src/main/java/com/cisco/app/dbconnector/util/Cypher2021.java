@@ -3,16 +3,24 @@ package com.cisco.app.dbconnector.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Cypher2021 {
+	Logger logger = LoggerFactory.getLogger(Cypher2021.class);
 
-	private static final String key = "${client_secret}";
+	@Value("${client_id}")
+	private  String key ;
 	private static final String ALGORITHM = "AES";
 	private static final String TRANSFORMATION = "AES";
 
@@ -64,10 +72,31 @@ public class Cypher2021 {
 	}
 
 	private void renameToOldFilename(File oldFile, File newFile) {
-		if (oldFile.exists()) {
+		try {
 			oldFile.delete();
+			Files.copy(newFile.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			newFile.delete();
+		} catch (Exception e) {
+			logger.error("Exception", e);	
+		} finally {
 		}
-		newFile.renameTo(oldFile);
+
+	}
+	
+
+	@PostConstruct
+	private void fixSecretKeyLength() {
+		try {
+			while (key.length() < 32) {
+				key += "0";
+			}
+		} catch (Exception e) {
+		}
+		try {
+			key = key.substring(0, 32);
+		} catch (Exception e) {
+			logger.error("Exception", e);	
+		}
 	}
 
 }

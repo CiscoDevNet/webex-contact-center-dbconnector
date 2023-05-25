@@ -49,7 +49,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 	}
 
 	@Override
-	public void writeConnectorToFile(DbConnection oDbConnection) throws Exception {
+	public synchronized void writeConnectorToFile(DbConnection oDbConnection) throws Exception {
 		FileOutputStream f = null;
 		ObjectOutputStream o = null;
 		try {
@@ -93,21 +93,15 @@ public class FileSystemLocalhost implements FileSystemInterface {
 				o.close();
 				f.close();
 				cypher2021.encrypt(oFile);
-			}			
+			}
 			// this is the SQL connection
 
 		} finally {
-			if (o != null) {
-				o.close();
-			}
-			if (f != null) {
-				f.close();
-			}
 		}
 	}
 
 	@Override
-	public DbConnection readConnectorFromFile() throws Exception {
+	public synchronized DbConnection readConnectorFromFile() throws Exception {
 		/**
 		 * read Connector from file
 		 */
@@ -118,19 +112,18 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
 			cypher2021.decrypt(oFile);
 			FileInputStream fi = new FileInputStream(oFile);
-			cypher2021.encrypt(oFile);
 			oi = new ObjectInputStream(fi);
 			// Read objects
-			oDbConnection = (DbConnection) oi.readObject();
+			Object o = oi.readObject();
+			oi.close();
+			cypher2021.encrypt(oFile);
+			oDbConnection = (DbConnection) o;
 		} catch (FileNotFoundException e) {
 			// 1st time to run the program and no data files exist
-			logger.error(e.getMessage());
+			logger.error("OK if 1st time to run the program and no data files exist:" + e.getMessage());
 			this.seedDataFiles();
 			return new MySql();
 		} finally {
-			if (oi != null) {
-				oi.close();
-			}
 		}
 		return oDbConnection;
 	}
@@ -142,7 +135,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 	 * @throws Exception
 	 */
 	@Override
-	public void seedDataFiles() throws Exception {
+	public synchronized void seedDataFiles() throws Exception {
 		logger.info("using fileSystemInterface: {}", this.getClass().getSimpleName());
 		logger.info("seedDataFiles...");
 		new File(this.dataDirectory).mkdirs();
@@ -195,7 +188,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 				o.close();
 				f.close();
 				cypher2021.encrypt(oFile);
-			}			
+			}
 			oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			if (!oFile.exists()) {
 				logger.info("CREATING {}/{}", this.dataDirectory, BasicAuth.FILE_NAME);
@@ -208,68 +201,65 @@ public class FileSystemLocalhost implements FileSystemInterface {
 				cypher2021.encrypt(oFile);
 			}
 		} finally {
-			if (o != null) {
-				o.close();
-			}
-			if (f != null) {
-				f.close();
-			}
 		}
 	}
 
 	@Override
-	public Object readConnectorFromFile(String serverType) throws Exception {
+	public synchronized Object readConnectorFromFile(String serverType) throws Exception {
 		/**
 		 * read Connector from file
 		 */
 		ObjectInputStream oi = null;
-
+		FileInputStream fi = null;
 		try {
 			if (DbConnection.SERVER_TYPE_MYSQL.equals(serverType)) {
 				File oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
 				cypher2021.decrypt(oFile);
-				FileInputStream fi = new FileInputStream(oFile);
+				fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);
+				Object o = oi.readObject();
+				fi.close();
+				oi.close();
 				cypher2021.encrypt(oFile);
 				// Read objects
-				return (DbConnection) oi.readObject();
-			} 
-			else if (DbConnection.SERVER_TYPE_SQL_SERVER.equals(serverType)) {
+				return (DbConnection) o;
+			} else if (DbConnection.SERVER_TYPE_SQL_SERVER.equals(serverType)) {
 				File oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 				cypher2021.decrypt(oFile);
-				FileInputStream fi = new FileInputStream(oFile);
+				fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);
+				Object o = oi.readObject();
+				fi.close();
+				oi.close();
 				cypher2021.encrypt(oFile);
 				// Read objects
-				return (DbConnection) oi.readObject();
-			} 
-			else if (DbConnection.SERVER_TYPE_ORACLE.equals(serverType)) {
+				return (DbConnection) o;
+			} else if (DbConnection.SERVER_TYPE_ORACLE.equals(serverType)) {
 				File oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
 				cypher2021.decrypt(oFile);
-				FileInputStream fi = new FileInputStream(oFile);
+				fi = new FileInputStream(oFile);
 				oi = new ObjectInputStream(fi);
+				Object o = oi.readObject();
+				fi.close();
+				oi.close();
 				cypher2021.encrypt(oFile);
 				// Read objects
-				return (DbConnection) oi.readObject();
-			} 
-			else {
+				return (DbConnection) o;
+			} else {
 				logger.warn("NOT a valid SERVER_TYPE {}:", serverType);
 			}
 		} catch (FileNotFoundException e) {
 			// 1st time to run the program and no data files exist
-			logger.error(e.getMessage());
+			logger.error("OK if 1st time to run the program and no data files exist:" + e.getMessage());
 			this.seedDataFiles();
 			return new MySql();
 		} finally {
-			if (oi != null) {
-				oi.close();
-			}
 		}
 		return "{}";
 	}
 
 	@Override
-	public void writeEndpointToFile(Endpoint oEndpoint) throws Exception {
+	public synchronized void writeEndpointToFile(Endpoint oEndpoint) throws Exception {
 		/**
 		 * write Endpoint to file
 		 */
@@ -285,42 +275,37 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			f.close();
 			cypher2021.encrypt(oFile);
 		} finally {
-			if (o != null) {
-				o.close();
-			}
-			if (f != null) {
-				f.close();
-			}
 		}
 
 	}
 
-	private Endpoint readEndpointFromFile(File oFile) throws Exception {
+	private synchronized Endpoint readEndpointFromFile(File oFile) throws Exception {
 		/**
 		 * read Connector from file
 		 */
 		ObjectInputStream oi = null;
+		FileInputStream fi = null;
 		// Read objects
 		Endpoint oEndpoint = null;
 
 		try {
 			cypher2021.decrypt(oFile);
-			FileInputStream fi = new FileInputStream(oFile);
+			fi = new FileInputStream(oFile);
 			oi = new ObjectInputStream(fi);
+			Object o = oi.readObject();
+			fi.close();
+			oi.close();
 			cypher2021.encrypt(oFile);
 			// Read objects
-			oEndpoint = (Endpoint) oi.readObject();
+			oEndpoint = (Endpoint) o;
 
 		} finally {
-			if (oi != null) {
-				oi.close();
-			}
 		}
 		return oEndpoint;
 	}
 
 	@Override
-	public List<Endpoint> loadEndpointsFromFile() throws Exception {
+	public synchronized List<Endpoint> loadEndpointsFromFile() throws Exception {
 		/**
 		 * get Endpoints from file system
 		 */
@@ -334,7 +319,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 					UUID.fromString(name);
 					return true;
 				} catch (Exception e) {
-					logger.debug("Not an endpoint:{}", name);
+					logger.info("Not an endpoint:{}", name);
 					return false;
 				}
 			}
@@ -347,7 +332,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 	}
 
 	@Override
-	public BasicAuth readBasicAuthFromFile() throws Exception {
+	public synchronized BasicAuth readBasicAuthFromFile() throws Exception {
 		/**
 		 * read BasicAuth from file
 		 */
@@ -357,23 +342,23 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			cypher2021.decrypt(oFile);
 			FileInputStream fi = new FileInputStream(oFile);
 			oi = new ObjectInputStream(fi);
+			Object o = oi.readObject();
+			fi.close();
+			oi.close();
 			cypher2021.encrypt(oFile);
 			// Read objects
-			return (BasicAuth) oi.readObject();
+			return (BasicAuth) o;
 		} catch (FileNotFoundException e) {
 			// 1st time to run the program and no data files exist
-			logger.error(e.getMessage());
+			logger.error("OK if 1st time to run the program and no data files exist:" + e.getMessage());
 			this.seedDataFiles();
 			return new BasicAuth();
 		} finally {
-			if (oi != null) {
-				oi.close();
-			}
 		}
 	}
 
 	@Override
-	public void writeBasicAuthToFile(BasicAuth basicAuth) throws Exception {
+	public synchronized void writeBasicAuthToFile(BasicAuth basicAuth) throws Exception {
 		FileOutputStream f = null;
 		ObjectOutputStream o = null;
 
@@ -387,19 +372,12 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			f.close();
 			cypher2021.encrypt(oFile);
 		} finally {
-			if (o != null) {
-				o.close();
-			}
-			if (f != null) {
-				f.close();
-			}
-
 		}
 
 	}
 
 	@Override
-	public void deleteEndpoint(String endpointName) throws Exception {
+	public synchronized void deleteEndpoint(String endpointName) throws Exception {
 		new File(this.dataDirectory + "/" + endpointName + ".obj").delete();
 	}
 }

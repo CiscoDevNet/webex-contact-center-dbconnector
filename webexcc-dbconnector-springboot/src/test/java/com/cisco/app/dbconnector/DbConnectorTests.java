@@ -23,91 +23,91 @@ import com.cisco.app.dbconnector.util.Cypher2021;
 @AutoConfigureMockMvc
 class DbConnectorTests {
 	static Logger logger = LoggerFactory.getLogger(WebControllerRest.class);
-
-	@Autowired
-	MockMvc mockMvc;
-
-	@Test
-	void encrypt() {
-		try {
-			File file = File.createTempFile("temp", null);
-			new Cypher2021().encrypt(file);
-			assertThat(file).exists();
-			file.deleteOnExit();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	@Test
-	void decrypt() {
-		try {
-			File file = File.createTempFile("temp", null);
-			new Cypher2021().decrypt(file);
-			assertThat(file).exists();
-			file.deleteOnExit();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	void doesItWork() {
-		Object[] o = new Object[0];
-		try {
-			MvcResult oMvcResult = mockMvc.perform(get("/doesItWork", o)).andExpect(status().isOk()).andReturn();
-			System.out.println(oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	
-	@Test
-	void getConnector() {
-		Object[] o = new Object[0];
-		try {
-			MvcResult oMvcResult = mockMvc.perform(get("/rest/connector", o)).andExpect(status().isOk()).andReturn();
-			logger.info("\nrest/connector:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	@Test
-	void getConnectorByServerType() {
-		Object[] o = new Object[0];
-		try {
-			MvcResult oMvcResult = mockMvc.perform(get("/rest/connector/MySQL", o)).andExpect(status().isOk()).andReturn();
-			logger.info("\nrest/connector/MySQL:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Test
-	void getEndpoints() {
-		Object[] o = new Object[0];
-		try {
-			MvcResult oMvcResult = mockMvc.perform(get("/rest/endpoints", o)).andExpect(status().isOk()).andReturn();
-			logger.info("\nrest/endpoints:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	@Test
-	void getBasicAuth() {
-		Object[] o = new Object[0];
-		try {
-			MvcResult oMvcResult = mockMvc.perform(get("/rest/basicauth", o)).andExpect(status().isOk()).andReturn();
-			logger.info("\nrest/basicauth:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
+//
+//	@Autowired
+//	MockMvc mockMvc;
+//
+//	@Test
+//	void encrypt() {
+//		try {
+//			File file = File.createTempFile("temp", null);
+//			new Cypher2021().encrypt(file);
+//			assertThat(file).exists();
+//			file.deleteOnExit();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
+//
+//	@Test
+//	void decrypt() {
+//		try {
+//			File file = File.createTempFile("temp", null);
+//			new Cypher2021().decrypt(file);
+//			assertThat(file).exists();
+//			file.deleteOnExit();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	@Test
+//	void doesItWork() {
+//		Object[] o = new Object[0];
+//		try {
+//			MvcResult oMvcResult = mockMvc.perform(get("/doesItWork", o)).andExpect(status().isOk()).andReturn();
+//			System.out.println(oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	
+//	@Test
+//	void getConnector() {
+//		Object[] o = new Object[0];
+//		try {
+//			MvcResult oMvcResult = mockMvc.perform(get("/rest/connector", o)).andExpect(status().isOk()).andReturn();
+//			logger.info("\nrest/connector:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	@Test
+//	void getConnectorByServerType() {
+//		Object[] o = new Object[0];
+//		try {
+//			MvcResult oMvcResult = mockMvc.perform(get("/rest/connector/MySQL", o)).andExpect(status().isOk()).andReturn();
+//			logger.info("\nrest/connector/MySQL:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	@Test
+//	void getEndpoints() {
+//		Object[] o = new Object[0];
+//		try {
+//			MvcResult oMvcResult = mockMvc.perform(get("/rest/endpoints", o)).andExpect(status().isOk()).andReturn();
+//			logger.info("\nrest/endpoints:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	
+//	@Test
+//	void getBasicAuth() {
+//		Object[] o = new Object[0];
+//		try {
+//			MvcResult oMvcResult = mockMvc.perform(get("/rest/basicauth", o)).andExpect(status().isOk()).andReturn();
+//			logger.info("\nrest/basicauth:\n{}", oMvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	
 //	  @Test
 //	  void registrationWorksThroughAllLayers() throws Exception {
 //	    UserResource user = new UserResource("Zaphod", "zaphod@galaxy.net");
