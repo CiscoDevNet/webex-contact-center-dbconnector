@@ -15,7 +15,7 @@
 	<name>webexcc-dbconnector-springboot</name>
 	<description>On premise Db to Rest Interface</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
