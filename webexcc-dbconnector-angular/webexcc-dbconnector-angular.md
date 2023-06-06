@@ -72,6 +72,10 @@ dbConnector -->> WebexCallFlow: JSON response
 |Code|src/main/java/com/cisco/app/dbconnector/util/Convertor.java|convert sql to json|
 |Code|src/main/java/com/cisco/app/dbconnector/util/Cypher2021.java|encryption class|
 |Code|src/main/java/com/cisco/app/util/Memory.java|logs application memory usage|
+|Conf|src/assets/env.json| JSON login config file|
+|Conf| src/assets/env.json -> client_id | get value from https://developer.webex-cx.com/my-apps|
+|Conf| src/assets/env.json -> redirect_uri | get value from https://developer.webex-cx.com/my-apps|
+|Conf| src/assets/env.json -> resourceUrl | FQDN of the springboot server|
 
 ## Videos of different configurations 
 
@@ -89,9 +93,11 @@ If you don't have angular skill set, you can write your own UI web pages.
 
 # compile & run
 
-nvm install v14.20
+nvm install v14.20 #one time install
 
-nvm use v14.20
+nvm use v14.20 #one time install
+
+npm install -g @angular/cli@15.2.8. #one time install
 
 npm install
 
