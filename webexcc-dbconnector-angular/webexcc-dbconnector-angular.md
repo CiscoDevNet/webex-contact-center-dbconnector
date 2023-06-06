@@ -121,3 +121,48 @@ refer to src/app/connector for connector selections (pulldown)
 
 refer to src/app/connector/oracle for adding connector page
 
+# compile and run (stand alone springboot server)
+
+open terminal 
+
+cd ../webex-contact-center-dbconnector/webexcc-dbconnector-angular
+
+npm i
+
+ng build
+
+
+-------------------------
+
+
+delete all files in 
+
+.../webex-contact-center-dbconnector/webexcc-dbconnector-springboot/src/main/resources/static
+
+
+
+move all files 
+
+from 
+
+.../webex-contact-center-dbconnector/webexcc-dbconnector-angular/dist
+
+to
+
+.../webex-contact-center-dbconnector/webexcc-dbconnector-springboot/src/main/resources/static
+
+
+
+-------------------------
+
+
+
+open terminal 
+
+cd .../webex-contact-center-dbconnector/webexcc-dbconnector-springboot
+
+mvn clean install
+
+java -jar target/dbConnectorGitHub-0.0.2.jar
+
+
