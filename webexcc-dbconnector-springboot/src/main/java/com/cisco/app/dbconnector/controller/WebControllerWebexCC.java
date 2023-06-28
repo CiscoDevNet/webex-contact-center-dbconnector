@@ -97,7 +97,8 @@ public class WebControllerWebexCC {
 				// - String encoding = "Basic " + Base64.getEncoder().encodeToString("username:password".getBytes("UTF-8"));
 				logger.debug("authorization:{}", authorization);
 				logger.debug("encoding     :{}", basicAuth.getValue());
-				if (!basicAuth.getValue().equals(authorization)) {
+				String check = "Basic " + basicAuth.getValue();
+				if (!check.equals(authorization)) {
 					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 					return "{\"Exception\":\"401 not authorized\"}";
 				}
