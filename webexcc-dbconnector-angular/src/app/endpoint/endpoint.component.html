@@ -213,10 +213,9 @@
 
             <div class="row">
                 <div class="col">
-                    <div [ngClass]="{'bg-primary': endpoint.isHighlighted === true}"
-                        *ngFor="let endpoint of endpoints; index as i;" (click)="selectEndpoint(endpoint)">
-                        <div (click)="deleteEndpoint(i)" class="alert__icon icon-error-outline"> </div>
-                        {{endpoint.endpoint}}<br>
+                    <div [ngClass]="{'bg-primary': endpoint.isHighlighted === true}"  *ngFor="let endpoint of endpoints; index as i;" (click)="selectEndpoint(endpoint)">
+                        <button  (click)="deleteEndpoint(i)" class="button bg-warn">-</button>
+                        &nbsp;&nbsp;{{endpoint.endpoint}}<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{endpoint.description}}
                     </div>
                 </div>
