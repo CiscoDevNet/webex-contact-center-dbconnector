@@ -86,6 +86,7 @@ export class EndpointComponent implements OnInit {
           }
           this.endpoints.splice(index, 1);
           this.isworking = false;
+          this.endpoints[--index].isHighlighted = true;
         });
     } else {
       console.log('EndpointComponent: deleteEndpoint: NOT');
@@ -133,7 +134,7 @@ export class EndpointComponent implements OnInit {
     this.isworking = true;
     this.myConsole = '';
     this.restService.getEndpoints()
-      .subscribe(data => {
+      .subscribe((data: any) => {
         this.endpoints = data;
         if (this.endpoints.Exception) {
           this.myConsole = atob(this.myConsole.Exception);
@@ -161,7 +162,7 @@ export class EndpointComponent implements OnInit {
     this.isworking = true;
     this.myConsole = '';
     this.restService.saveBasicAuthentication(this.basicAuth)
-      .subscribe(data => {
+      .subscribe((data: any) => {
         this.myConsole = data;
         if (this.myConsole.Exception) {
           this.myConsole = 'Exception:\n' + atob(this.myConsole.Exception);
@@ -203,7 +204,7 @@ export class EndpointComponent implements OnInit {
     this.isworking = true;
 
     this.restService.saveEndpointAndTest(this.endpoint)
-      .subscribe(data => {
+      .subscribe((data: any) => {
         this.myConsole = data;
         if (this.myConsole.Exception) {
           this.myConsole = 'Exception:\n' + atob(this.myConsole.Exception);
@@ -279,7 +280,7 @@ export class EndpointComponent implements OnInit {
     this.isworking = true;
     this.restService.getConnector()
       .subscribe((data: any) => {
-        - console.log('EndpointComponent: getConnector', data);
+        // #console.log('EndpointComponent: getConnector', data);
         this.connector = data;
         this.isworking = false;
       });
