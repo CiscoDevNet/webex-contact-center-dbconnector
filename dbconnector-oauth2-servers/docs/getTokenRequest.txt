@@ -1,12 +1,12 @@
 POST https://www.yourDomain.com/oauth2/token: {
   "Request Headers": {
     "content-type": "application/x-www-form-urlencoded",
-    "authorization": "Basic Qzk5NmI2ZmYxZDlkZTQ3ZWI1NzU3MDE2YTJmNzk1MmMwZWY4N2E4MzNlMmMyYTQ4ZDhhZDUzOWRmOTI5YjEwZWE6YzQ0NWNiMDIyZjQzMjI1M2E2YmU2MGUyNWUzMDg5NWIyMGU0MTJiMzY4ZjUyMDczYWNmMmEwNzE3ODUzODJkZQ==",
+    "authorization": "Basic yourAccesssToken",
     "accept": "*/*",
   },
   "Request Body": {
     "grant_type": "client_credentials",
     "scope": "dbconnector.read"
   },
-  "Response Body": "{\"access_token\":\"REDACTED\",\"scope\":\"dbconnector.read\",\"token_type\":\"Bearer\",\"expires_in\":155519999}"
+  "Response Body": "{\"access_token\":\"yourAccesssToken\",\"scope\":\"dbconnector.read\",\"token_type\":\"Bearer\",\"expires_in\":9999}"
 }
