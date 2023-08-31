@@ -1,0 +1,27 @@
+----------------------- Apple pc
+brew install cast certbot
+sudo certbot certonly -a standalone -d www.yourDomain.com
+
+
+Certificate is saved at: /etc/letsencrypt/live/www.yourDomain.com/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/www.yourDomain.com/privkey.pem
+
+
+cd /etc/letsencrypt/live/www.yourDomain.com
+
+
+sudo openssl pkcs12 -export -in fullchain.pem  -inkey privkey.pem  -out keystore.p12  -name tomcat  -CAfile chain.pem -caname root
+
+
+security.require-ssl=true
+server.ssl.key-store:/etc/letsencrypt/live/www.yourDomain.com/keystore.p12
+server.ssl.key-store-password: tomcat
+server.ssl.keyStoreType: PKCS12
+server.ssl.keyAlias: tomcat
+
+
+https://www.yourDomain.com
+
+
+----------------------- Windows
+To do

@@ -1,0 +1,225 @@
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<div *ngIf="isLoggedIn" class="container">
+    <div *ngIf="isworking" class="loader" aria-label="Loading, please wait..."
+        style="position: absolute;  width: 70px;  height: 70px;  z-index: 15;  top: 50%;  left: 50%;  margin: -100px 0 0 -150px;">
+        <div class="wrapper">
+            <div class="wheel"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div *ngIf="endpoints.length > 0" class="col">
+            <div class="panel panel--loose panel--raised base-margin-bottom">
+                <h2 class="subtitle">Endpoints</h2>
+                <hr>
+                <div class="section">
+
+
+
+                    <div class="form-group base-margin-bottom">
+
+                        <div class="form-group__check">
+                            <input type="checkbox" class="form-check-input" id="BasicAuthenticationisRequired"
+                                [checked]="basicAuth.isBasicAuthenticationRequired"
+                                [(ngModel)]="basicAuth.isBasicAuthenticationRequired"
+                                (change)="setBasicAuthenticationRequired($event);showAuthenticatioTabButton('tab1'); "
+                                [ngModelOptions]="{standalone: true}">&nbsp; &nbsp;
+                            <label class="form-check-label" for="BasicAuthenticationisRequired">Basic Authentication is
+                                Required</label>
+                        </div>
+                    </div>
+
+
+                    <ul id="embossed" class="tabs tabs--embossed">
+
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <span (click)="showAuthenticatioTabButton('tab1')"
+                                    class="nav-link btn-outline-primary btn-sm" aria-current="page">Endpoint</span>
+                            </li>
+                            <li class="nav-item">
+                                <span *ngIf="basicAuth.isBasicAuthenticationRequired"
+                                    (click)="showAuthenticatioTabButton('tab2')"
+                                    class="nav-link btn-outline-primary btn-sm">Authentication</span>
+                            </li>
+                        </ul>
+
+
+                    </ul>
+                    <div id="embossed-content" class="tab-content">
+
+                        <div *ngIf="showTab1" id="embossed-1-content" class="tab-pane active">
+                            <div class="panel panel--loose panel--raised base-margin-bottom">
+                                <div class="form-group base-margin-bottom">
+
+                                    <div class="form-group">
+                                        <label for="exampleInputEndPoint1">EndPoint</label>
+                                        <input type="text" class="form-control" id="exampleInputEndPoint1"
+                                            aria-describedby="EndPointHelp" [(ngModel)]="endpoint.endpoint" readonly
+                                            placeholder="Enter EndPoint">
+                                        <small id="EndPointHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp; Auto
+                                            generated endpoint</small>
+                                    </div>
+                                    <!--  -->
+                                    <div class="form-group">
+                                        <label for="exampleInputDescription1">Description</label>
+                                        <input type="text" class="form-control" id="exampleInputDescription1"
+                                            maxlength="120" aria-describedby="DescriptionHelp"
+                                            [(ngModel)]="endpoint.description" placeholder="Enter Description">
+                                        <small id="DescriptionHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp;
+                                            Description of the end point</small>
+                                    </div>
+                                    <!--  -->
+                                    <div>
+                                        <p>Parameters
+                                    </div>
+                                    <div class="form-group__text">
+
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-1">
+                                                    <button (click)="addNameValuePair({})"
+                                                        class="btn btn--link ">[+]</button>
+                                                </div>
+                                                <div class="col-5 text-left  "> Name </div>
+                                                <div class="col-5 text-left  "> Value </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <hr>
+                                                </div>
+                                            </div>
+
+                                            <div class="row"
+                                                *ngFor="let nameValue of endpoint.nameValueList; index as i;">
+                                                <div class="col-1  "> <button (click)="deleteNameValuePair(i)"
+                                                        class="btn btn--link btn-sm">[-]</button> </div>
+                                                <div class="col-5  "> <input id="input-type-NamePair_name{{i}}"
+                                                        [(ngModel)]="nameValue.name"
+                                                        [ngModelOptions]="{standalone: true}" type="text"></div>
+                                                <div class="col-5   "> <input id="input-type-ValuePair_value{{i}}"
+                                                        [(ngModel)]="nameValue.value"
+                                                        [ngModelOptions]="{standalone: true}" type="text"> </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!--  -->
+                                    <div>
+                                        <p></p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputQuery1">SQL Query Statement </label>
+                                        <textarea class="form-control" placeholder="Enter SQL statement"
+                                            [(ngModel)]="endpoint.query" id="exampleInputQuery1"
+                                            aria-describedby="QueryHelp"></textarea>
+                                        <small id="QueryHelp" class="form-text text-muted"> &nbsp; &nbsp; &nbsp; SQL
+                                            statement</small>
+                                    </div>
+                                    <div class="form-floating">
+                                    </div>
+
+                                    <!--  -->
+
+                                    <div class="form-group__text">
+                                        <label for="input-type-Username">Console</label>
+                                        <textarea id="textarea-state-default" class="text-white" readonly
+                                            style="background-color: #000000;width: 100%;"
+                                            rows="8">{{myConsole}}</textarea>
+                                    </div>
+                                    <!--  -->
+                                    <div class="form-group__text">
+                                        <p></p>
+                                        <button (click)="saveEndpointAndTest()" class="btn btn--ghost"
+                                            [disabled]="isworking">Save and Test
+                                            Endpoint</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div *ngIf="showTab2" id="embossed-2-content" class="tab-pane active">
+                            <div class="panel panel--loose panel--raised base-margin-bottom">
+                                <h2 class="subtitle">Basic Authentication for Endpoints</h2>
+                                Applies to all endpoints
+                                <hr>
+                                <!--  -->
+                                <div class="form-group base-margin-bottom">
+
+                                    <div class="form-group">
+                                        <label for="exampleInputBasicAuthUserName1">Basic Auth Username must be atleast
+                                            12 charactors</label>
+                                        <input type="text" class="form-control" id="exampleInputBasicAuthUserName1"
+                                            maxlength="120" aria-describedby="BasicAuthUserNameHelp"
+                                            (change)="updateBasicAuthValue()" [(ngModel)]="basicAuth.username"
+                                            placeholder="Enter Basic Auth Username">
+                                    </div>
+                                    <!--  -->
+                                    <div class="form-group">
+                                        <label for="exampleInputBasicAuthPassword1">Basic Auth Password must be atleast
+                                            12 charactors</label>
+                                        <input type="text" class="form-control" id="exampleInputBasicAuthPassword1"
+                                            maxlength="120" aria-describedby="BasicAuthPasswordHelp"
+                                            (change)="updateBasicAuthValue()" [(ngModel)]="basicAuth.password"
+                                            placeholder="Enter Basic Auth Password">
+                                    </div>
+                                    <!--  -->
+                                    <div class="form-group">
+                                        <label for="exampleInputBasicAuthValue1">BasicAuthValue</label>
+                                        <input type="text" class="form-control" id="exampleInputBasicAuthValue1"
+                                            maxlength="120" aria-describedby="BasicAuthValueHelp"
+                                            (change)="updateBasicAuthValue()" [(ngModel)]="basicAuth.value" readonly
+                                            placeholder="Auto generated value">
+                                    </div>
+                                    <!--  -->
+
+
+                                    <!--  -->
+                                    <div class="form-group__text">
+                                        <p></p>
+                                        <button (click)="saveBasicAuthentication()" class="btn btn--ghost">Save Basic
+                                            Authentication</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <h4>Current Endpoints</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label><button (click)="addEndpoint()" class="btn btn--ghost">add</button></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <!-- space -->
+                    <hr>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="row">
+                <div class="col">
+                    <div [ngClass]="{'bg-primary': endpoint.isHighlighted === true}"  *ngFor="let endpoint of endpoints; index as i;" (click)="selectEndpoint(endpoint)">
+                        <button  (click)="deleteEndpoint(i)" class="button bg-warn">-</button>
+                        &nbsp;&nbsp;{{endpoint.endpoint}}<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{endpoint.description}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

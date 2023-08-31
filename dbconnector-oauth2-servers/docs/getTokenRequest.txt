@@ -1,0 +1,12 @@
+POST https://www.yourDomain.com/oauth2/token: {
+  "Request Headers": {
+    "content-type": "application/x-www-form-urlencoded",
+    "authorization": "Basic Qzk5NmI2ZmYxZDlkZTQ3ZWI1NzU3MDE2YTJmNzk1MmMwZWY4N2E4MzNlMmMyYTQ4ZDhhZDUzOWRmOTI5YjEwZWE6YzQ0NWNiMDIyZjQzMjI1M2E2YmU2MGUyNWUzMDg5NWIyMGU0MTJiMzY4ZjUyMDczYWNmMmEwNzE3ODUzODJkZQ==",
+    "accept": "*/*",
+  },
+  "Request Body": {
+    "grant_type": "client_credentials",
+    "scope": "dbconnector.read"
+  },
+  "Response Body": "{\"access_token\":\"eyJraWQiOiIxZmJiY2NiNy1mZjkxLTQzNzctOWU0OC1mNjRiMGE4OGJjYzAiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJDOTk2YjZmZjFkOWRlNDdlYjU3NTcwMTZhMmY3OTUyYzBlZjg3YTgzM2UyYzJhNDhkOGFkNTM5ZGY5MjliMTBlYSIsImF1ZCI6IkM5OTZiNmZmMWQ5ZGU0N2ViNTc1NzAxNmEyZjc5NTJjMGVmODdhODMzZTJjMmE0OGQ4YWQ1MzlkZjkyOWIxMGVhIiwibmJmIjoxNjkzNTA3MDU3LCJzY29wZSI6WyJkYmNvbm5lY3Rvci5yZWFkIl0sImlzcyI6Imh0dHBzOi8vdGVzdC5hcGkuNHNpdGVpbmMuY29tIiwiZXhwIjoxODQ5MDI3MDU3LCJpYXQiOjE2OTM1MDcwNTd9.Izph5G-UGk6LpSVppjPutFdiEC__U_6eSwPLBlCUGmHD4rjuNaN-vmo_6yKt4vqhPy7xOxF52efYHLVuZg0nWFK0awycTrnXHvUYjEUa7L2usG38hX30M9Wt95f4AwiGIPdMpS5e-ZKO6P7baONGqb3a3sYRPKE0TSXIwpQyCkZRmgpSaznoVg8uuL3LneK5lA5EASL_m8_P8odWWicehVLQmLzZI_7ycWlZ5RC0jSQdscvtcQioNruLjLoB58wF6U43B4CCz_KABqFiz98eUUipOkksiwGZffQPWgIQK8fVBAkltLtSujeoN6z5jrJQpwKNLuAHB7nUNbg_jXBzcg\",\"scope\":\"dbconnector.read\",\"token_type\":\"Bearer\",\"expires_in\":155519999}"
+}

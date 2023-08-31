@@ -1,0 +1,66 @@
+<p>&nbsp;</p>
+
+<div class="container">
+    <div *ngIf="isworking" class="loader" aria-label="Loading, please wait..."
+        style="position: absolute;  width: 70px;  height: 70px;  z-index: 15;  top: 50%;  left: 50%;  margin: -100px 0 0 -150px;">
+        <div class="wrapper">
+            <div class="wheel"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!--  -->
+        <div class="col">
+            <div>
+                <h2 class="subtitle">Connector</h2>
+                <hr>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Select DB Server</label>
+                    <select class="form-control" id="exampleFormControlSelect1" (change)="onOptionsSelected($event)"
+                        [(ngModel)]="connector.type">
+                        <option value="MySQL">MySQL</option>
+                        <option value="SQL_Server">SQL Server</option>
+                        <option value="Oracle">Oracle</option>
+                    </select>
+                </div>
+                <!-- load the correct connector page -->
+                <div *ngIf="connector.type === 'MySQL'">
+                    <app-mysql [connector]="connectorMySql" (onDataChange)="onDataChange($event)"></app-mysql>
+                </div>
+                <div *ngIf="connector.type === 'SQL_Server'">
+                    <app-sqlserver [connector]="connectorSqlServer" (onDataChange)="onDataChange($event)">
+                    </app-sqlserver>
+                </div>
+                <div *ngIf="connector.type === 'Oracle'">
+                    <app-oracle [connector]="connectorOracle" (onDataChange)="onDataChange($event)">
+                    </app-oracle>
+                </div>
+
+            </div>
+        </div>
+        <div class="col">
+            <label for="textarea-state-default">Console</label>
+            <div class="form-group__text">
+                <textarea id="textarea-state-default" class="text-white"
+                    style="background-color: #000000;-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;"
+                    rows="35">{{myConsole}}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!--  -->
+    <div *ngIf="isworking" class="navbar fixed-bottom">
+        <div class="container text-center">
+            <div class="row w-100">
+                <div class="col">
+                    <div class="progress">
+                        <div class="progress-bar bg-warning text-dark" role="progressbar" style="width: 100%;"
+                            aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                            WORKING... </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
