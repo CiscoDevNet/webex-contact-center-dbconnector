@@ -1,0 +1,56 @@
+server:
+  port: 443
+  ssl:
+    key-store: /etc/letsencrypt/live/www.yourDomain.com/keystore.p12
+    key-store-password: tomcat
+    keyStoreType: PKCS12
+    keyAlias: tomcat
+
+
+  
+security:
+  require-ssl: true
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://www.yourDomain.com
+      client:
+        registration:
+          webexcc:
+            provider: webexcc
+            client-id: your-client-id
+            client-secret: your-client-secret
+            authorization-grant-type: client_credentials
+            client-authentication-method: client_secret_post
+            scope: dbconnector.read,dbconnector.write
+            client-name: webexcc
+        provider:
+          webexcc:
+            token-uri: https://www.yourDomain.com/oauth2/token
+        resourceserver:
+          jwt:
+            issuer-uri: https://www.yourDomain.com
+            jwk-set-uri: https://www.yourDomain.com/oauth2/jwks
+
+            
+userDetails:
+  admin:
+    username: admin
+    password: admin
+    authorities: SCOPE_dbconnector.read, SCOPE_dbconnector.write
+  user:
+    username: user
+    password: user
+    authorities: SCOPE_dbconnector.read
+  webexcc:
+    authorities: dbconnector.read
+    
+    
+
+    
+     
+        
+    

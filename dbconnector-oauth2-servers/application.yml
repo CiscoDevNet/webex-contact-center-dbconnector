@@ -1,0 +1,37 @@
+filesystem:
+# this is the directory in-which database information will be persisted 
+  dataDirectory: data
+# fileSystemInterface: can be fileSystemLocalhost OR fileSystemAWSS3
+  fileSystemInterface: fileSystemLocalhost
+
+fileSystemAWSS3:
+  accessKey: your_accessKey
+  bucketName: your_bucketName
+  secretKey: your_secretKey
+
+spring:
+  cache:
+    type: NONE
+
+    
+    
+logging:
+  level:
+    root: info
+    org.springframework.security: info
+    org.springframework: error
+    com.howtodoinjava: error
+    org.hibernate: error
+    org.apache.tomcat.util.net: error
+    sun.rmi: error
+    javax.management: error
+    java.io: error
+    web: error
+    org.apache.tomcat.util.net.NioEndpoint: error
+    com.mchange.v2: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file.name: /logs/application-debug.log
+
+    

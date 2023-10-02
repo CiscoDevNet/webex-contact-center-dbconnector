@@ -1,0 +1,12 @@
+POST https://www.yourDomain.com/oauth2/token: {
+  "Request Headers": {
+    "content-type": "application/x-www-form-urlencoded",
+    "authorization": "Basic yourAccesssToken",
+    "accept": "*/*",
+  },
+  "Request Body": {
+    "grant_type": "client_credentials",
+    "scope": "dbconnector.read"
+  },
+  "Response Body": "{\"access_token\":\"yourAccesssToken\",\"scope\":\"dbconnector.read\",\"token_type\":\"Bearer\",\"expires_in\":9999}"
+}
