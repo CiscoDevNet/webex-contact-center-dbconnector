@@ -1,0 +1,55 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">
+        <img src="https://cdn.bfldr.com/ENSXS21L/at/k3xfk3sw5mj4bcfpv86qc5nx/webexbycisco-3d-vertical-color-black-text.png?auto=webp&format=png&width=50&height=40"
+            alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <span class="navbar-nav mr-auto">
+        </span>
+
+
+
+
+
+        <!-- logged in -->
+        <form class="form-inline my-2 my-lg-0">
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="/connector">Connector <span class="sr-only"> </span></a>
+                </li>
+                <!--  -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="/endpoint">Endpoints <span class="sr-only"> </span></a>
+                </li>
+                <!--  -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="/grid-view">Grid View <span class="sr-only"> </span></a>
+                </li>
+                <!--  -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="/help">Help <span class="sr-only"> </span></a>
+                </li>
+                <!--  -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="/support">Support <span class="sr-only"> </span></a>
+                </li>
+                <!--  -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="/about">About <span class="sr-only"> </span></a>
+                </li>
+                <!--  -->
+                <li class="nav-item active">
+                    <a class="nav-link btn" (click)="logout()">Logout <span class="sr-only"></span></a>
+                </li>
+            </ul>
+        </form>
+    </div>
+</nav>
+
+
+<router-outlet></router-outlet>
