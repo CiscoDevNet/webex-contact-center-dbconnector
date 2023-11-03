@@ -138,7 +138,20 @@ public class MySql implements Serializable, DbConnection {
 
 	@Override
 	public String toString() {
-		return "MySql [type=" + type + ", version=" + version + ", hostname=" + hostname + ", port=" + port + ", database=" + database + ", username=" + username + ", password=" + password + ", driver=" + driver + ", connectionString=" + connectionString + ", connectionPool=" + connectionPool + "]";
+		// @formatter:off
+		return "MySql ["
+				+ "type=" + type 
+				+ ", version=" + version 
+				+ ", hostname=" + hostname 
+				+ ", port=" + port 
+				+ ", database=" + database 
+				+ ", username=" + username 
+				+ ", password=" + "******" 
+				+ ", driver=" + driver 
+//				+ ", connectionString=" + connectionString 
+				+ ", connectionPool=" + connectionPool 
+				+ "]";
+		// @formatter:on
 	}
 
 }
