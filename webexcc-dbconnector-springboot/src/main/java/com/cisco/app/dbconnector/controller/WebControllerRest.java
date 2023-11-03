@@ -150,7 +150,7 @@ public class WebControllerRest {
 	public Object postConnector(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
 		long tstart = System.currentTimeMillis();
 		this.addHeaders(response);
-		logger.info("body:{}", body);
+		logger.debug("body:{}", body.toString());
 		Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
 		logger.debug("check:{}", check);
 
@@ -176,7 +176,7 @@ public class WebControllerRest {
 			fileSystem.writeConnectorToFile(oDbConnection);
 			reloadRules();
 
-			logger.info("oDbConnection:{}", oDbConnection);
+			logger.debug("oDbConnection:{}", oDbConnection);
 //			db.setDataSource(oConnector);
 			if (db.testConnector(oDbConnection)) {
 				return "{\"response\":\"SUCCESS \\n---- Very Nice!!!! ---- \\nYou can now build your endpoints\"}";
@@ -370,7 +370,7 @@ public class WebControllerRest {
 
 	private void reloadRules() throws Exception {
 		// reload the rules & BasicAuth setting
-		new RestTemplate().getForObject("http://localhost:8080/rest/webexcc/reloadRules", String.class);
+		new RestTemplate().getForObject(redirectUri + "/rest/webexcc/reloadRules?reload=true", String.class);
 	}
 
 	private long printMemoryCounter = 0;

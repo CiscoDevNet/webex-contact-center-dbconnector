@@ -145,9 +145,9 @@ public class SqlServer implements Serializable, DbConnection {
 				+ "port=" + port + ", "
 				+ "database=" + database + ", "
 				+ "username=" + username + ", "
-				+ "password=" + password + ", "
+				+ "password=" + "*****" + ", "
 				+ "driver=" + driver + ", "
-				+ "connectionString=" + connectionString + ", "
+//				+ "connectionString=" + connectionString + ", "
 				+ "connectionPool=" + connectionPool + "]";
 		// @formatter:on
 
