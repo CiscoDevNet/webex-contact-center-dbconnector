@@ -229,7 +229,7 @@ public class DatabaseUtility {
 
 	public boolean testConnector(DbConnection oConnector) throws Exception {
 		long tstart = System.currentTimeMillis();
-		logger.info("Connector:{}", oConnector);
+		logger.debug("Connector:{}", oConnector);
 
 		if (oConnector.getType().equals(DbConnection.SERVER_TYPE_MYSQL)) {
 			// Creating connection
