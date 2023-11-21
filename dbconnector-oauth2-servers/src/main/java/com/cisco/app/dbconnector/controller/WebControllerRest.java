@@ -372,7 +372,6 @@ public class WebControllerRest {
 
 	private void reloadRules() throws Exception {
 		// reload the rules & BasicAuth setting
-//		@TODO FIX THIS JDW
 		new RestTemplate().getForObject(redirectUri + "/rest/webexcc/reloadRules?reload=true", String.class);
 		
 	}
