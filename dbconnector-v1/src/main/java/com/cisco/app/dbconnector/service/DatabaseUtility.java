@@ -194,10 +194,31 @@ public class DatabaseUtility {
 		ResultSet resultSet = null;
 		try {
 			connection = dataSource.getConnection();
-			pstmt = connection.prepareStatement(this.getSqlStatement(oEndpoint));
-			resultSet = pstmt.executeQuery();
-			Object json = new Convertor().convertToJSON(resultSet);
-			return json.toString();
+			String sql = this.getSqlStatement(oEndpoint);
+			if(sql.toLowerCase().trim().startsWith("select")) {
+				pstmt = connection.prepareStatement(sql);				
+				resultSet = pstmt.executeQuery();
+				Object json = new Convertor().convertToJSON(resultSet);
+				return json.toString();
+			}
+			if(sql.toLowerCase().trim().startsWith("insert")) {
+				pstmt = connection.prepareStatement(sql);				
+	            int row = pstmt.executeUpdate();
+				return "{\"insert\":" + row + "}";
+
+			}
+			if(sql.toLowerCase().trim().startsWith("update")) {
+				pstmt = connection.prepareStatement(sql);				
+	            int row = pstmt.executeUpdate();
+				return "{\"update\":" + row + "}";				
+			}
+			if(sql.toLowerCase().trim().startsWith("delete")) {
+				pstmt = connection.prepareStatement(sql);				
+	            int row = pstmt.executeUpdate();
+				return "{\"delete\":" + row + "}";				
+			}
+			
+			return "{\"Exception\":\"Not a valid SQL statement\"}";
 		} catch (Exception e) {
 			throw e;
 		} finally {
