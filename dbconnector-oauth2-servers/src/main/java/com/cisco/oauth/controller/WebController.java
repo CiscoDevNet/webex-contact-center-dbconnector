@@ -22,12 +22,12 @@ public class WebController {
 
 	public WebController() {
 		super();
-    	logger.info("WebController:");
+		logger.info("public WebController");
 	}
 
 	@GetMapping(path = "/webexcc/**", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Object webexcc(Authentication authentication, HttpServletRequest request, HttpServletResponse response, @RequestParam final Map<String, String> inboundParameters) {
-		logger.info("webexcc");
+		logger.debug("webexcc");
 		logger.debug("inboundParameters:{}", inboundParameters);		
 		return "{\"jim\":\"wyatt\"}";
 	}
