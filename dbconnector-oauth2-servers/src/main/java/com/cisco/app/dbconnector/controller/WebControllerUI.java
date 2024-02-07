@@ -26,16 +26,15 @@ public class WebControllerUI {
 
 	public WebControllerUI() {
 		super();
-		logger.info("public WebControllerUI");
-	}
+		logger.info("public WebControllerUI");	}
 
 	@GetMapping({ "/", "/logout", "/help", "/support", "/about", "/loggedin", "/endpoint", "/connector", "/grid-view", "mylogin" })
 	public String angularRoutes(HttpServletRequest request, HttpServletResponse response) {
 		request.getAttribute("access_token");
 		Authentication check = (Authentication) request.getAttribute("oAuthentication");
-		logger.info("WebControllerUI: check:{}", check);
+		logger.debug("WebControllerUI: check:{}", check);
 		
-		logger.info("WebControllerUI");
+		logger.debug("WebControllerUI");
 		return "forward:/index.html";
 //		return "forward:/";
 	}
@@ -43,8 +42,8 @@ public class WebControllerUI {
 	@GetMapping({ "/mylogout"})
 	@ResponseBody
 	public Object mylogout(HttpServletRequest request, HttpServletResponse response) {
-		logger.info("WebControllerUI");
-		logger.info("mylogout");
+		logger.debug("WebControllerUI");
+		logger.debug("mylogout");
 		request.setAttribute("oAuthentication", null);
 		
 //		return "forward:/index.html";

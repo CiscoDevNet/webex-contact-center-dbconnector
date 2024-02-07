@@ -15,35 +15,20 @@ import org.slf4j.LoggerFactory;
 public class Memory {
 	private static final Logger logger = LoggerFactory.getLogger(Memory.class);
 
-	  private Memory() {
-		    throw new IllegalStateException("Utility class");
-		  }
-
  
+
+	// Here's a simple Java method that uses the `Runtime` class to print out information about the JVM's memory usage:
 	public static void logMemory() {
 		try {
-
-			int mb = 1024 * 1024;
-
-			// Getting the runtime reference from system
+			var bytesPerMegabyte = 1024 * 1024;
 			Runtime runtime = Runtime.getRuntime();
-
-			logger.info("##### Heap utilization statistics [MB] #####");
-
-			// Print used memory
-			logger.info("Used Memory:{}", (runtime.totalMemory() - runtime.freeMemory()) / mb);
-
-			// Print free memory
-			logger.info("Free Memory:{}", runtime.freeMemory() / mb);
-
-			// Print total available memory
-			logger.info("Total Memory:{}", runtime.totalMemory() / mb);
-
-			// Print Maximum available memory
-			logger.info("Max Memory:{}", runtime.maxMemory() / mb);
-
+			long maxMemory = runtime.maxMemory() / bytesPerMegabyte; // Max memory JVM will attempt to use
+			long allocatedMemory = runtime.totalMemory() / bytesPerMegabyte; // Total memory currently in use by the JVM
+			long freeMemory = runtime.freeMemory() / bytesPerMegabyte; // Free memory out of the total memory
+			long totalFreeMemory = (freeMemory + (maxMemory - allocatedMemory));
+			logger.info("Max memory:{} Meg Allocated memory:{} Meg Free memory:{} Meg Total free memory:{} Meg", maxMemory, allocatedMemory, freeMemory, totalFreeMemory);
 		} catch (Exception e) {
-			logger.error("", e);
+			e.printStackTrace();
 		}
 	}
 }

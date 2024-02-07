@@ -35,6 +35,11 @@ spring:
             issuer-uri: https://www.yourDomain.com
             jwk-set-uri: https://www.yourDomain.com/oauth2/jwks
 
+
+token:
+  accessTokenTimeToLive: 60   #Duration.ofMinutes
+  refreshTokenTimeToLive: 120 #Duration.ofMinutes
+
             
 userDetails:
   admin:
@@ -48,8 +53,8 @@ userDetails:
   webexcc:
     authorities: dbconnector.read
     
-    
 
+    
     
      
         

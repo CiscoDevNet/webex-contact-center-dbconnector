@@ -58,6 +58,12 @@ public class OAuth2ServerConfig {
 	@Value("${userDetails.webexcc.authorities}")
 	private String webexccAuthority;
 
+	@Value("${token.accessTokenTimeToLive:60}")
+	private long accessTokenTimeToLive;
+
+	@Value("${token.refreshTokenTimeToLive:120}")
+	private long refreshTokenTimeToLive;
+
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -85,8 +91,8 @@ public class OAuth2ServerConfig {
 				.tokenSettings(TokenSettings.builder()
 						.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) // Generate JWT token
 				.idTokenSignatureAlgorithm(SignatureAlgorithm.RS256)// idTokenSignatureAlgorithm: signature algorithm
-				.accessTokenTimeToLive(Duration.ofDays(30 * 60))// accessTokenTimeToLive：access_token validity period
-				.refreshTokenTimeToLive(Duration.ofDays(60 * 60))// refreshTokenTimeToLive：refresh_token validity period
+				.accessTokenTimeToLive(Duration.ofMinutes(accessTokenTimeToLive))// accessTokenTimeToLive：access_token validity period
+				.refreshTokenTimeToLive(Duration.ofMinutes(refreshTokenTimeToLive))// refreshTokenTimeToLive：refresh_token validity period
 				.reuseRefreshTokens(true)// reuseRefreshTokens: whether to reuse refresh tokens
 				.build()).build();
 		registeredClients.add(registeredClient);

@@ -86,7 +86,7 @@ public class WebControllerRest {
 		logger.debug("check:{}", check);
 
 		try {
-			logger.info("readConnectorFromFile");
+			logger.debug("readConnectorFromFile");
 			return fileSystem.readConnectorFromFile();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -113,7 +113,7 @@ public class WebControllerRest {
 			@PathVariable String serverType) {
 		long tstart = System.currentTimeMillis();
 		this.addHeaders(response);
-		logger.info("serverType:{}", serverType);
+		logger.debug("serverType:{}", serverType);
 		Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
 		logger.debug("check:{}", check);
 
@@ -223,7 +223,7 @@ public class WebControllerRest {
 	public Object postEndpoint(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
 		long tstart = System.currentTimeMillis();
 		this.addHeaders(response);
-		logger.info("body:{}", body);
+		logger.debug("body:{}", body);
 		Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
 		logger.debug("check:{}", check);
 
@@ -237,7 +237,7 @@ public class WebControllerRest {
 			 */
 			fileSystem.writeEndpointToFile(oEndpoint);
 			String json = db.execute(oEndpoint);
-			logger.info("json: {}", json);
+			logger.debug("json: {}", json);
 			String jsonResponse = new String(Base64.getEncoder().encode(json.getBytes()));
 			String http = "" + db.getUrlParams(oEndpoint);
 			String httpParams = new String(Base64.getEncoder().encode(http.getBytes()));
@@ -287,7 +287,7 @@ public class WebControllerRest {
 		logger.debug("check:{}", check);
 
 		try {
-			logger.info("endpointName:{}", endpointName);
+			logger.debug("endpointName:{}", endpointName);
 			List<Endpoint> lists = fileSystem.loadEndpointsFromFile();
 			for (Endpoint endpoint : lists) {
 				if (endpoint.getName().equals(endpointName)) {
@@ -341,7 +341,7 @@ public class WebControllerRest {
 		long tstart = System.currentTimeMillis();
 		this.addHeaders(response);
 		Authentication check = (Authentication) request.getSession().getAttribute(AUTHENTICATFION);
-		logger.info("postBasicAuth:check:{}", check);
+		logger.debug("postBasicAuth:check:{}", check);
 		logger.debug("postBasicAuth:body:{}", body);
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -376,7 +376,7 @@ public class WebControllerRest {
 		
 	}
 
-	private long printMemoryCounter = 0;
+	private long printMemoryCounter = -1;
 
 	/**
 	 * log each request for performance print java VM memory every 1000 request
@@ -387,12 +387,11 @@ public class WebControllerRest {
 	 */
 	private void logExecutionTime(HttpServletRequest request, long tstart, String method) {
 		printMemoryCounter++;
-		if (printMemoryCounter % 1000 == 0) {
+		if (printMemoryCounter % 100 == 0) {
 			Memory.logMemory();
 		}
 		try {
-			logger.info("Done in {} milli seconds {} - {}", (System.currentTimeMillis() - tstart),
-					request.getSession().getId(), method);
+			logger.debug("Done in {} milli seconds {} - {}", (System.currentTimeMillis() - tstart), request.getSession().getId(), method);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}

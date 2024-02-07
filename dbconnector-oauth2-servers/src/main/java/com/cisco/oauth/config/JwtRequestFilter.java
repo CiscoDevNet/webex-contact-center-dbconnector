@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	public JwtRequestFilter() {
 		super();
-    	logger.info("public class JwtRequestFilter:");
+		logger.info("public JwtRequestFilter");
 	}
 
 	@Override
@@ -65,30 +65,30 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			if (oAuthentication == null || oAuthentication.getPrincipal().equals("anonymousUser")) {
 
 				SecurityContextImpl sci = (SecurityContextImpl) httpRequest.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
-				logger.info("sci:" + sci);
+				logger.debug("sci:" + sci);
 				Principal principal = httpRequest.getUserPrincipal();
-				logger.info("principal:" + principal);
+				logger.debug("principal:" + principal);
 
 				String[] chunks = httpRequest.getHeader("Authorization").split("\\.");
-				logger.info("chunks:" + chunks);
+				logger.debug("chunks:" + chunks);
 				for (int i = 0; i < chunks.length; i++) {
-					logger.info(i + ":chunks:" + chunks[i]);
+					logger.debug(i + ":chunks:" + chunks[i]);
 
 				}
 
 //			    String header = new String(Base64.decodeBase64(chunks[0].toString()), "UTF-8");
 				String payload = new String(Base64.decodeBase64(chunks[1].toString()), "UTF-8");
 
-//			    logger.info("header:" + header);
+//			    logger.debug("header:" + header);
 
-				logger.info("payload:" + payload);
+				logger.debug("payload:" + payload);
 				Map<String, Object> result = new ObjectMapper().readValue(payload, HashMap.class);
 //				
-				logger.info("result:nbf:" + result.get("nbf"));
-				logger.info("result:scope:" + result.get("scope"));
-				logger.info("result:iss:" + result.get("iss"));
-				logger.info("result:exp:" + result.get("exp"));
-				logger.info("result:iat:" + result.get("iat"));
+				logger.debug("result:nbf:" + result.get("nbf"));
+				logger.debug("result:scope:" + result.get("scope"));
+				logger.debug("result:iss:" + result.get("iss"));
+				logger.debug("result:exp:" + result.get("exp"));
+				logger.debug("result:iat:" + result.get("iat"));
 				boolean b = isJwtValid(result);
 				if (!b) {
 					throw new Exception("isJwtValid is not valid");
@@ -116,13 +116,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	}
 
 	private void logRequestDetails(HttpServletRequest httpRequest, Authentication oAuthentication) {
-		logger.info("oAuthentication             :" + oAuthentication);
-		logger.info("oAuthentication.getPrincipal:" + oAuthentication.getPrincipal());
+		logger.debug("oAuthentication             :" + oAuthentication);
+		logger.debug("oAuthentication.getPrincipal:" + oAuthentication.getPrincipal());
 
 		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 		if (headerNames != null) {
 			while (headerNames.hasMoreElements()) {
-				logger.info("doFilter: Header: " + httpRequest.getHeader(headerNames.nextElement()));
+				logger.debug("doFilter: Header: " + httpRequest.getHeader(headerNames.nextElement()));
 			}
 		}
 	}
@@ -141,7 +141,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		// successfully.
 		// MAGIC HAPPENS... HERE TO SET SPRING SECURITY STUFF ... MAGIC HAPPENS
 		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-		logger.info("private void setAuthentication");
+		logger.debug("private void setAuthentication");
 
 	}
 
