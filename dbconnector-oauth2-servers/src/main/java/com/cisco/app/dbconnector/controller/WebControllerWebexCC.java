@@ -47,12 +47,12 @@ public class WebControllerWebexCC {
 	private BasicAuth basicAuth;
 	private Map<String, Object> endpointMap = new ConcurrentHashMap<>();
 
-	private long printMemoryCounter = 0;
+	private long printMemoryCounter = -1;
 
 	public WebControllerWebexCC() {
 		super();
-		logger.info("public WebControllerRest");
-	}
+		logger.info("public WebControllerWebexCC");
+		}
 
 	/**
 	 * WEBEXCC end-point -- Security for this method is only none or BASIC
@@ -104,7 +104,7 @@ public class WebControllerWebexCC {
 					return "{\"Exception\":\"401 not authorized\"}";
 				}
 			} else {
-				logger.warn("Basic Authentication is turned off");
+				logger.debug("Basic Authentication is turned off");
 			}
 		} catch (Exception e) {
 			logger.error("", e);
@@ -119,7 +119,7 @@ public class WebControllerWebexCC {
 				}
 			}
 			Endpoint oEndpoint = (Endpoint) endpointMap.get(endpointName);
-//			logger.info("oEndpoint/webexcc/:{}", oEndpoint);
+//			logger.debug("oEndpoint/webexcc/:{}", oEndpoint);
 			if (oEndpoint == null) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return "{\"Exception\":\"BAD END POINT\"}";
@@ -147,11 +147,11 @@ public class WebControllerWebexCC {
 	 */
 	private void logExecutionTime(HttpServletRequest request, long tstart, String method) {
 		printMemoryCounter++;
-		if (printMemoryCounter % 1000 == 0) {
+		if (printMemoryCounter % 100 == 0) {
 			Memory.logMemory();
 		}
 		try {
-			logger.info("Done in {} milli seconds {} - {}", (System.currentTimeMillis() - tstart), request.getSession().getId(), method);
+			logger.debug("Done in {} milli seconds {} - {}", (System.currentTimeMillis() - tstart), request.getSession().getId(), method);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}

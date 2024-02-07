@@ -17,14 +17,14 @@ public class CustomErrorController implements ErrorController {
 	Logger logger = LoggerFactory.getLogger(CustomErrorController.class);
 
 	public CustomErrorController() {
-    	logger.info("public class CustomErrorController:");
+		logger.info("public CustomErrorController");
 	}
 
 	  @RequestMapping("/error")
 	  @ResponseBody
 	  String error(HttpServletRequest request, HttpServletResponse response) {
 		  try {
-		    	logger.info("response.sendRedirect to /");
+		    	logger.debug("response.sendRedirect to /");
 			response.sendRedirect("/");
 		} catch (IOException e) {
 			e.printStackTrace();

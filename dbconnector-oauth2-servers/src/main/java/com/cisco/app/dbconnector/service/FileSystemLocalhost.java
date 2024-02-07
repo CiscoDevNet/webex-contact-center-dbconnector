@@ -46,6 +46,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 
 	public FileSystemLocalhost() {
 		super();
+		logger.info("public FileSystemLocalhost");
 	}
 
 	@Override
@@ -136,8 +137,8 @@ public class FileSystemLocalhost implements FileSystemInterface {
 	 */
 	@Override
 	public synchronized void seedDataFiles() throws Exception {
-		logger.info("using fileSystemInterface: {}", this.getClass().getSimpleName());
-		logger.info("seedDataFiles...");
+		logger.debug("using fileSystemInterface: {}", this.getClass().getSimpleName());
+		logger.debug("seedDataFiles...");
 		new File(this.dataDirectory).mkdirs();
 		FileOutputStream f = null;
 		ObjectOutputStream o = null;
@@ -145,7 +146,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			// this is the active connection
 			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, DbConnection.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, DbConnection.FILE_NAME);
 
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
@@ -157,7 +158,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			}
 			oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, MySql.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, MySql.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
@@ -168,7 +169,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			}
 			oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, SqlServer.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, SqlServer.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
@@ -179,7 +180,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			}
 			oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, Oracle.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, Oracle.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
@@ -191,7 +192,7 @@ public class FileSystemLocalhost implements FileSystemInterface {
 			}
 			oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, BasicAuth.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, BasicAuth.FILE_NAME);
 				oFile.getParentFile().mkdirs();
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
@@ -313,13 +314,13 @@ public class FileSystemLocalhost implements FileSystemInterface {
 		File[] files = new File(this.dataDirectory).listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				logger.info("loadEndpointsFromFile: name:{}", name);
+				logger.debug("loadEndpointsFromFile: name:{}", name);
 				try {
 					name = name.replaceFirst(".obj", "");
 					UUID.fromString(name);
 					return true;
 				} catch (Exception e) {
-					logger.info("Not an endpoint:{}", name);
+					logger.debug("Not an endpoint:{}", name);
 					return false;
 				}
 			}

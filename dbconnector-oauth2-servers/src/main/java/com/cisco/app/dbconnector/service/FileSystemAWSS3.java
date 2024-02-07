@@ -74,6 +74,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 
 	public FileSystemAWSS3() {
 		super();
+		logger.info("public FileSystemAWSS3");
 	}
 
 	@Override
@@ -186,8 +187,8 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 	 */
 	@Override
 	public void seedDataFiles() throws Exception {
-		logger.info("using fileSystemInterface: {}", this.getClass().getSimpleName());
-		logger.info("seedDataFiles...");
+		logger.debug("using fileSystemInterface: {}", this.getClass().getSimpleName());
+		logger.debug("seedDataFiles...");
 		new File(this.dataDirectory).mkdirs();
 		FileOutputStream f = null;
 		ObjectOutputStream o = null;
@@ -195,7 +196,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			// this is the active connection
 			File oFile = new File(this.dataDirectory + "/" + DbConnection.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, DbConnection.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, DbConnection.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new MySql());
@@ -207,7 +208,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			}
 			oFile = new File(this.dataDirectory + "/" + MySql.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, MySql.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, MySql.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new MySql());
@@ -219,7 +220,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			}
 			oFile = new File(this.dataDirectory + "/" + SqlServer.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, SqlServer.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, SqlServer.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new SqlServer());
@@ -231,7 +232,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			}
 			oFile = new File(this.dataDirectory + "/" + Oracle.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, Oracle.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, Oracle.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new Oracle());
@@ -243,7 +244,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 			}			
 			oFile = new File(this.dataDirectory + "/" + BasicAuth.FILE_NAME);
 			if (!oFile.exists()) {
-				logger.info("CREATING {}/{}", this.dataDirectory, BasicAuth.FILE_NAME);
+				logger.debug("CREATING {}/{}", this.dataDirectory, BasicAuth.FILE_NAME);
 				f = new FileOutputStream(oFile);
 				o = new ObjectOutputStream(f);
 				o.writeObject(new BasicAuth());
@@ -491,7 +492,7 @@ public class FileSystemAWSS3 implements FileSystemInterface {
 		try {
 			List<S3ObjectSummary> fileList = s3Client.listObjects(bucketName).getObjectSummaries();
 			for (S3ObjectSummary file : fileList) {
-				logger.info("listBucket:file:{}:{}" ,bucketName,file.getKey());
+				logger.debug("listBucket:file:{}:{}" ,bucketName,file.getKey());
 				if (file.getKey().endsWith(".obj")) {
 					returnThis.add(file.getKey());
 				}

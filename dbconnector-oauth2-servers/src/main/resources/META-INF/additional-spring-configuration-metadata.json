@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "token.accessTokenTimeToLive",
+    "type": "long",
+    "description": "How long the accessToken is active"
+  },
+  {
+    "name": "token.refreshTokenTimeToLive",
+    "type": "long",
+    "description": "How long the refreshToken is active"
+  }
+]}

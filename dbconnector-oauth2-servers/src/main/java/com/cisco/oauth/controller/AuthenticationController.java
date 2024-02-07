@@ -22,12 +22,12 @@ public class AuthenticationController {
 	
 	public AuthenticationController() {
 		super();
-    	logger.info("public class AuthenticationController:");
+		logger.info("public AuthenticationController");
 	}
 
 	@GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Object root(Authentication authentication) {
-    	logger.info("/:");
+    	logger.debug("/:");
 //    	try {
 //    		return authenticationToJson(authentication);
 //		} catch (Exception e) {
@@ -39,12 +39,12 @@ public class AuthenticationController {
 	
 	@GetMapping(path = "/people/me", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object article(Authentication authentication) {
-    	logger.info("/people/me:");
+    	logger.debug("/people/me:");
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
     	String s = gson.toJson(authentication);
-    	logger.info("/people/me:{}", s);
+    	logger.debug("/people/me:{}", s);
     	s = s.replaceAll("\"password\": \"\\{noop\\}user\",", "");
-    	logger.info("/people/me:{}", s);
+    	logger.debug("/people/me:{}", s);
 //    	try {
     		return s;
 //		} catch (Exception e) {

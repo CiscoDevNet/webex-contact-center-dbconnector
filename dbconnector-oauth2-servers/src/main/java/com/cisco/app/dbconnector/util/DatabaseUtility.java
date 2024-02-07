@@ -45,6 +45,7 @@ public class DatabaseUtility {
 
 	public DatabaseUtility() {
 		super();
+		logger.info("public DatabaseUtility");
 
 	}
 
@@ -296,7 +297,7 @@ public class DatabaseUtility {
 	}
 
 	private void logExecutionTime(long tstart, String method) {
-		logger.info( "Done in {} milli seconds - {}",(System.currentTimeMillis() - tstart),method);
+		logger.debug( "Done in {} milli seconds - {}",(System.currentTimeMillis() - tstart),method);
 	}
 
 }
