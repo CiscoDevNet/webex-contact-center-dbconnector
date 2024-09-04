@@ -20,6 +20,7 @@
 - [Support](#support)
 - [Questions?](#questions)
 - [Change Log](#change-log)
+- [Change localhost to FQDN](#change-url)
 - [License](#license)
 
 ## Overview
@@ -136,6 +137,12 @@ Refer: **[How to Ask a Question or Initiate a Discussion](https://community.cisc
 | November 2021 | Connector Refactoring | Connectors now have separate pages so it is easier to add additional connectors: /app/connector <- main page /app/connector/mysql <- mysql connector page /app/connector/sqlserver <- sql server connector page |
 | November 2021 | Refactoring           | Moved src/main/resources/application.yml out of the jar file and renamed application.yml to application.properties                                                                                              |
 | November 2022 | Updates               | Readme updates, installation updates                                                                                                                                                                            |
+
+
+## Change localhost to FQDN
+- [Instructions](./dbconnector_change_angular_main.txt)
+
+
 
 ## License
 
