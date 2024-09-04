@@ -1,0 +1,58 @@
+
+how to change the client_id & redirect_uri vi text edit.
+no need to recompile Angular code
+
+step 1
+Go to webexcc-dbconnector-springboot/src/main/resources/static
+
+edit the main.a6eeb038a57f1786.js file.
+
+the name may be different but there should only be one main.{something}.js file.
+
+
+step 2
+
+search for "replace values"
+
+should be near the bottom of file.
+
+there will be a json section (all on one line) and update the following values.
+
+the json will be (pretty version) .....
+
+{
+   "COMMENT":"replace values with information from your app at https://developer.webex-cx.com/my-apps",
+   "client_id":"C742904541c47aa1bd95014237fea094664ea178cb1264b983061d9b79ecd484a",
+   "redirect_uri":"http%3A%2F%2Flocalhost%3A8080",
+   "redirect_uri_comment":"this attribute is used",
+   "redirect_uri_USE_THIS_ONE_FOR_PORT_4200":"http%3A%2F%2Flocalhost%3A4200",
+   "redirect_uri_USE_THIS_ONE_FOR_PORT_4200_comment":"this attribute is NOT used",
+   "redirect_uri_USE_THIS_ONE_FOR_PORT_8080":"http%3A%2F%2Flocalhost%3A8080",
+   "redirect_uri_USE_THIS_ONE_FOR_PORT_8080_comment":"this attribute is NOT used",
+   "scope":"cjp%3Aconfig_read",
+   "state":"test",
+   "response_type":"code",
+   "loginUrl":"https://webexapis.com/v1/authorize?",
+   "resourceUrl":"http://localhost:8080"
+}
+
+step 3
+
+....EDIT VALUES....
+client_id
+redirect_uri  <- this value has to be encode 
+resourceUrl    <- plain text (no encoding)
+
+step 4
+
+save file
+
+
+
+step 5
+open a terminal window and go to the webexcc-dbconnector-springboot root folder
+
+run 
+mvn clean install
+
+a new jar file will be created in the ./target folder.
