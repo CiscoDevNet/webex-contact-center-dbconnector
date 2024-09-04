@@ -65,7 +65,7 @@ For the DB Connector to work effectively here is the 4 step process:
 
 `$ mvn --version`
 
-- [Angular](https://angular.io/)
+- [Angular](https://angular.io/) (only if you want to edit HTML)
 
 `$ ng version`
 
@@ -85,7 +85,7 @@ Under `src > main > java > application.yml`
 
 6. Install the Dependencies for the frontend:
 
-`$ npm i @angular/cli@8`
+`$ npm i @angular/cli@8`(only if you want to edit HTML)
 
 7. Install dependencies and package the JAR:
 
