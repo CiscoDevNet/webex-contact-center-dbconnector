@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add SQL Statement</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .console {
+            background-color: #1e1e1e;
+            color: #4af626;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 5px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .console-header {
+            border-bottom: 1px solid #333;
+            padding: 5px 10px;
+            color: #888;
+            font-size: 0.8em;
+            background-color: #252526;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .console-body {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .console-error { color: #ff5555; }
+        .console-line::before { content: "> "; color: #888; }
+        textarea { font-family: monospace; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spin-animation { animation: spin 0.5s linear; }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="h3 mb-0"><i class="bi bi-code-square me-2 text-primary"></i>Add/Edit SQL Statement</h1>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="sqlForm" th:action="@{/admin/sql/save}" th:object="${statement}" method="post">
+                            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <span th:text="${errorMessage}">Error message</span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <input type="hidden" th:field="*{id}"/>
+                            <input type="hidden" th:field="*{environment}"/>
+                            
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold">Name (Endpoint Identifier)</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required placeholder="e.g., get_all_customers"/>
+                                <div class="form-text">This will be used in the URL: <code>/api/query/{name}</code></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label fw-bold">Description</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="2" placeholder="Describe what this query does..."></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="dbConnection" class="form-label fw-bold">Database Connection</label>
+                                <select class="form-select" id="dbConnection" th:field="*{dbConnection}" required>
+                                    <option value="" disabled selected>-- Select a Connection --</option>
+                                    <option th:each="conn : ${connections}" 
+                                            th:value="${conn.id}" 
+                                            th:text="${conn.name} + ' (' + ${conn.type} + ')'">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="sqlContent" class="form-label fw-bold">SQL Content</label>
+                                <textarea class="form-control" id="sqlContent" th:field="*{sqlContent}" rows="6" required placeholder="SELECT * FROM table_name WHERE id = ?"></textarea>
+                            </div>
+
+                            <!-- Hidden field to store parameter names for positional parameters -->
+                            <input type="hidden" id="paramNamesInput" th:field="*{paramNames}" />
+
+                            <div id="paramsContainer" class="mb-3 p-3 bg-light rounded border" style="display: none;">
+                                <h6 class="fw-bold mb-3"><i class="bi bi-sliders me-2"></i>Query Parameters</h6>
+                                <div id="paramsList"></div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <a href="/admin/sql" class="btn btn-outline-secondary">Cancel</a>
+                                <div>
+                                    <button type="button" class="btn btn-info text-white me-2" onclick="testSql()">
+                                        <i class="bi bi-play-fill me-1"></i> Test SQL
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="saveBtn" disabled>
+                                        <i class="bi bi-save me-1"></i> Save Statement
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="console" class="console mt-4" style="display: none;">
+                    <div class="console-header">
+                        <i class="bi bi-terminal me-2"></i>Output Console
+                    </div>
+                    <div id="consoleOutput" class="console-body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sqlInput = document.getElementById('sqlContent');
+            const paramsContainer = document.getElementById('paramsContainer');
+            const paramsList = document.getElementById('paramsList');
+            const paramNamesInput = document.getElementById('paramNamesInput');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            // Auto-lowercase name on blur
+            const nameInput = document.getElementById('name');
+            if (nameInput) {
+                nameInput.addEventListener('blur', function() {
+                    this.value = this.value.toLowerCase();
+                });
+            }
+
+            // Define this globally so inline oninput handlers can find it
+            window.updateHiddenParamNames = function() {
+                const nameInputs = document.querySelectorAll('.param-name-input');
+                const namedInputs = document.querySelectorAll('.named-param-input');
+                
+                const posNames = Array.from(nameInputs).map(input => input.value.trim()).filter(v => v !== '');
+                const namedNames = Array.from(namedInputs).map(input => input.value.trim());
+                
+                const allNames = [...posNames, ...namedNames];
+                paramNamesInput.value = allNames.join(',');
+                invalidateTest(); // Invalidate test if params change
+            };
+
+            // Initial load
+            updateParamsUI();
+
+            // Listen for changes with debounce
+            let debounceTimer;
+            const handleUpdate = () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateParamsUI, 300);
+                invalidateTest(); // Invalidate test if SQL changes
+            };
+            
+            sqlInput.addEventListener('input', handleUpdate);
+            sqlInput.addEventListener('blur', updateParamsUI); // Immediate update on blur
+            sqlInput.addEventListener('change', updateParamsUI); // Catch-all
+            
+            // Also invalidate if connection changes
+            document.getElementById('dbConnection').addEventListener('change', invalidateTest);
+
+            function invalidateTest() {
+                saveBtn.disabled = true;
+                saveBtn.title = "Please test the SQL successfully before saving.";
+            }
+
+            function updateParamsUI() {
+                console.log("--- updateParamsUI called --- " + new Date().toISOString());
+                const sql = sqlInput.value;
+                const positionalMatches = (sql.match(/\?/g) || []).length;
+                console.log("SQL Value:", sql);
+                console.log("Positional matches:", positionalMatches);
+                
+                // Detect named parameters
+                const paramRegex = /:(\w+)/g;
+                const matches = [...sql.matchAll(paramRegex)];
+                const uniqueNamedParams = [...new Set(matches.map(m => m[1]))];
+                console.log("Named matches:", uniqueNamedParams);
+
+                if (positionalMatches === 0 && uniqueNamedParams.length === 0) {
+                    console.log("No parameters found. Hiding container.");
+                    paramsContainer.style.display = 'none';
+                    paramsList.innerHTML = ''; // Clear content
+                    updateHiddenParamNames(); // Clear hidden input
+                    return;
+                }
+
+                paramsContainer.style.display = 'block';
+                
+                // Preserve existing values if possible
+                const existingNameInputs = document.querySelectorAll('.param-name-input');
+                const existingTestInputs = document.querySelectorAll('.param-test-input');
+                const currentNames = Array.from(existingNameInputs).map(i => i.value);
+                const currentTestValues = {};
+                existingTestInputs.forEach(i => currentTestValues[i.dataset.key] = i.value);
+                
+                console.log("Current Names preserved:", currentNames);
+
+                // Load saved param names from hidden input if we are initializing and haven't edited yet
+                let savedNames = [];
+                if (paramNamesInput.value) {
+                    savedNames = paramNamesInput.value.split(',').map(s => s.trim());
+                }
+
+                let html = '';
+
+                // Positional Parameters
+                if (positionalMatches > 0) {
+                    html += '<div class="mb-2"><small class="text-muted">Positional Parameters (?)</small></div>';
+                    for (let i = 0; i < positionalMatches; i++) {
+                        // Use current input value, or saved value, or default
+                        let nameVal = currentNames[i] !== undefined ? currentNames[i] : (savedNames[i] || `param${i+1}`);
+                        let testVal = currentTestValues[`pos_${i}`] || '';
+                        
+                        html += `
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-auto">
+                                    <span class="badge bg-secondary">? #${i + 1}</span>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control form-control-sm param-name-input" 
+                                           placeholder="Query Param Name (e.g. id)" 
+                                           value="${nameVal}" 
+                                           oninput="updateHiddenParamNames()">
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control form-control-sm param-test-input" 
+                                           data-key="pos_${i}"
+                                           placeholder="Test Value" 
+                                           value="${testVal}">
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Named Parameters
+                if (uniqueNamedParams.length > 0) {
+                    if (positionalMatches > 0) html += '<hr class="my-2">';
+                    html += '<div class="mb-2"><small class="text-muted">Named Parameters (:name)</small></div>';
+                    uniqueNamedParams.forEach(param => {
+                        let testVal = currentTestValues[`named_${param}`] || '';
+                        html += `
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-auto" style="min-width: 100px;">
+                                    <span class="badge bg-info text-dark">:${param}</span>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control form-control-sm named-param-input" disabled value="${param}">
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control form-control-sm param-test-input" 
+                                           data-key="named_${param}"
+                                           placeholder="Test Value" 
+                                           value="${testVal}">
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                console.log("Generated HTML length:", html.length);
+                paramsList.innerHTML = html;
+                
+                // Update hidden input immediately
+                window.updateHiddenParamNames();
+            }
+
+            // window.updateHiddenParamNames is defined at the top
+        });
+
+        async function testSql() {
+            const form = document.getElementById('sqlForm');
+            const consoleDiv = document.getElementById('console');
+            const outputDiv = document.getElementById('consoleOutput');
+            const connSelect = document.getElementById('dbConnection');
+            const sqlText = document.getElementById('sqlContent');
+            
+            if (!connSelect.value || !sqlText.value) {
+                alert("Please select a connection and enter SQL content to test.");
+                return;
+            }
+
+            consoleDiv.style.display = 'block';
+            outputDiv.innerHTML = '';
+            outputDiv.insertAdjacentHTML('beforeend', '<div class="console-line">Initiating SQL execution...</div>');
+            
+            const loadingId = 'loading-' + Date.now();
+            outputDiv.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="console-line">Executing... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></div>`);
+
+            const data = {
+                connectionId: connSelect.value,
+                sql: sqlText.value,
+                params: {},
+                positionalParams: []
+            };
+
+            // Gather values from UI
+            const testInputs = document.querySelectorAll('.param-test-input');
+            testInputs.forEach(input => {
+                const key = input.dataset.key;
+                const value = input.value;
+                const parsedValue = isNaN(value) ? value : (value.trim() === '' ? value : Number(value));
+
+                if (key.startsWith('pos_')) {
+                    const index = parseInt(key.split('_')[1]);
+                    data.positionalParams[index] = parsedValue;
+                } else if (key.startsWith('named_')) {
+                    const name = key.split('_')[1];
+                    data.params[name] = parsedValue;
+                }
+            });
+
+            try {
+                const response = await fetch('/admin/sql/test-ajax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    let rowCount = 0;
+                    if (Array.isArray(result.data)) {
+                        rowCount = result.data.length;
+                    } else if (result.data && Object.keys(result.data).length > 0) {
+                        rowCount = 1;
+                    }
+
+                    outputDiv.insertAdjacentHTML('beforeend', `<div class="console-line" style="color: #4af626;">Execution successful! Retrieved ${rowCount} rows.</div>`);
+                    
+                    // Enable save button on success
+                    const saveBtn = document.getElementById('saveBtn');
+                    saveBtn.disabled = false;
+                    saveBtn.title = "";
+
+                    if (rowCount > 0) {
+                        const jsonString = JSON.stringify(result.data, null, 2);
+                        outputDiv.insertAdjacentHTML('beforeend', `<pre class="console-line" style="color: #ddd; margin: 0;">${jsonString}</pre>`);
+                    } else {
+                        outputDiv.insertAdjacentHTML('beforeend', '<pre class="console-line" style="color: #ddd; margin: 0;">{}</pre>');
+                    }
+
+                } else {
+                    const msg = result.message || 'Unknown error occurred';
+                    outputDiv.insertAdjacentHTML('beforeend', `<div class="console-line console-error">${msg}</div>`);
+                    if (result.stacktrace) {
+                        outputDiv.insertAdjacentHTML('beforeend', `<pre class="console-line console-error" style="margin: 0; white-space: pre-wrap;">${result.stacktrace}</pre>`);
+                    }
+                }
+            } catch (error) {
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+                
+                console.error(error);
+                outputDiv.insertAdjacentHTML('beforeend', `<div class="console-line console-error">Error: ${error.message}</div>`);
+            }
+            outputDiv.insertAdjacentHTML('beforeend', '<div class="console-line">Process finished.</div>');
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+    </script>
+    <!-- Help FAB -->
+    <a href="/help_sql_edit.html" onclick="window.open(this.href, 'helpWindow', 'width=600,height=800,scrollbars=yes,resizable=yes'); return false;" class="help-fab" title="Get Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </a>
+</body>
+</html>

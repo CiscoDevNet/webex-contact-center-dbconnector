@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Connections - Help Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        h2 {
+            margin-top: 2rem;
+            color: #34495e;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 0.3rem;
+        }
+        ul {
+            padding-left: 2rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        strong {
+            color: #2c3e50;
+        }
+        .note {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Database Connections - Help Guide</h1>
+
+    <h2>Overview</h2>
+    <p>This page allows you to manage the database connections that your SQL endpoints will use. You can define connections for different environments (DEV, UAT, PROD) and database types.</p>
+
+    <h2>Managing Connections</h2>
+    <ul>
+        <li>
+            <strong>Add Connection</strong>: Click the "Add Connection" button to define a new database source.
+        </li>
+        <li>
+            <strong>Edit</strong>: Click the "Edit" button next to a connection to modify its details (URL, username, password, etc.).
+        </li>
+        <li>
+            <strong>Delete</strong>: Click the "Delete" button to remove a connection. 
+            <div class="note">
+                <strong>Note:</strong> You cannot delete a connection if it is currently being used by any SQL endpoints. You must delete or reassign those endpoints first.
+            </div>
+        </li>
+        <li>
+            <strong>Test Connection</strong>: Click the "Test" button to verify that the application can successfully connect to the database using the provided credentials.
+        </li>
+    </ul>
+
+    <h2>Connection Details</h2>
+    <ul>
+        <li><strong>Name</strong>: A friendly name for the connection (e.g., "Sales DB Dev").</li>
+        <li><strong>Type</strong>: The database vendor (e.g., PostgreSQL, MySQL, Oracle, SQL Server).</li>
+        <li><strong>Environment</strong>: The environment this connection belongs to (DEV, UAT, or PROD).</li>
+        <li><strong>JDBC URL</strong>: The connection string used to connect to the database.</li>
+    </ul>
+
+</body>
+</html>

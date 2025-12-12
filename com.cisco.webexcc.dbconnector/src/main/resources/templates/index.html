@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Webex DB Connector</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #005073;
+            --primary-hover: #003f5c;
+            --bg-color: #f4f6f8;
+            --text-color: #1a1a1a;
+            --text-secondary: #5f6368;
+            --warning-bg: #fff8e1;
+            --warning-text: #5c3a00;
+            --warning-border: #ffecb3;
+            --card-bg: #ffffff;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            margin: 0;
+            color: var(--text-color);
+            background-image: radial-gradient(#e1e5ea 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 3.5rem 3rem;
+            text-align: center;
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .logo-area {
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-color);
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.5;
+        }
+
+        .security-warning {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 1.25rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid var(--warning-border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            text-align: left;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .security-warning strong {
+            color: #b45309;
+            display: block;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .btn-login {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0, 80, 115, 0.15);
+            letter-spacing: 0.01em;
+        }
+
+        .btn-login:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 15px rgba(0, 80, 115, 0.2);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 80, 115, 0.15);
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            font-size: 0.75rem;
+            color: #9aa0a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo-area">
+            <!-- Simple SVG Icon for DB Connector -->
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C7.58172 3 4 4.79086 4 7V17C4 19.2091 7.58172 21 12 21C16.4183 21 20 19.2091 20 17V7C20 4.79086 16.4183 3 12 3Z" stroke="#005073" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 7C20 9.20914 16.4183 11 12 11C7.58172 11 4 9.20914 4 7" stroke="#005073" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 12C20 14.2091 16.4183 16 12 16C7.58172 16 4 14.2091 4 12" stroke="#005073" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        
+        <h1>Webex DB Connector</h1>
+        <p class="subtitle">Secure Database Integration Platform</p>
+
+        <div class="security-warning">
+            <svg style="flex-shrink: 0; width: 24px; height: 24px; color: #d97706;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <div>
+                <strong>Security Warning</strong>
+                This server is intended for authorized company use only. Access by the general public is prohibited. Unauthorized access or use of this system may result in administrative, disciplinary, or criminal action. You have been warned.
+            </div>
+        </div>
+
+        <a href="/oauth2/authorization/webex" class="btn-login">
+            Sign in with Webex
+        </a>
+
+        <div class="footer">
+            &copy; 2025 Webex Contact Center. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>

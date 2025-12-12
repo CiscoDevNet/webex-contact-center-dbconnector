@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard - Webex DB Connector</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles are partly in header, but we define page specifics here */
+        :root {
+            --primary: #049FD9; /* Cisco Blue */
+            --primary-dark: #005073;
+            --surface: #ffffff;
+            --background: #f4f6f8;
+            --text-main: #1b1b1b;
+            --text-secondary: #58585b;
+            --border: #e1e4e8;
+            --success: #6cc04a;
+            --warning: #ffc20e;
+            --danger: #e2231a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-bottom: 2.5rem;
+        }
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-main);
+        }
+        .hero p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .stat-trend {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .trend-up { color: var(--success); }
+
+        /* Detailed Sections */
+        .dashboard-grid {
+            display: block;
+            max-width: 100%;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 0;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .card-body.collapsed {
+            display: none;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        /* List Styles */
+        .endpoint-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .endpoint-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .endpoint-item:last-child { border-bottom: none; }
+        
+        .endpoint-name {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: var(--primary);
+            background: rgba(0, 112, 173, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        .endpoint-count {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .btn-action {
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .btn-reset {
+            color: var(--danger);
+            border-color: rgba(226, 35, 26, 0.3);
+        }
+        .btn-reset:hover {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        .btn-cleanup {
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+        .btn-cleanup:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: white;
+        }
+
+        /* JSON Viewer for Attributes */
+        .json-viewer {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #333;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 0;
+            border-radius: 0 0 12px 12px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="main-content">
+        <div class="hero">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1>Welcome back, <span th:text="${name}">User</span></h1>
+                    <p>Here's what's happening with your database connectors today.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Level Stats -->
+        <div class="stats-grid">
+            <div class="stat-card" th:each="env : ${envStats}">
+                <div class="stat-label" th:text="${env.key + ' Hits'}">Environment Hits</div>
+                <div class="stat-value" th:text="${env.value.totalHits}">0</div>
+                <div class="stat-trend" th:style="${env.key == 'PROD' ? 'color: var(--primary)' : (env.key == 'UAT' ? 'color: var(--success)' : 'color: var(--warning)')}">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"
+                          th:style="${'background: ' + (env.key == 'PROD' ? 'var(--primary)' : (env.key == 'UAT' ? 'var(--success)' : 'var(--warning)'))}"></span>
+                    <span th:text="${env.key == 'PROD' ? 'Live Environment' : (env.key == 'UAT' ? 'Staging Environment' : 'Test Environment')}">Environment</span>
+                </div>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Failures</span>
+                    <span style="font-size: 0.9rem; font-weight: 600; color: var(--danger);" th:text="${env.value.failedHits}">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Main Column: Detailed Stats -->
+            <div class="stats-column">
+                <div class="card" style="margin-bottom: 2rem;" th:each="envEntry : ${detailedEnvStats}">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <h3 class="card-title" th:text="${envEntry.key + ' Activity'}">Activity</h3>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <form th:action="@{'/admin/stats/cleanup/' + ${envEntry.key}}" method="post" style="margin: 0;" 
+                                      onsubmit="return confirm('Are you sure you want to remove stats for endpoints that no longer exist in this environment?');">
+                                    <button type="submit" class="btn-action btn-cleanup" onclick="event.stopPropagation()">Cleanup</button>
+                                </form>
+                                <form th:action="@{'/admin/stats/reset/' + ${envEntry.key}}" method="post" style="margin: 0;" 
+                                      onsubmit="return confirm('Are you sure you want to reset all counters for this environment? This cannot be undone.');">
+                                    <button type="submit" class="btn-action btn-reset" onclick="event.stopPropagation()">Reset</button>
+                                </form>
+                            </div>
+                            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="endpoint-list">
+                            <li class="endpoint-item" th:if="${#maps.isEmpty(envEntry.value)}">
+                                <span style="color: var(--text-secondary); font-style: italic;">No activity recorded yet.</span>
+                            </li>
+                            <li class="endpoint-item" th:each="entry : ${envEntry.value}">
+                                <span class="endpoint-name" th:text="${entry.key}">/api/query/PROD/users</span>
+                                <div style="text-align: right;">
+                                    <div class="endpoint-count">
+                                        <span th:text="${entry.value.count + ' hits'}">142 hits</span>
+                                        <span th:if="${entry.value.failedCount > 0}" style="color: var(--danger); margin-left: 0.5rem; font-size: 0.9em;">
+                                            <span th:text="${'(' + entry.value.failedCount + ' failed)'}"></span>
+                                        </span>
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);" 
+                                         th:text="${#temporals.format(entry.value.lastExecution, 'yyyy-MM-dd HH:mm:ss')}">2023-10-27 14:30:00</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCard(header) {
+            const body = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            if (body.classList.contains('collapsed')) {
+                body.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+            } else {
+                body.classList.add('collapsed');
+                icon.classList.add('collapsed');
+            }
+        }
+    </script>
+
+    <!-- Help FAB -->
+    <a href="/help_home.html" onclick="window.open(this.href, 'helpWindow', 'width=600,height=800,scrollbars=yes,resizable=yes'); return false;" class="help-fab" title="Get Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </a>
+</body>
+</html>

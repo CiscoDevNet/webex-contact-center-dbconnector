@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Deployment</title>
+    <style>
+        body { font-family: sans-serif; padding: 0; margin: 0; }
+        .container { max-width: 600px; margin: 50px auto; padding: 2rem; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .btn { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .info { background: #e9ecef; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Deployment</h1>
+        </div>
+    
+    <div class="info">
+        <p><strong>Statement:</strong> <span th:text="${source.name}"></span></p>
+        <p th:if="${source.description}"><strong>Description:</strong> <span th:text="${source.description}"></span></p>
+        <p><strong>Source Environment:</strong> <span th:text="${source.environment}"></span></p>
+    </div>
+
+    <div th:if="${warningMessage}" style="background: rgba(255, 194, 14, 0.15); color: #8a6d0b; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 194, 14, 0.3);">
+        <strong th:text="${warningMessage}">Warning message</strong>
+    </div>
+
+    <form th:action="@{/admin/sql/deploy}" method="post">
+        <input type="hidden" name="sourceId" th:value="${source.id}"/>
+        <input type="hidden" name="confirmed" th:value="${requiresConfirmation ? 'true' : 'false'}"/>
+        
+        <div class="form-group">
+            <label>Select Production Connection:</label>
+            <select name="connectionId" required>
+                <option value="" disabled th:selected="${selectedConnectionId == null}">-- Select a Connection --</option>
+                <option th:each="conn : ${connections}" 
+                        th:value="${conn.id}" 
+                        th:text="${conn.environment} + ' - ' + ${conn.type} + ' - ' + ${conn.name}"
+                        th:selected="${selectedConnectionId != null && selectedConnectionId.equals(conn.id)}">
+                </option>
+            </select>
+            <div th:if="${#lists.isEmpty(connections)}" style="background: rgba(255, 194, 14, 0.15); color: #8a6d0b; padding: 10px; border-radius: 4px; margin-top: 10px; border: 1px solid rgba(255, 194, 14, 0.3);">
+                <strong>Warning:</strong> No UAT or PROD connections found! Please <a href="/admin/connections/add">add a connection</a> first.
+            </div>
+        </div>
+        
+        <button type="submit" class="btn" th:text="${requiresConfirmation ? 'Confirm Overwrite' : 'Deploy'}">Deploy</button>
+        <a href="/admin/sql" style="margin-left: 10px;">Cancel</a>
+    </form>
+    </div>
+    <!-- Help FAB -->
+    <a href="/help_deploy.html" onclick="window.open(this.href, 'helpWindow', 'width=600,height=800,scrollbars=yes,resizable=yes'); return false;" class="help-fab" title="Get Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </a>
+</body>
+</html>

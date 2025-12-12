@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="header">
+        <style>
+            :root {
+                --header-bg: #1b1b1b;
+                --header-text: #ffffff;
+                --header-hover: #049FD9; /* Cisco Blue */
+                --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            }
+            body { margin: 0; font-family: var(--font-family); background-color: #f4f6f8; }
+            
+            .app-header {
+                background-color: var(--header-bg);
+                padding: 0 2rem;
+                height: 64px;
+                display: flex;
+                align-items: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+            
+            .header-brand {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: var(--header-text);
+                text-decoration: none;
+                margin-right: 3rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .header-nav {
+                display: flex;
+                gap: 1.5rem;
+                height: 100%;
+            }
+            
+            .header-nav a {
+                color: #a0a0a0;
+                text-decoration: none;
+                font-size: 0.9rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s ease;
+            }
+            
+            .header-nav a:hover, .header-nav a.active {
+                color: var(--header-text);
+                border-bottom-color: var(--header-hover);
+            }
+            
+            .header-actions {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+            }
+            
+            .logout-btn {
+                background-color: rgba(255,255,255,0.1);
+                color: var(--header-text);
+                border: 1px solid rgba(255,255,255,0.2);
+                padding: 0.5rem 1rem;
+                border-radius: 4px;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: background 0.2s;
+                text-decoration: none;
+            }
+            
+            .logout-btn:hover {
+                background-color: rgba(255,255,255,0.2);
+            }
+
+            /* Floating Action Button for Help */
+            .help-fab {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 56px;
+                height: 56px;
+                background-color: #049FD9; /* Cisco Blue */
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(4, 159, 217, 0.4);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 9999;
+                text-decoration: none;
+                border: none;
+                cursor: pointer;
+            }
+
+            .help-fab:hover {
+                background-color: #005073; /* Darker Blue */
+                transform: translateY(-4px) scale(1.05);
+                box-shadow: 0 8px 20px rgba(4, 159, 217, 0.5);
+                color: white;
+            }
+
+            .help-fab svg {
+                width: 28px;
+                height: 28px;
+                stroke-width: 2.5;
+            }
+        </style>
+        <div class="app-header">
+            <a href="/about" class="header-brand">
+                <!-- Simple SVG Logo Icon -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                DB Connector
+            </a>
+            <nav class="header-nav">
+                <a href="/home">Dashboard</a>
+                <a href="/admin/connections">Connections</a>
+                <a href="/admin/sql">SQL Management</a>
+                <a href="/admin/test">Test Console</a>
+            </nav>
+            <div class="header-actions">
+                <form th:action="@{/logout}" method="post" style="margin:0;">
+                    <button type="submit" class="logout-btn">Sign Out</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

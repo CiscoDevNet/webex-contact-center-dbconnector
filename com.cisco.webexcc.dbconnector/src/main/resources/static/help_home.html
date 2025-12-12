@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Help - Webex DB Connector</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #049FD9;
+            border-bottom: 2px solid #f4f6f8;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #005073;
+            margin-top: 30px;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #049FD9;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f4f6f8;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Help</h1>
+    
+    <p>Welcome to the Webex Database Connector Dashboard. This page provides an overview of your connector's activity and health.</p>
+
+    <h2>Environment Stats</h2>
+    <p>The top section shows real-time statistics for your configured environments (e.g., DEV, UAT, PROD):</p>
+    <ul>
+        <li><strong>Hits:</strong> Total number of successful requests processed.</li>
+        <li><strong>Failures:</strong> Number of failed requests.</li>
+        <li><strong>Status:</strong> Color-coded indicators show the environment type (Blue for PROD, Green for UAT, Yellow for others).</li>
+    </ul>
+
+    <h2>Detailed Activity</h2>
+    <p>The main section lists detailed activity for each environment:</p>
+    <ul>
+        <li><strong>Endpoint Activity:</strong> Shows which API endpoints are being accessed.</li>
+        <li><strong>Hit Counts:</strong> Number of times each specific endpoint was called.</li>
+        <li><strong>Last Execution:</strong> Timestamp of the most recent activity.</li>
+    </ul>
+
+    <div class="note">
+        <strong>Note:</strong> You can use the <strong>Cleanup</strong> button to remove stats for endpoints that no longer exist, or <strong>Reset</strong> to clear all counters for an environment.
+    </div>
+</body>
+</html>
