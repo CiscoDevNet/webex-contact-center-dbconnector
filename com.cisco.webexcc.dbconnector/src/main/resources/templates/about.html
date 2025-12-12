@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>About - Webex DB Connector</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #049FD9; /* Cisco Blue */
+            --primary-dark: #005073;
+            --surface: #ffffff;
+            --background: #f4f6f8;
+            --text-main: #1b1b1b;
+            --text-secondary: #58585b;
+            --border: #e1e4e8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        .lead {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .feature-item h3 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .feature-item p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            margin: 2rem 0;
+        }
+
+        .credits-section {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+            background-color: #f9f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .credits-section h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .credits-section p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="main-content">
+        <div class="card">
+            <div style="display: flex; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;">
+                <div style="flex-grow: 1;">
+                    <h1 style="margin: 0; border: none; padding: 0; font-size: 2rem; font-weight: 700;">Webex DB Connector</h1>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 1.1rem; color: var(--text-secondary);">Enterprise-grade middleware for Webex Contact Center</p>
+                </div>
+                <span class="version-badge">v2.0</span>
+            </div>
+            
+            <p class="lead">The Webex Contact Center DB Connector bridges the gap between Webex Contact Center flows and your internal databases, enabling secure, dynamic data access.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h3>Secure Access</h3>
+                    <p>Connect to internal SQL databases securely without direct public exposure.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Dynamic SQL</h3>
+                    <p>Manage SQL queries dynamically through a user-friendly admin interface.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Environment Mgmt</h3>
+                    <p>Seamlessly manage DEV, UAT, and PROD environments with separate configurations.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>REST API</h3>
+                    <p>Expose SQL queries as secure REST endpoints for Webex Contact Center.</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="credits-section">
+                <div class="license-info">
+                    <h3>Open Source</h3>
+                    <p>This project is open source software licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 500;">MIT License</a>.</p>
+                </div>
+                
+                <div class="developer-info">
+                    <h3>Credits</h3>
+                    <p>
+                        Originally developed by <strong>Jim Wyatt @ Cisco</strong><br>
+                        <span style="font-size: 0.9rem; color: var(--text-secondary);">with the help of AI Copilot - Gemini 3 Pro</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Connection | DB Connector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cisco-blue: #049FD9;
+            --cisco-dark-blue: #005073;
+            --cisco-sky-blue: #6ABF4B;
+            --cisco-green: #6cc04a;
+            --cisco-red: #e2231a;
+            --cisco-orange: #ffc20e;
+            --cisco-gray-10: #f2f2f2;
+            --cisco-gray-20: #e6e6e6;
+            --cisco-gray-60: #666666;
+            --cisco-gray-90: #333333;
+            --cisco-text: #1b1b1b;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-radius: 8px;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--cisco-text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .help-link {
+            font-size: 0.9rem;
+            color: var(--cisco-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--cisco-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 32px;
+            border: 1px solid var(--cisco-gray-20);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--cisco-gray-90);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid var(--cisco-gray-20);
+            border-radius: 4px;
+            font-family: var(--font-family);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cisco-blue);
+            box-shadow: 0 0 0 3px rgba(4, 159, 217, 0.1);
+        }
+
+        .form-control.font-monospace {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 13px;
+            background-color: #fafafa;
+        }
+
+        .form-text {
+            font-size: 12px;
+            color: var(--cisco-gray-60);
+            margin-top: 6px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 24px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: var(--cisco-blue);
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+
+        .radio-label {
+            font-size: 14px;
+            color: var(--cisco-text);
+        }
+
+        .row {
+            display: flex;
+            gap: 24px;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--cisco-gray-20);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 20px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+            background-color: var(--cisco-gray-20);
+            color: var(--cisco-gray-60);
+        }
+
+        .btn-primary {
+            background-color: var(--cisco-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--cisco-dark-blue);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--cisco-gray-60);
+            border: 1px solid var(--cisco-gray-20);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--cisco-gray-10);
+            color: var(--cisco-gray-90);
+        }
+
+        .btn-test {
+            background-color: white;
+            color: var(--cisco-blue);
+            border: 1px solid var(--cisco-blue);
+        }
+
+        .btn-test:hover {
+            background-color: rgba(4, 159, 217, 0.05);
+        }
+
+        /* Console Output Styles */
+        .console-output {
+            margin-top: 24px;
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            overflow: hidden;
+            display: none; /* Hidden by default */
+        }
+        
+        .console-output.visible {
+            display: block;
+        }
+
+        .console-header {
+            background-color: #2d2d2d;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #aaa;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .console-body {
+            padding: 16px;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 13px;
+            color: #d4d4d4;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-success { color: var(--cisco-green); }
+        .log-error { color: var(--cisco-red); }
+        .log-info { color: var(--cisco-blue); }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title-container" style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="page-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <svg class="icon" style="color: #049FD9;" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                    </svg>
+                    <span th:text="${connection.id == null ? 'Add Database Connection' : 'Edit Database Connection'}">Add Database Connection</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="card">
+            <form id="connectionForm" th:action="@{/admin/connections/save}" th:object="${connection}" method="post">
+                <input type="hidden" th:field="*{id}"/>
+                
+                <div class="form-group">
+                    <label for="name" class="form-label">Connection Name</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}" required placeholder="e.g. Production DB"/>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Environment</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" th:field="*{environment}" value="DEV" id="envDev" th:checked="${connection.environment == null || connection.environment == 'DEV'}">
+                            <span class="radio-label">Development</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" th:field="*{environment}" value="UAT" id="envUat" th:checked="${connection.environment == 'UAT'}">
+                            <span class="radio-label">UAT</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" th:field="*{environment}" value="PROD" id="envProd" th:checked="${connection.environment == 'PROD'}">
+                            <span class="radio-label">Production</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="type" class="form-label">Database Type</label>
+                    <select class="form-control" id="type" th:field="*{type}" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;">
+                        <option value="MYSQL">MySQL</option>
+                        <option value="SQLSERVER">SQL Server</option>
+                        <option value="ORACLE">Oracle</option>
+                        <option value="POSTGRESQL">PostgreSQL</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="url" class="form-label">JDBC URL</label>
+                    <input type="text" class="form-control font-monospace" id="url" th:field="*{url}" required placeholder="jdbc:mysql://localhost:3306/mydb"/>
+                    <div class="form-text">The full JDBC connection string.</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" th:field="*{username}" required/>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <div style="position: relative;">
+                                <input type="password" class="form-control" id="password" th:field="*{password}" required style="padding-right: 40px;"/>
+                                <button type="button" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--cisco-gray-60); padding: 4px; display: flex; align-items: center; justify-content: center;" title="Show/Hide Password">
+                                    <svg id="eyeIcon" class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="console-output" id="testConsole">
+                    <div class="console-header">
+                        <span>Connection Test Output</span>
+                        <span id="testStatus"></span>
+                    </div>
+                    <div class="console-body" id="consoleBody">
+                        <!-- Logs will appear here -->
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/admin/connections" class="btn btn-secondary">Cancel</a>
+                    <div style="display: flex; gap: 12px;">
+                        <button type="button" class="btn btn-test" onclick="testConnection()">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Test Connection
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="saveButton" disabled>
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                            </svg>
+                            Save Connection
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-4.01.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+            }
+        }
+
+        function testConnection() {
+            const consoleOutput = document.getElementById('testConsole');
+            const consoleBody = document.getElementById('consoleBody');
+            const testStatus = document.getElementById('testStatus');
+            const saveButton = document.getElementById('saveButton');
+            
+            consoleOutput.classList.add('visible');
+            consoleBody.innerHTML = '<div class="log-info">> Initiating connection test...</div>';
+            testStatus.textContent = 'Testing...';
+            
+            // Disable save button during test
+            saveButton.disabled = true;
+            
+            const formData = new FormData(document.getElementById('connectionForm'));
+            const data = Object.fromEntries(formData.entries());
+            
+            fetch('/admin/connections/test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    consoleBody.innerHTML += `<div class="log-success">> Success: ${result.message}</div>`;
+                    testStatus.textContent = 'Passed';
+                    testStatus.style.color = 'var(--cisco-green)';
+                    // Enable save button on success
+                    saveButton.disabled = false;
+                } else {
+                    consoleBody.innerHTML += `<div class="log-error">> Error: ${result.message}</div>`;
+                    testStatus.textContent = 'Failed';
+                    testStatus.style.color = 'var(--cisco-red)';
+                    saveButton.disabled = true;
+                }
+            })
+            .catch(error => {
+                consoleBody.innerHTML += `<div class="log-error">> System Error: ${error}</div>`;
+                testStatus.textContent = 'Error';
+                testStatus.style.color = 'var(--cisco-red)';
+                saveButton.disabled = true;
+            });
+        }
+
+        // Disable save button when any input changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('connectionForm');
+            const saveButton = document.getElementById('saveButton');
+            const inputs = form.querySelectorAll('input, select');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    saveButton.disabled = true;
+                    // Optional: Reset test status visual indicator if desired
+                    // document.getElementById('testStatus').textContent = '';
+                });
+                input.addEventListener('change', () => {
+                    saveButton.disabled = true;
+                });
+            });
+        });
+    </script>
+    <!-- Help FAB -->
+    <a href="/help_connections_add.html" onclick="window.open(this.href, 'helpWindow', 'width=600,height=800,scrollbars=yes,resizable=yes'); return false;" class="help-fab" title="Get Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </a>
+</body>
+</html>

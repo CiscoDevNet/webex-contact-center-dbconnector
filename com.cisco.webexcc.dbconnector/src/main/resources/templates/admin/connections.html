@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Connections - Webex DB Connector</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #049FD9; /* Cisco Blue */
+            --primary-dark: #005073;
+            --surface: #ffffff;
+            --background: #f4f6f8;
+            --text-main: #1b1b1b;
+            --text-secondary: #58585b;
+            --border: #e1e4e8;
+            --success: #6cc04a;
+            --warning: #ffc20e;
+            --danger: #e2231a; /* Cisco Red */
+            --hover-bg: #f9fafb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .page-title-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .page-title h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-main);
+        }
+        .page-title p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1rem;
+        }
+        .help-link {
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px; /* Pill shape */
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        .btn-outline {
+            background-color: transparent;
+            border-color: var(--border);
+            color: var(--text-main);
+        }
+        .btn-outline:hover {
+            background-color: var(--surface);
+            border-color: var(--text-secondary);
+        }
+        .btn-icon {
+            padding: 0.4rem;
+            border-radius: 50%;
+            color: var(--text-secondary);
+        }
+        .btn-icon:hover {
+            background-color: var(--hover-bg);
+            color: var(--primary);
+        }
+        .btn-icon.delete:hover {
+            color: var(--danger);
+            background-color: rgba(226, 35, 26, 0.1);
+        }
+        .btn-icon.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+        .alert-success {
+            background-color: rgba(108, 192, 74, 0.1);
+            color: #2a5e1a;
+            border: 1px solid rgba(108, 192, 74, 0.2);
+        }
+        .alert-danger {
+            background-color: rgba(226, 35, 26, 0.1);
+            color: #8a1510;
+            border: 1px solid rgba(226, 35, 26, 0.2);
+        }
+        .alert-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.6;
+        }
+        .alert-close:hover { opacity: 1; }
+
+        /* Table Card */
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: #fafbfc;
+            padding: 1rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: var(--hover-bg);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+        .badge-prod {
+            background-color: rgba(108, 192, 74, 0.15);
+            color: #2a5e1a;
+        }
+        .badge-dev {
+            background-color: rgba(4, 159, 217, 0.15);
+            color: #005073;
+        }
+        .badge-uat {
+            background-color: rgba(255, 194, 14, 0.15);
+            color: #997300;
+        }
+        .badge-type {
+            background-color: #f0f0f0;
+            color: var(--text-secondary);
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .empty-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+
+        /* Utilities */
+        .text-mono {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title-container" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div class="page-title">
+                    <h1>Database Connections</h1>
+                    <p>Manage your external database configurations</p>
+                </div>
+            </div>
+            <div>
+                <a href="/home" class="btn btn-outline" style="margin-right: 0.5rem;">Back to Dashboard</a>
+                <a href="/admin/connections/add" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Add Connection
+                </a>
+            </div>
+        </div>
+    
+        <div th:if="${successMessage}" class="alert alert-success">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span th:text="${successMessage}">Operation successful</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span th:text="${errorMessage}">Error occurred</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+        </div>
+
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Environment</th>
+                            <th># of endpoints</th>
+                            <th>Type</th>
+                            <th>Connection URL</th>
+                            <th>Username</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="conn : ${connections}">
+                            <td>
+                                <span th:text="${conn.environment}" 
+                                      th:class="${conn.environment == 'PROD' ? 'badge badge-prod' : (conn.environment == 'UAT' ? 'badge badge-uat' : 'badge badge-dev')}">
+                                    DEV
+                                </span>
+                            </td>
+                            <td>
+                                <span th:text="${conn.endpointCount}">0</span>
+                            </td>
+                            <td><span class="badge badge-type" th:text="${conn.type}">MYSQL</span></td>
+                            <td class="text-mono" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${conn.url}" th:title="${conn.url}">jdbc:mysql://...</td>
+                            <td th:text="${conn.username}">root</td>
+                            <td>
+                                <div class="actions-cell">
+                                    <a th:href="@{/admin/connections/test/{id}(id=${conn.id})}" class="btn-icon" title="Test Connection">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                    </a>
+                                    <a th:href="@{/admin/connections/edit/{id}(id=${conn.id})}" class="btn-icon" title="Edit">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </a>
+                                    
+                                    <!-- Delete Button (Enabled if no endpoints) -->
+                                    <a th:if="${conn.endpointCount == 0}" 
+                                       th:href="@{/admin/connections/delete/{id}(id=${conn.id})}" 
+                                       class="btn-icon delete" 
+                                       onclick="return confirm('Are you sure you want to delete this connection?')" 
+                                       title="Delete">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </a>
+                                    
+                                    <!-- Delete Button (Disabled if endpoints exist) -->
+                                    <span th:if="${conn.endpointCount > 0}" 
+                                          class="btn-icon disabled" 
+                                          title="Cannot delete: Connection has endpoints">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(connections)}">
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                                    <p>No database connections found.</p>
+                                    <a href="/admin/connections/add" class="btn btn-primary" style="margin-top: 1rem;">
+                                        Create New Connection
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Help FAB -->
+    <a href="/help_connections.html" onclick="window.open(this.href, 'helpWindow', 'width=600,height=800,scrollbars=yes,resizable=yes'); return false;" class="help-fab" title="Get Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </a>
+</body>
+</html>

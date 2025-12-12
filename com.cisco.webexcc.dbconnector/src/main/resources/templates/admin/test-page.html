@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Test Console - Webex DB Connector</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #049FD9; /* Cisco Blue */
+            --primary-dark: #005073;
+            --surface: #ffffff;
+            --background: #f4f6f8;
+            --text-main: #1b1b1b;
+            --text-secondary: #58585b;
+            --border: #e1e4e8;
+            --success: #6cc04a;
+            --warning: #ffc20e;
+            --danger: #e2231a;
+            --hover-bg: #f9fafb;
+            --code-bg: #f4f5f7;
+            --sidebar-width: 320px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Layout */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 1rem 2rem 2rem 2rem;
+            box-sizing: border-box;
+            gap: 1.5rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .sidebar-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: #fafbfc;
+        }
+
+        .sidebar-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Search Box */
+        .search-box {
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem 0.5rem 2rem;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(4, 159, 217, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .endpoint-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .endpoint-item {
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .endpoint-item:hover {
+            background-color: var(--hover-bg);
+            border-color: var(--border);
+        }
+
+        .endpoint-item.active {
+            background-color: rgba(4, 159, 217, 0.08);
+            border-color: rgba(4, 159, 217, 0.3);
+        }
+
+        .endpoint-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .endpoint-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+        .badge-prod {
+            background-color: rgba(108, 192, 74, 0.15);
+            color: #2a5e1a;
+        }
+        .badge-dev {
+            background-color: rgba(4, 159, 217, 0.15);
+            color: #005073;
+        }
+        .badge-method {
+            background-color: #e1e4e8;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .empty-selection {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1.5rem;
+            color: #d1d5db;
+            opacity: 0.5;
+        }
+
+        /* Test Console */
+        .console-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: #fafbfc;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .console-title h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            color: var(--text-main);
+        }
+
+        .console-url {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--code-bg);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            display: inline-block;
+            margin-top: 0.5rem;
+            word-break: break-all;
+        }
+
+        .console-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .split-view {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .params-panel {
+            width: 350px;
+            padding: 2rem;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            background: #fff;
+        }
+
+        .results-panel {
+            flex: 1;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            background: #fafbfc;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(4, 159, 217, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(4, 159, 217, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(4, 159, 217, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: #e1e4e8;
+            color: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Results Area */
+        .results-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #d1d5db;
+        }
+        .status-dot.success { background-color: var(--success); }
+        .status-dot.error { background-color: var(--danger); }
+
+        .json-viewer {
+            flex: 1;
+            padding: 1.5rem;
+            overflow: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #24292e;
+            background: #fafbfc;
+        }
+
+        .no-params-msg {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            padding: 2rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+    <script>
+        function selectStatement(element, name, env, paramNames) {
+            // Update active state in sidebar
+            document.querySelectorAll('.endpoint-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            // Show console, hide empty state
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('testConsole').style.display = 'flex';
+
+            // Update Header Info
+            document.getElementById('selectedName').textContent = name;
+            const envBadge = document.getElementById('selectedEnv');
+            envBadge.textContent = env;
+            envBadge.className = 'badge ' + (env === 'PROD' ? 'badge-prod' : 'badge-dev');
+
+            // Setup Parameters
+            const paramsArea = document.getElementById('paramsArea');
+            paramsArea.innerHTML = '';
+            
+            let params = [];
+            if (paramNames) {
+                params = paramNames.split(',').map(p => p.trim()).filter(p => p);
+            }
+            
+            if (params.length > 0) {
+                params.forEach(param => {
+                    const group = document.createElement('div');
+                    group.className = 'form-group';
+                    group.innerHTML = `
+                        <label class="form-label">${param}</label>
+                        <input type="text" class="form-control param-input" data-name="${param}" placeholder="Enter value for ${param}">
+                    `;
+                    paramsArea.appendChild(group);
+                });
+            } else {
+                paramsArea.innerHTML = `
+                    <div class="no-params-msg">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e1e4e8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1rem"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        <p>No parameters required for this endpoint.</p>
+                    </div>
+                `;
+            }
+
+            updateUrlPreview(name, env);
+            
+            // Add listeners
+            document.querySelectorAll('.param-input').forEach(input => {
+                input.addEventListener('input', () => updateUrlPreview(name, env));
+            });
+
+            // Reset Results
+            const runBtn = document.getElementById('runBtn');
+            runBtn.onclick = () => runQuery(name, env);
+            runBtn.disabled = false;
+            runBtn.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Run Request
+            `;
+            
+            document.getElementById('resultArea').textContent = '// Response will appear here...';
+            document.getElementById('statusText').textContent = 'Ready';
+            document.getElementById('statusDot').className = 'status-dot';
+        }
+
+        function updateUrlPreview(name, env) {
+            let url = window.location.origin + '/api/query/' + env + '/' + name;
+            const inputs = document.querySelectorAll('.param-input');
+            const params = [];
+            inputs.forEach(input => {
+                if (input.value) {
+                    params.push(encodeURIComponent(input.dataset.name) + '=' + encodeURIComponent(input.value));
+                }
+            });
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            document.getElementById('urlPreview').textContent = url;
+        }
+
+        async function runQuery(name, env) {
+            const resultArea = document.getElementById('resultArea');
+            const runBtn = document.getElementById('runBtn');
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
+            
+            // Loading State
+            resultArea.textContent = 'Sending request...';
+            runBtn.disabled = true;
+            runBtn.innerHTML = `
+                <svg class="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+                Running...
+            `;
+            statusText.textContent = 'Processing...';
+            statusDot.className = 'status-dot';
+            
+            // Add spinner animation style if not exists
+            if (!document.getElementById('spinner-style')) {
+                const style = document.createElement('style');
+                style.id = 'spinner-style';
+                style.textContent = `
+                    @keyframes spin { 100% { transform: rotate(360deg); } }
+                    .spinner { animation: spin 1s linear infinite; }
+                `;
+                document.head.appendChild(style);
+            }
+
+            let url = document.getElementById('urlPreview').textContent;
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+
+                resultArea.textContent = JSON.stringify(data, null, 2);
+                
+                if (response.ok) {
+                    statusText.textContent = `200 OK (${duration}ms)`;
+                    statusDot.className = 'status-dot success';
+                } else {
+                    statusText.textContent = `${response.status} Error (${duration}ms)`;
+                    statusDot.className = 'status-dot error';
+                }
+            } catch (e) {
+                resultArea.textContent = 'Error: ' + e.message;
+                statusText.textContent = 'Network Error';
+                statusDot.className = 'status-dot error';
+            } finally {
+                runBtn.disabled = false;
+                runBtn.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    Run Request
+                `;
+            }
+        }
+
+        function filterEndpoints(query) {
+            const items = document.querySelectorAll('.endpoint-item');
+            const normalize = str => str.toLowerCase().trim();
+            const q = normalize(query);
+            
+            items.forEach(item => {
+                const name = normalize(item.querySelector('.endpoint-name span').textContent);
+                const env = normalize(item.querySelector('.endpoint-meta span:first-child').textContent);
+                const db = normalize(item.querySelector('.endpoint-meta span:last-child').textContent);
+                
+                if (name.includes(q) || env.includes(q) || db.includes(q)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="sidebar-title">Available Endpoints</h2>
+                </div>
+                <p class="sidebar-subtitle">Select an endpoint to test</p>
+                <div class="search-box">
+                    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" class="search-input" placeholder="Filter endpoints..." oninput="filterEndpoints(this.value)">
+                </div>
+            </div>
+            <div class="endpoint-list">
+                <div th:each="stmt : ${statements}" 
+                     class="endpoint-item"
+                     th:onclick="selectStatement(this, [[${stmt.name}]], [[${stmt.environment}]], [[${stmt.paramNames}]])">
+                    <div class="endpoint-meta" style="margin-bottom: 0.25rem;">
+                        <span th:text="${stmt.environment}" 
+                              th:class="${stmt.environment == 'PROD' ? 'badge badge-prod' : 'badge badge-dev'}">DEV</span>
+                        <span class="badge" style="background-color: #e1e4e8; color: #58585b;" th:text="${stmt.dbConnection.type}">TYPE</span>
+                    </div>
+                    <div class="endpoint-name">
+                        <span th:text="${stmt.name}">get_users</span>
+                    </div>
+                </div>
+                
+                <div th:if="${#lists.isEmpty(statements)}" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                    <p>No endpoints available.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-area">
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-selection">
+                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <h3>Select an Endpoint</h3>
+                <p>Choose an endpoint from the sidebar to configure parameters and execute a test request.</p>
+            </div>
+
+            <!-- Test Console (Hidden by default) -->
+            <div id="testConsole" class="console-body" style="display: none;">
+                <div class="console-header">
+                    <div class="console-title">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                            <h2 id="selectedName">Endpoint Name</h2>
+                            <span id="selectedEnv" class="badge">ENV</span>
+                        </div>
+                        <div id="urlPreview" class="console-url">/api/query/...</div>
+                    </div>
+                </div>
+
+                <div class="split-view">
+                    <!-- Parameters Panel -->
+                    <div class="params-panel">
+                        <h3 style="font-size: 0.9rem; font-weight: 700; margin: 0 0 1.5rem 0; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Request Parameters</h3>
+                        <div id="paramsArea">
+                            <!-- Params injected here -->
+                        </div>
+                        <div style="margin-top: 2rem;">
+                            <button id="runBtn" class="btn btn-primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                Run Request
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Results Panel -->
+                    <div class="results-panel">
+                        <div class="results-header">
+                            <span>Response Body</span>
+                            <div class="status-indicator">
+                                <div id="statusDot" class="status-dot"></div>
+                                <span id="statusText">Ready</span>
+                            </div>
+                        </div>
+                        <pre id="resultArea" class="json-viewer">// Response will appear here...</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Help FAB -->
+    <a href="/help_test.html" onclick="window.open(this.href, 'helpWindow', 'width=600,height=800,scrollbars=yes,resizable=yes'); return false;" class="help-fab" title="Get Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </a>
+</body>
+</html>

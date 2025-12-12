@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Edit SQL Statement - Help Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        h2 {
+            margin-top: 2rem;
+            color: #34495e;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 0.3rem;
+        }
+        ul {
+            padding-left: 2rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        strong {
+            color: #2c3e50;
+        }
+        .note {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Add/Edit SQL Statement - Help Guide</h1>
+
+    <h2>Overview</h2>
+    <p>This form allows you to define a new SQL query or modify an existing one. These queries are exposed as REST API endpoints that can be consumed by your Contact Center flows.</p>
+
+    <h2>Form Fields</h2>
+    <ul>
+        <li>
+            <strong>Name (Endpoint Identifier)</strong>: 
+            <ul>
+                <li>A unique name for your query.</li>
+                <li>This will be part of the API URL: <code>/api/query/{name}</code>.</li>
+                <li>Use lowercase letters, numbers, and underscores (e.g., <code>get_customer_balance</code>).</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Description</strong>: 
+            <ul>
+                <li>A brief explanation of what the query does. This helps other administrators understand its purpose.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Database Connection</strong>: 
+            <ul>
+                <li>Select the database where this query should run.</li>
+                <li>Only connections for the current environment (e.g., DEV) are listed.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>SQL Content</strong>: 
+            <ul>
+                <li>The actual SQL statement to execute.</li>
+                <li>You can use <strong>named parameters</strong> (e.g., <code>:customerId</code>) or <strong>positional parameters</strong> (e.g., <code>?</code>) for dynamic values.</li>
+                <li><em>Example:</em> <code>SELECT * FROM customers WHERE id = :customerId</code></li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Testing</h2>
+    <p>Before saving, you can click the <strong>"Test SQL"</strong> button. This will:</p>
+    <ol>
+        <li>Parse your SQL for parameters.</li>
+        <li>Prompt you to enter test values for those parameters.</li>
+        <li>Execute the query against the selected connection.</li>
+        <li>Show the results (or errors) in the console window below.</li>
+    </ol>
+
+    <div class="note">
+        <strong>Tip:</strong> Always test your queries to ensure they return the expected data structure before using them in your flows.
+    </div>
+
+</body>
+</html>

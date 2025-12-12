@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Management - Help Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        h2 {
+            margin-top: 2rem;
+            color: #34495e;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 0.3rem;
+        }
+        ul {
+            padding-left: 2rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        strong {
+            color: #2c3e50;
+        }
+        .note {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 6px solid #ffc107;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SQL Management - Help Guide</h1>
+
+    <h2>Overview</h2>
+    <p>The <strong>SQL Management</strong> page is the central hub for creating, viewing, and managing the SQL queries that power your Contact Center integrations. Each query is exposed as a secure REST API endpoint.</p>
+
+    <h2>Managing SQL Statements</h2>
+    
+    <h3>Adding a New Statement</h3>
+    <p>Click the <strong>"Add SQL Statement"</strong> button to create a new query. You will need to provide:</p>
+    <ul>
+        <li><strong>Name</strong>: A unique identifier for the query (e.g., <code>getCustomerById</code>). This becomes part of the API URL.</li>
+        <li><strong>Connection</strong>: The database connection to run the query against.</li>
+        <li><strong>SQL</strong>: The actual SQL query. Use named parameters like <code>:id</code> for dynamic inputs.</li>
+    </ul>
+    <div class="note">
+        <strong>Note:</strong> You can only add new statements to <strong>DEV</strong> environments directly. To move them to UAT or PROD, use the <strong>Deploy</strong> feature.
+    </div>
+
+    <h3>Actions</h3>
+    <p>For each statement in the list, you can perform the following actions:</p>
+    <ul>
+        <li><strong>Test</strong> (Beaker Icon): Opens the Test Console pre-loaded with this query to verify it works.</li>
+        <li><strong>Deploy</strong> (Rocket Icon): Promotes a DEV query to UAT or PROD environments.</li>
+        <li><strong>Edit</strong> (Pencil Icon): Modify the SQL or description (DEV only).</li>
+        <li><strong>Delete</strong> (Trash Icon): Remove the statement.</li>
+    </ul>
+
+    <h2>Filtering</h2>
+    <p>Use the search bar at the top of the table to quickly find statements by name, environment, or SQL content.</p>
+
+</body>
+</html>
