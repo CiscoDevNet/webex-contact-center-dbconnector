@@ -4,3 +4,5 @@
 webexcc-dbconnector-springboot/application.yml.jiwyatt
 webexcc-dbconnector-angular/package-lock.json
 webexcc-dbconnector-angular/src.zip
+/deprecated
+/com.cisco.webexcc.dbconnector/target
