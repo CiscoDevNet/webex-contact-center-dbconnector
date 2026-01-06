@@ -5,7 +5,7 @@
 ```mermaid
 graph LR
     A[Server] --> B[DB Connector]
-    B --> C[DB Server]
+    B <--> C[DB Server]
     B --> D[Endpoints]
     
     style A fill:#0066cc,stroke:#003d7a,color:#fff
