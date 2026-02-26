@@ -1,16 +1,6 @@
 # Getting Started
 
-## Running the application
-
-To run the application, use the following commands:
-
-```bash
-cd webex-contact-center-dbconnector
-mvn clean install
-java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
-```
-
-Or use the VS Code task "Run Spring Boot App".
+(Getting Started)[https://github.com/CiscoDevNet/webex-contact-center-dbconnector/tree/main/com.cisco.webexcc.dbconnector]
 
 ### Reference Documentation
 For further reference, please consider the following sections:
