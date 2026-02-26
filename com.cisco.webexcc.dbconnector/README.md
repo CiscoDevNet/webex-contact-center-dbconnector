@@ -100,7 +100,7 @@ java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
 
 **Option 2: Using the JAR File**
 ```bash
-java -jar target/com.cisco.webexcc.dbconnector-<version>.jar
+java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
 ```
 
 **Option 3: Using VS Code**
