@@ -20,8 +20,8 @@ The DB Connector is deployed on the server and configured to connect to the data
 
 ```mermaid
 graph LR
-    A[Webex CC] --> B[Whitelist]
-    B <--> C[FQDN]
+    A[Webex CC] --> B[FQDN]
+    B <--> C[Whitelist]
     C <--> D[Load Balancer]
     D <--> E[Endpoints]
     
