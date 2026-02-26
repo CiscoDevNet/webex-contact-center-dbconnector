@@ -88,7 +88,7 @@ This is a Spring Boot application designed to integrate with Webex Contact Cente
 2.  Update `src/main/resources/application.properties` with your valid `client-id` and `client-secret`.
 3.  Run the application:
     ```bash
-    ./mvnw spring-boot:run
+    java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
     ```
 4.  Access the application at `http://localhost:8080`.
 
