@@ -29,6 +29,10 @@
 	<properties>
 		<java.version>24</java.version>
 		<logback.version>1.5.25</logback.version>
+		<h2.version>2.4.240</h2.version>
+		<mysql-connector.version>9.6.0</mysql-connector.version>
+		<ojdbc11.version>23.26.1.0.0</ojdbc11.version>
+		<nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -50,11 +54,13 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
+			<version>${mysql-connector.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -66,6 +72,7 @@
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc11</artifactId>
+			<version>${ojdbc11.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -75,7 +82,7 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>10.0.2</version>
+			<version>${nimbus-jose-jwt.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
