@@ -2,9 +2,10 @@
 
 ## Running the application
 
-To run the application, use the following command:
+To run the application, use the following commands:
 
 ```bash
+mvn clean install
 java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
 ```
 
