@@ -5,6 +5,7 @@
 To run the application, use the following commands:
 
 ```bash
+cd webex-contact-center-dbconnector
 mvn clean install
 java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
 ```
