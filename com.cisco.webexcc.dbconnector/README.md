@@ -73,7 +73,7 @@ Compile the project using the included Maven wrapper (no separate Maven installa
 
 **On macOS/Linux:**
 ```bash
-./mvnw clean install
+mvn clean install
 ```
 
 **On Windows:**
@@ -95,7 +95,7 @@ Once compilation is complete, start the application using one of these methods:
 
 **Option 1: Using Maven (Recommended for Development)**
 ```bash
-./mvnw spring-boot:run
+java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
 ```
 
 **Option 2: Using the JAR File**
@@ -127,7 +127,7 @@ You should see the application home page. Check the console output for any error
 - Create separate property files for different environments:
   - `application-dev.properties` for development
   - `application-prod.properties` for production
-- Activate profiles using: `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`
+- Activate profiles using: `java -jar target/dbconnector-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev`
 
 **Troubleshooting:**
 - If compilation fails, verify your Java version: `java -version`
@@ -140,7 +140,7 @@ You should see the application home page. Check the console output for any error
 To run the application, use the following command:
 
 ```bash
-./mvnw spring-boot:run
+java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
 ```
 
 Or use the VS Code task "Run Spring Boot App".
