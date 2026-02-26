@@ -5,7 +5,7 @@
 To run the application, use the following command:
 
 ```bash
-./mvnw spring-boot:run
+java -jar target/dbconnector-0.0.1-SNAPSHOT.jar
 ```
 
 Or use the VS Code task "Run Spring Boot App".

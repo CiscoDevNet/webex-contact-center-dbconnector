@@ -78,7 +78,7 @@ mvn clean install
 
 **On Windows:**
 ```bash
-mvnw.cmd clean install
+mvn clean install
 ```
 
 This command will:
