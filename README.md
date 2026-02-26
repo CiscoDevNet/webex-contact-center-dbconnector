@@ -1,6 +1,6 @@
 # Getting Started
 
-(Getting Started)[https://github.com/CiscoDevNet/webex-contact-center-dbconnector/tree/main/com.cisco.webexcc.dbconnector]
+latest version -> https://github.com/CiscoDevNet/webex-contact-center-dbconnector/tree/main/com.cisco.webexcc.dbconnector
 
 ### Reference Documentation
 For further reference, please consider the following sections:
