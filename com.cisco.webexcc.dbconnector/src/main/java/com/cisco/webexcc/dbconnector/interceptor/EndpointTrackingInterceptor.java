@@ -24,7 +24,10 @@ public class EndpointTrackingInterceptor implements HandlerInterceptor {
         // Filter out static resources and error pages if needed
         if (!uri.startsWith("/css") && !uri.startsWith("/js") && !uri.startsWith("/images") && !uri.equals("/error")) {
             // Normalize to lowercase for consistent tracking
-            trackingService.trackExecution(uri.toLowerCase(), response.getStatus());
+            try {
+                trackingService.trackExecution(uri.toLowerCase(), response.getStatus());
+            } catch (RuntimeException ignored) {
+            }
         }
     }
 }
