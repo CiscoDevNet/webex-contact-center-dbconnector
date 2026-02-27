@@ -5,6 +5,8 @@ import com.cisco.webexcc.dbconnector.model.EndpointStat;
 import com.cisco.webexcc.dbconnector.model.EnvironmentStat;
 import com.cisco.webexcc.dbconnector.repository.EndpointExecutionRepository;
 import com.cisco.webexcc.dbconnector.repository.SqlStatementRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @Service
 public class EndpointTrackingService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EndpointTrackingService.class);
 
     @Autowired
     private EndpointExecutionRepository repository;
@@ -61,8 +65,12 @@ public class EndpointTrackingService {
     }
 
     public void trackExecution(String endpoint, int statusCode) {
-        EndpointExecution execution = new EndpointExecution(endpoint.toLowerCase(), LocalDateTime.now(), statusCode);
-        repository.save(execution);
+        try {
+            EndpointExecution execution = new EndpointExecution(endpoint.toLowerCase(), LocalDateTime.now(), statusCode);
+            repository.save(execution);
+        } catch (RuntimeException exception) {
+            logger.warn("Skipping endpoint tracking for {} due to repository error: {}", endpoint, exception.getMessage());
+        }
     }
 
     public Map<String, Long> getExecutionStats() {
@@ -82,16 +90,16 @@ public class EndpointTrackingService {
         Map<String, EnvironmentStat> stats = new LinkedHashMap<>();
         
         // Use lowercase prefixes
-        long prodCount = repository.countByEndpointStartingWith("/api/query/prod/");
-        long prodFailures = repository.countFailuresByPrefix("/api/query/prod/");
+        long prodCount = safeCountByEndpointPrefix("/api/query/prod/");
+        long prodFailures = safeFailureCountByPrefix("/api/query/prod/");
         stats.put("PROD", new EnvironmentStat(prodCount, prodFailures));
         
-        long uatCount = repository.countByEndpointStartingWith("/api/query/uat/");
-        long uatFailures = repository.countFailuresByPrefix("/api/query/uat/");
+        long uatCount = safeCountByEndpointPrefix("/api/query/uat/");
+        long uatFailures = safeFailureCountByPrefix("/api/query/uat/");
         stats.put("UAT", new EnvironmentStat(uatCount, uatFailures));
         
-        long devCount = repository.countByEndpointStartingWith("/api/query/dev/");
-        long devFailures = repository.countFailuresByPrefix("/api/query/dev/");
+        long devCount = safeCountByEndpointPrefix("/api/query/dev/");
+        long devFailures = safeFailureCountByPrefix("/api/query/dev/");
         stats.put("DEV", new EnvironmentStat(devCount, devFailures));
         
         return stats;
@@ -118,7 +126,7 @@ public class EndpointTrackingService {
         }
 
         // 2. Overlay with actual execution stats
-        java.util.List<Object[]> results = repository.countEndpointsByPrefix(prefix);
+        java.util.List<Object[]> results = safeCountEndpointsByPrefix(prefix);
         for (Object[] result : results) {
             String endpoint = (String) result[0];
             long count = (Long) result[1];
@@ -134,7 +142,7 @@ public class EndpointTrackingService {
         }
         
         // 3. Overlay with failure stats
-        java.util.List<Object[]> failureResults = repository.countEndpointFailuresByPrefix(prefix);
+        java.util.List<Object[]> failureResults = safeCountEndpointFailuresByPrefix(prefix);
         for (Object[] result : failureResults) {
             String endpoint = (String) result[0];
             long failedCount = (Long) result[1];
@@ -147,5 +155,41 @@ public class EndpointTrackingService {
         }
         
         return map;
+    }
+
+    private long safeCountByEndpointPrefix(String prefix) {
+        try {
+            return repository.countByEndpointStartingWith(prefix);
+        } catch (RuntimeException exception) {
+            logger.warn("Unable to read endpoint count for prefix {}: {}", prefix, exception.getMessage());
+            return 0L;
+        }
+    }
+
+    private long safeFailureCountByPrefix(String prefix) {
+        try {
+            return repository.countFailuresByPrefix(prefix);
+        } catch (RuntimeException exception) {
+            logger.warn("Unable to read endpoint failures for prefix {}: {}", prefix, exception.getMessage());
+            return 0L;
+        }
+    }
+
+    private java.util.List<Object[]> safeCountEndpointsByPrefix(String prefix) {
+        try {
+            return repository.countEndpointsByPrefix(prefix);
+        } catch (RuntimeException exception) {
+            logger.warn("Unable to read endpoint details for prefix {}: {}", prefix, exception.getMessage());
+            return java.util.Collections.emptyList();
+        }
+    }
+
+    private java.util.List<Object[]> safeCountEndpointFailuresByPrefix(String prefix) {
+        try {
+            return repository.countEndpointFailuresByPrefix(prefix);
+        } catch (RuntimeException exception) {
+            logger.warn("Unable to read endpoint failure details for prefix {}: {}", prefix, exception.getMessage());
+            return java.util.Collections.emptyList();
+        }
     }
 }
