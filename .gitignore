@@ -7,3 +7,5 @@ webexcc-dbconnector-angular/src.zip
 /deprecated
 /com.cisco.webexcc.dbconnector/target
 /com.cisco.webexcc.dbconnector/logs
+/com.cisco.webexcc.dbconnector/data
+.DS_Store

@@ -1,5 +1,21 @@
 # Recommended Prompts for Project Recreation
 
+## v2.1.1 Prompt Additions (2026-03-03)
+
+Use these additional prompts to recreate newly implemented features:
+
+### A) LDAP Statement Management
+> "Add LDAP statement management to the admin UI with CRUD support. Persist LDAP statement name, description, environment, connection, base DN, filter, attributes, and param names. Ensure unique name per environment."
+
+### B) Unified Test Console (SQL + LDAP)
+> "Update the test console to list and execute both SQL and LDAP endpoints. Use endpoint-specific API routes (`/api/query/{env}/{name}` and `/api/ldap/query/{env}/{name}`) and preserve parameterized execution UX."
+
+### C) LDAP Deploy Workflow
+> "Implement LDAP deployment from DEV to UAT/PROD with a deploy form, target LDAP connection selection, duplicate detection, and overwrite confirmation behavior matching SQL deploy."
+
+### D) Dashboard Stats Aggregation Fix
+> "Update endpoint tracking and dashboard aggregation so environment totals and detailed stats include both SQL and LDAP endpoint executions. Include reset/cleanup support for both route families."
+
 This document outlines a sequence of prompts that could be used to recreate the current state of the Webex Contact Center DB Connector project. These prompts cover the setup, authentication, security, and utility scripts.
 
 ## 1. Backup and Maintenance Script

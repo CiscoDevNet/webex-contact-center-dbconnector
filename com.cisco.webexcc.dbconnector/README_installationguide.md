@@ -1,11 +1,27 @@
 # Installation and Configuration Guide
 
+## v2.1.1 Documentation Update (2026-03-03)
+
+- Application supports both SQL and LDAP endpoint administration.
+- Deployment supports both SQL and LDAP promotion from DEV to UAT/PROD.
+- Dashboard environment stats now include both SQL and LDAP traffic.
+- Recommended runtime/build JDK remains **Java 24**.
+
+### Java 24 (macOS) runtime example
+
+```bash
+export JAVA_HOME=$(/usr/libexec/java_home -v 24)
+export PATH="$JAVA_HOME/bin:$PATH"
+mvn clean compile
+mvn spring-boot:run
+```
+
 This guide provides step-by-step instructions for installing, configuring, building, and deploying the Webex Contact Center DB Connector.
 
 ## 1. Prerequisites
 
 *   **Java Development Kit (JDK)**: Version 24 or higher.
-*   **Maven**: The project includes a Maven wrapper (`mvnw`), so a local Maven installation is not strictly required, but internet access is needed to download dependencies.
+*   **Maven**: Install Apache Maven (`mvn`) and ensure it is available on your `PATH`.
 *   **Webex Integration**: You must have a Webex Integration created in the [Webex Developer Portal](https://developer.webex.com/).
 
 ## 2. Configuration
@@ -44,12 +60,12 @@ To build the application, navigate to the project root directory and run:
 
 **Linux/macOS:**
 ```bash
-./mvnw clean package -DskipTests
+mvn clean package -DskipTests
 ```
 
 **Windows:**
 ```cmd
-mvnw.cmd clean package -DskipTests
+mvn clean package -DskipTests
 ```
 
 This will generate an executable JAR file in the `target/` directory (e.g., `target/dbconnector-0.0.1-SNAPSHOT.jar`).

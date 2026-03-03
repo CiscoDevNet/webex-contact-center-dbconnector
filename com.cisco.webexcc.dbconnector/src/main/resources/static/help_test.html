@@ -54,14 +54,26 @@
     <h1>Test Console - Help Guide</h1>
 
     <h2>Overview</h2>
-    <p>The Test Console allows you to execute your SQL endpoints directly from the browser. This is useful for verifying that your queries are working correctly and returning the expected data before integrating them into your Contact Center flows.</p>
+    <p>The Test Console allows you to execute both <strong>SQL</strong> and <strong>LDAP</strong> endpoints directly from the browser. This is useful for verifying endpoint behavior and response payloads before integrating them into your Contact Center flows.</p>
+
+    <h2>Supported Endpoint Types</h2>
+    <ul>
+        <li><strong>SQL Endpoints</strong>: Execute saved SQL statements against configured database connections.</li>
+        <li><strong>LDAP Endpoints</strong>: Execute saved LDAP queries (base DN, filter, attributes) against configured LDAP connections.</li>
+    </ul>
+
+    <div class="note">
+        <strong>API patterns shown in Test Console:</strong><br>
+        SQL: <code>/api/query/{env}/{name}</code><br>
+        LDAP: <code>/api/ldap/query/{env}/{name}</code>
+    </div>
 
     <h2>How to Use</h2>
     <ol>
         <li>
             <strong>Select an Endpoint</strong>: 
             <ul>
-                <li>Browse the list of available endpoints in the left sidebar.</li>
+                <li>Browse SQL and LDAP endpoints in the left sidebar.</li>
                 <li>You can use the search box to filter by name, environment, or database.</li>
                 <li>Click on an endpoint to load it into the main console area.</li>
             </ul>
@@ -69,8 +81,9 @@
         <li>
             <strong>Enter Parameters</strong>: 
             <ul>
-                <li>If the selected query requires parameters, input fields will appear in the "Request Parameters" panel.</li>
-                <li>The system supports both <strong>named parameters</strong> (e.g., <code>:customerId</code>) and <strong>positional parameters</strong> (e.g., <code>?</code>).</li>
+                <li>If the selected endpoint requires parameters, input fields appear in the "Request Parameters" panel.</li>
+                <li>SQL endpoints use configured statement parameter names from the SQL definition.</li>
+                <li>LDAP endpoints use configured parameter names that map to filter placeholders like <code>{0}</code>, <code>{1}</code>.</li>
                 <li>Enter valid test values for each parameter.</li>
             </ul>
         </li>
@@ -78,7 +91,7 @@
             <strong>Run Request</strong>: 
             <ul>
                 <li>Click the <strong>"Run Request"</strong> button.</li>
-                <li>The system will execute the query against the configured database.</li>
+                <li>The system executes the selected SQL or LDAP endpoint using its configured connection and environment.</li>
             </ul>
         </li>
         <li>
@@ -86,15 +99,24 @@
             <ul>
                 <li>The JSON response from the API will be displayed in the "Response Body" panel.</li>
                 <li>The status indicator will show if the request was successful (200 OK) or if an error occurred.</li>
+                <li>Responses can be an object (single result) or an array (multiple results).</li>
             </ul>
         </li>
     </ol>
 
+    <h2>Examples</h2>
+    <ul>
+        <li><strong>SQL</strong>: <code>/api/query/dev/get_customer?customerId=12345</code></li>
+        <li><strong>LDAP</strong>: <code>/api/ldap/query/dev/find_user?uid=einstein</code></li>
+    </ul>
+
     <h2>Troubleshooting</h2>
     <ul>
         <li><strong>Network Error</strong>: Check if the backend server is running and accessible.</li>
-        <li><strong>500 Error</strong>: There might be an issue with the SQL query or the database connection. Check the application logs for more details.</li>
-        <li><strong>Empty Response</strong>: The query executed successfully but returned no rows. Verify your test data and parameters.</li>
+        <li><strong>400 / Validation Error</strong>: Required parameters may be missing or invalid.</li>
+        <li><strong>SQL Error</strong>: There may be an issue with SQL syntax, statement mapping, or DB credentials.</li>
+        <li><strong>LDAP Error</strong>: Verify LDAP URL, bind DN/password, base DN, filter, and attributes.</li>
+        <li><strong>Empty Response</strong>: The endpoint executed successfully but returned no matching rows/entries for the supplied parameters.</li>
     </ul>
 
 </body>

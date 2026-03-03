@@ -1,5 +1,12 @@
 # Database Support Matrix
 
+## v2.1.1 Documentation Update (2026-03-03)
+
+- SQL database support matrix remains unchanged (MySQL, SQL Server, Oracle external targets; H2 internal store).
+- LDAP endpoint support is now available in the application as a parallel, non-SQL data-source capability.
+- LDAP is managed via LDAP connections/statements and exposed through `/api/ldap/query/{env}/{name}`.
+- This document continues to focus on SQL/JDBC-backed database targets.
+
 This document lists the databases currently supported by **Webex Contact Center DB Connector** based on the active codebase.
 
 ## Supported Databases

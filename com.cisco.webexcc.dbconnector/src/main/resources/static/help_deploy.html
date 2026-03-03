@@ -53,47 +53,65 @@
     <h1>Deployment - Help Guide</h1>
 
     <h2>Overview</h2>
-    <p>The <strong>Deployment</strong> page allows you to promote a tested SQL statement from a DEV environment to UAT or PROD environments. This ensures that only verified queries are made available to your live Contact Center flows.</p>
+    <p>The <strong>Deployment</strong> pages allow you to promote tested endpoints from <strong>DEV</strong> to <strong>UAT</strong> or <strong>PROD</strong>. Deployment is supported for both <strong>SQL</strong> and <strong>LDAP</strong> endpoint types.</p>
+
+    <h2>Supported Deployments</h2>
+    <ul>
+        <li><strong>SQL Deploy</strong>: Promotes a DEV SQL statement to a target SQL database connection in UAT/PROD.</li>
+        <li><strong>LDAP Deploy</strong>: Promotes a DEV LDAP statement to a target LDAP connection in UAT/PROD.</li>
+    </ul>
 
     <div class="note">
-        <strong>Important:</strong> You can only deploy <strong>DEV</strong> SQL statement(s) to <strong>UAT</strong> or <strong>PROD</strong> environments.
+        <strong>Important:</strong> Deploy actions are available for <strong>DEV</strong> endpoints and target only <strong>UAT</strong>/<strong>PROD</strong> connections.
     </div>
 
-    <h2>How to Deploy</h2>
+    <h2>How to Deploy (SQL or LDAP)</h2>
     <ol>
         <li>
             <strong>Verify Source Information</strong>:
             <ul>
-                <li>Review the <strong>Statement Name</strong>, <strong>Description</strong>, and <strong>Source Environment</strong> displayed at the top of the page to ensure you are deploying the correct query.</li>
+                <li>Review the <strong>Name</strong>, <strong>Description</strong>, and <strong>Source Environment</strong> shown at the top of the deploy page.</li>
+                <li>Confirm you selected the correct endpoint type (SQL or LDAP).</li>
             </ul>
         </li>
         <li>
-            <strong>Select Production Connection</strong>:
+            <strong>Select Target Connection</strong>:
             <ul>
-                <li>Use the dropdown menu to select the target <strong>Production Database Connection</strong>.</li>
-                <li><div class="note"><em>Note</em>: Only connections configured in the system will appear here. If you don't see your production database, go to the <strong>Connections</strong> page to add it.</div></li>
+                <li>Use the dropdown menu to select a target <strong>UAT/PROD connection</strong> of the same type:</li>
+                <li>SQL deploy page shows SQL-compatible target connections.</li>
+                <li>LDAP deploy page shows LDAP-compatible target connections.</li>
+                <li><div class="note"><em>Note</em>: Only configured connections appear. If missing, add them on the <strong>Connections</strong> page first.</div></li>
             </ul>
         </li>
         <li>
             <strong>Deploy</strong>:
             <ul>
                 <li>Click the <strong>Deploy</strong> button.</li>
+                <li>If a same-name endpoint already exists in the target environment, you will be prompted to <strong>Confirm Overwrite</strong>.</li>
             </ul>
         </li>
     </ol>
 
+    <h2>What Gets Copied</h2>
+    <ul>
+        <li><strong>SQL</strong>: name, query content, parameter definitions, and target connection/environment.</li>
+        <li><strong>LDAP</strong>: name, base DN, filter, attributes, parameter definitions, and target connection/environment.</li>
+    </ul>
+
     <h2>Warnings & Confirmation</h2>
     <div class="warning">
         <ul>
-            <li><strong>Overwrite Warning</strong>: If a SQL statement with the exact same name already exists in the selected Production environment, the system will warn you.</li>
-            <li><strong>Confirmation</strong>: You will be asked to confirm that you want to overwrite the existing production query. This is a safety measure to prevent accidental changes to live flows.</li>
+            <li><strong>Overwrite Warning</strong>: If an endpoint with the same name already exists in the selected target environment, the system shows a warning.</li>
+            <li><strong>Confirmation</strong>: You must confirm overwrite before the existing target endpoint is replaced.</li>
+            <li><strong>Connection Type Safety</strong>: SQL deploy only accepts SQL connections; LDAP deploy only accepts LDAP connections.</li>
         </ul>
     </div>
 
     <h2>Best Practices</h2>
     <ul>
-        <li>Always test your queries in the <strong>Test Console</strong> before deploying.</li>
-        <li>Ensure your Production connection credentials have the appropriate permissions (usually read-only for the application).</li>
+        <li>Always validate endpoints in the <strong>Test Console</strong> before deploy.</li>
+        <li>Use clear endpoint names and keep DEV/UAT/PROD behavior aligned.</li>
+        <li>Ensure target connection credentials and network access are correct for the destination environment.</li>
     </ul>
 
 </body>

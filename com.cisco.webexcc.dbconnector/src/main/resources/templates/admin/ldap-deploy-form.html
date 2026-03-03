@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>LDAP Deployment</title>
+    <style>
+        body { font-family: sans-serif; padding: 0; margin: 0; }
+        .container { max-width: 600px; margin: 50px auto; padding: 2rem; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .btn { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .info { background: #e9ecef; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
+        .target-env-box { margin-top:10px; padding:10px; border:1px solid #ddd; border-radius:4px; background:#f8f9fa; }
+        .target-env-badge { display:inline-flex; align-items:center; padding:.25rem .7rem; border-radius:999px; font-size:.75rem; font-weight:700; margin-left:.4rem; }
+        .target-env-default { background:#f1f3f5; color:#5f6368; }
+        .target-env-dev { background:#e8f0fe; color:#1967d2; }
+        .target-env-uat { background:#fff4ce; color:#8a6d0b; }
+        .target-env-prod { background:#e6f4ea; color:#1e8e3e; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>LDAP Deployment</h1>
+    </div>
+
+    <div class="info">
+        <p><strong>Statement:</strong> <span th:text="${source.name}"></span></p>
+        <p th:if="${source.description}"><strong>Description:</strong> <span th:text="${source.description}"></span></p>
+        <p><strong>Source Environment:</strong> <span th:text="${source.environment}"></span></p>
+    </div>
+
+    <div th:if="${warningMessage}" style="background: rgba(255, 194, 14, 0.15); color: #8a6d0b; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 194, 14, 0.3);">
+        <strong th:text="${warningMessage}">Warning message</strong>
+    </div>
+
+    <div th:if="${errorMessage}" style="background: rgba(226, 35, 26, 0.12); color: #7c1a16; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid rgba(226, 35, 26, 0.25);">
+        <strong th:text="${errorMessage}">Error message</strong>
+    </div>
+
+    <form th:action="@{/admin/ldap/deploy}" method="post">
+        <input type="hidden" name="sourceId" th:value="${source.id}"/>
+        <input type="hidden" name="confirmed" th:value="${requiresConfirmation ? 'true' : 'false'}"/>
+
+        <div class="form-group">
+            <label>Select Target LDAP Connection:</label>
+            <select id="targetConnection" name="connectionId" required>
+                <option value="" disabled th:selected="${selectedConnectionId == null}">-- Select a Connection --</option>
+                <option th:each="conn : ${connections}"
+                        th:value="${conn.id}"
+                        th:text="${conn.environment} + ' - ' + ${conn.type} + ' - ' + ${conn.name}"
+                        th:attr="data-env=${conn.environment}"
+                        th:selected="${selectedConnectionId != null && selectedConnectionId.equals(conn.id)}">
+                </option>
+            </select>
+            <div class="target-env-box">
+                <strong>Target Environment:</strong>
+                <span id="targetEnvLabel" class="target-env-badge target-env-default">Not selected</span>
+            </div>
+            <div th:if="${#lists.isEmpty(connections)}" style="background: rgba(255, 194, 14, 0.15); color: #8a6d0b; padding: 10px; border-radius: 4px; margin-top: 10px; border: 1px solid rgba(255, 194, 14, 0.3);">
+                <strong>Warning:</strong> No UAT or PROD LDAP connections found. Please <a href="/admin/connections/add">add a connection</a> first.
+            </div>
+        </div>
+
+        <button type="submit" class="btn" th:text="${requiresConfirmation ? 'Confirm Overwrite' : 'Deploy'}">Deploy</button>
+        <a href="/admin/ldap" style="margin-left: 10px;">Cancel</a>
+    </form>
+</div>
+
+<script>
+    (function () {
+        const select = document.getElementById('targetConnection');
+        const label = document.getElementById('targetEnvLabel');
+
+        function updateTargetEnv() {
+            if (!select || !label) {
+                return;
+            }
+            const selected = select.options[select.selectedIndex];
+            const env = selected ? selected.getAttribute('data-env') : null;
+            const value = env && env.trim().length > 0 ? env.trim().toUpperCase() : 'Not selected';
+            label.textContent = value;
+            label.className = 'target-env-badge';
+            if (value === 'PROD') {
+                label.classList.add('target-env-prod');
+            } else if (value === 'UAT') {
+                label.classList.add('target-env-uat');
+            } else if (value === 'DEV') {
+                label.classList.add('target-env-dev');
+            } else {
+                label.classList.add('target-env-default');
+            }
+        }
+
+        if (select) {
+            select.addEventListener('change', updateTargetEnv);
+            updateTargetEnv();
+        }
+    })();
+</script>
+</body>
+</html>

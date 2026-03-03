@@ -391,7 +391,7 @@
         }
     </style>
     <script>
-        function selectStatement(element, name, env, paramNames) {
+        function selectStatement(element, name, env, paramNames, apiPath) {
             // Update active state in sidebar
             document.querySelectorAll('.endpoint-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
@@ -434,16 +434,16 @@
                 `;
             }
 
-            updateUrlPreview(name, env);
+            updateUrlPreview(apiPath);
             
             // Add listeners
             document.querySelectorAll('.param-input').forEach(input => {
-                input.addEventListener('input', () => updateUrlPreview(name, env));
+                input.addEventListener('input', () => updateUrlPreview(apiPath));
             });
 
             // Reset Results
             const runBtn = document.getElementById('runBtn');
-            runBtn.onclick = () => runQuery(name, env);
+            runBtn.onclick = () => runQuery(apiPath);
             runBtn.disabled = false;
             runBtn.innerHTML = `
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -455,8 +455,8 @@
             document.getElementById('statusDot').className = 'status-dot';
         }
 
-        function updateUrlPreview(name, env) {
-            let url = window.location.origin + '/api/query/' + env + '/' + name;
+        function updateUrlPreview(apiPath) {
+            let url = window.location.origin + apiPath;
             const inputs = document.querySelectorAll('.param-input');
             const params = [];
             inputs.forEach(input => {
@@ -470,7 +470,7 @@
             document.getElementById('urlPreview').textContent = url;
         }
 
-        async function runQuery(name, env) {
+        async function runQuery(apiPath) {
             const resultArea = document.getElementById('resultArea');
             const runBtn = document.getElementById('runBtn');
             const statusText = document.getElementById('statusText');
@@ -566,11 +566,12 @@
             <div class="endpoint-list">
                 <div th:each="stmt : ${statements}" 
                      class="endpoint-item"
-                     th:onclick="selectStatement(this, [[${stmt.name}]], [[${stmt.environment}]], [[${stmt.paramNames}]])">
+                     th:onclick="selectStatement(this, [[${stmt.name}]], [[${stmt.environment}]], [[${stmt.paramNames}]], [[${stmt.apiPath}]])">
                     <div class="endpoint-meta" style="margin-bottom: 0.25rem;">
                         <span th:text="${stmt.environment}" 
                               th:class="${stmt.environment == 'PROD' ? 'badge badge-prod' : 'badge badge-dev'}">DEV</span>
-                        <span class="badge" style="background-color: #e1e4e8; color: #58585b;" th:text="${stmt.dbConnection.type}">TYPE</span>
+                        <span class="badge" style="background-color: #e1e4e8; color: #58585b;" th:text="${stmt.connectionType}">TYPE</span>
+                        <span class="badge" style="background-color: #f4f5f7; color: #1b1b1b;" th:text="${stmt.type}">SQL</span>
                     </div>
                     <div class="endpoint-name">
                         <span th:text="${stmt.name}">get_users</span>
