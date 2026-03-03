@@ -28,6 +28,20 @@ The Webex Contact Center DB Connector is a Spring Boot application that exposes 
 
 ## Recent Security Updates (February 2026)
 
+## Recent Functional Surface Updates (March 2026)
+
+### ✅ Expanded API Surface: LDAP Endpoint Family
+- Added LDAP execution endpoint family: `/api/ldap/query/{env}/{name}` in addition to existing SQL route family.
+- Added LDAP admin management and deploy workflow (DEV → UAT/PROD).
+- Added unified test console execution for both SQL and LDAP.
+
+### Security Implications
+- Existing controls and recommendations for unauthenticated API execution routes now apply to both:
+  - `/api/query/{env}/{name}`
+  - `/api/ldap/query/{env}/{name}`
+- Monitoring, rate-limiting, and ingress filtering should be configured consistently for both route families.
+- Dashboard activity metrics now aggregate SQL + LDAP traffic, improving detection visibility across data-access endpoints.
+
 ### ✅ CVE Vulnerability Remediation
 All critical and high-severity CVE vulnerabilities have been addressed through dependency upgrades:
 

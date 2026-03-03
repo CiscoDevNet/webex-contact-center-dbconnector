@@ -2,13 +2,21 @@
 
 Welcome to the Webex Contact Center DB Connector. This application provides a secure and manageable way to expose database queries as API endpoints for use within Webex Contact Center flows.
 
+## v2.1.1 Documentation Update (2026-03-03)
+
+- Added LDAP statement management and LDAP endpoint execution support.
+- Test Console now supports both SQL and LDAP endpoints.
+- Added LDAP deploy action (DEV → UAT/PROD) with overwrite confirmation.
+- Dashboard environment stats now include both SQL and LDAP endpoint activity.
+
 ## Table of Contents
 1.  [Getting Started](#1-getting-started)
 2.  [Dashboard](#2-dashboard)
 3.  [Managing Connections](#3-managing-connections)
 4.  [Managing SQL Statements](#4-managing-sql-statements)
-5.  [Testing Queries](#5-testing-queries)
-6.  [Deployment](#6-deployment)
+5.  [Managing LDAP Statements](#5-managing-ldap-statements)
+6.  [Testing Endpoints](#6-testing-endpoints)
+7.  [Deployment](#7-deployment)
 
 ---
 
@@ -66,29 +74,46 @@ Welcome to the Webex Contact Center DB Connector. This application provides a se
 
 ---
 
-## 5. Testing Queries
+## 5. Managing LDAP Statements
 
-### Test Page
-*   **Access**: Click **"Test SQL"** in the navigation menu.
-*   **Purpose**: Verify that your SQL queries return the expected data before using them in a contact center flow.
-*   **How to Use**:
-    1.  **Select Environment**: Choose the environment (e.g., DEV).
-    2.  **Select Query**: Choose the SQL statement name from the dropdown.
-    3.  **Enter Parameters**: If your SQL uses parameters (like `:userId`), input fields will appear for you to provide values.
-    4.  **Run**: Click **"Execute"**.
-    5.  **Results**: The JSON response from the database will be displayed below.
+### LDAP Statements Page
+*   **Access**: Click **"LDAP Statements"** in the navigation menu.
+*   **Purpose**: Define LDAP queries exposed as APIs.
+*   **Actions**:
+    *   **View List**: See all LDAP statements by environment and connection.
+    *   **Create Statement**: Click **"Add LDAP Statement"**.
+        *   **Name**: Endpoint identifier.
+        *   **Connection**: LDAP connection to execute against.
+        *   **Base DN / Filter / Attributes**: LDAP search definition.
+        *   **Parameters**: Derived from filter placeholders (for example, `{0}`, `{1}`).
+    *   **Edit**: Modify statement details.
+    *   **Deploy (DEV only)**: Promote statement to UAT/PROD.
 
 ---
 
-## 6. Deployment
+## 6. Testing Endpoints
+
+### Test Page
+*   **Access**: Click **"Test"** in the navigation menu.
+*   **Purpose**: Validate SQL and LDAP endpoint behavior before flow integration.
+*   **How to Use**:
+    1.  **Select Environment**: Choose the environment (e.g., DEV).
+    2.  **Select Endpoint**: Choose SQL or LDAP endpoint from the list.
+    3.  **Enter Parameters**: Provide required endpoint parameters.
+    4.  **Run**: Click **"Execute"**.
+    5.  **Results**: JSON response is displayed in the result panel.
+
+---
+
+## 7. Deployment
 
 ### Deployment Page
-*   **Access**: Often accessed via a "Deploy" action on the SQL Statements page.
-*   **Purpose**: Promote a tested SQL statement from one environment to another (e.g., from **DEV** to **PROD**).
+*   **Access**: Via the **Deploy** action on SQL or LDAP statement pages.
+*   **Purpose**: Promote tested endpoints from **DEV** to **UAT/PROD**.
 *   **Process**:
-    1.  Select the source SQL statement.
-    2.  Choose the target environment.
-    3.  The system will create a copy of the SQL statement in the new environment, allowing you to map it to the appropriate production database connection.
+    1.  Select source endpoint (SQL or LDAP).
+    2.  Choose target UAT/PROD connection of the same type.
+    3.  Confirm overwrite if an endpoint with the same name already exists.
 
 ---
 

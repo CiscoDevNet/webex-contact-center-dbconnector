@@ -274,7 +274,7 @@
                     <svg class="icon" style="color: #049FD9;" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
                     </svg>
-                    <span th:text="${connection.id == null ? 'Add Database Connection' : 'Edit Database Connection'}">Add Database Connection</span>
+                    <span th:text="${connection.id == null ? 'Add Connection' : 'Edit Connection'}">Add Connection</span>
                 </h1>
             </div>
         </div>
@@ -307,31 +307,31 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="type" class="form-label">Database Type</label>
+                    <label for="type" class="form-label">Connection Type</label>
                     <select class="form-control" id="type" th:field="*{type}" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;">
                         <option value="MYSQL">MySQL</option>
                         <option value="SQLSERVER">SQL Server</option>
                         <option value="ORACLE">Oracle</option>
-                        <option value="POSTGRESQL">PostgreSQL</option>
+                        <option value="LDAP">LDAP</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="url" class="form-label">JDBC URL</label>
+                    <label for="url" class="form-label" id="urlLabel">Connection URL</label>
                     <input type="text" class="form-control font-monospace" id="url" th:field="*{url}" required placeholder="jdbc:mysql://localhost:3306/mydb"/>
-                    <div class="form-text">The full JDBC connection string.</div>
+                    <div class="form-text" id="urlHelp">The full connection string (JDBC for SQL, ldap:// for LDAP).</div>
                 </div>
                 
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
-                            <label for="username" class="form-label">Username</label>
+                            <label for="username" class="form-label" id="usernameLabel">Username</label>
                             <input type="text" class="form-control" id="username" th:field="*{username}" required/>
                         </div>
                     </div>
                     <div class="col">
                         <div class="form-group">
-                            <label for="password" class="form-label">Password</label>
+                            <label for="password" class="form-label" id="passwordLabel">Password</label>
                             <div style="position: relative;">
                                 <input type="password" class="form-control" id="password" th:field="*{password}" required style="padding-right: 40px;"/>
                                 <button type="button" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--cisco-gray-60); padding: 4px; display: flex; align-items: center; justify-content: center;" title="Show/Hide Password">
@@ -440,6 +440,33 @@
             const form = document.getElementById('connectionForm');
             const saveButton = document.getElementById('saveButton');
             const inputs = form.querySelectorAll('input, select');
+            const typeSelect = document.getElementById('type');
+
+            function updateFieldHints() {
+                const selectedType = typeSelect.value;
+                const urlInput = document.getElementById('url');
+                const urlLabel = document.getElementById('urlLabel');
+                const urlHelp = document.getElementById('urlHelp');
+                const usernameLabel = document.getElementById('usernameLabel');
+                const passwordLabel = document.getElementById('passwordLabel');
+
+                if (selectedType === 'LDAP') {
+                    urlLabel.textContent = 'LDAP URL';
+                    urlInput.placeholder = 'ldap://ldap.forumsys.com:389';
+                    urlHelp.textContent = 'LDAP server URL (for example ldap://host:389 or ldaps://host:636).';
+                    usernameLabel.textContent = 'Bind DN';
+                    passwordLabel.textContent = 'Bind Password';
+                } else {
+                    urlLabel.textContent = 'Connection URL';
+                    urlInput.placeholder = 'jdbc:mysql://localhost:3306/mydb';
+                    urlHelp.textContent = 'The full connection string (JDBC for SQL, ldap:// for LDAP).';
+                    usernameLabel.textContent = 'Username';
+                    passwordLabel.textContent = 'Password';
+                }
+            }
+
+            updateFieldHints();
+            typeSelect.addEventListener('change', updateFieldHints);
 
             inputs.forEach(input => {
                 input.addEventListener('input', () => {

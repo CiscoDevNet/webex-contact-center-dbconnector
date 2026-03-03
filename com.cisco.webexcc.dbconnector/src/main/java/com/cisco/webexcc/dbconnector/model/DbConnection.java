@@ -26,7 +26,7 @@ public class DbConnection {
     private long endpointCount;
 
     public enum DbType {
-        MYSQL, SQLSERVER, ORACLE
+        MYSQL, SQLSERVER, ORACLE, LDAP
     }
 
     // Getters and Setters

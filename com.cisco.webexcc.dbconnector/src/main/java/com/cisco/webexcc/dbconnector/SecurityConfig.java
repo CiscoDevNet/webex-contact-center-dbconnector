@@ -16,7 +16,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity in this demo, especially for AJAX POSTs
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/login**", "/error**", "/api/query/**").permitAll()
+                .requestMatchers("/", "/login**", "/error**", "/api/query/**", "/api/ldap/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2

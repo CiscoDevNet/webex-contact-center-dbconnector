@@ -4,6 +4,7 @@ import com.cisco.webexcc.dbconnector.model.EndpointExecution;
 import com.cisco.webexcc.dbconnector.model.EndpointStat;
 import com.cisco.webexcc.dbconnector.model.EnvironmentStat;
 import com.cisco.webexcc.dbconnector.repository.EndpointExecutionRepository;
+import com.cisco.webexcc.dbconnector.repository.LdapStatementRepository;
 import com.cisco.webexcc.dbconnector.repository.SqlStatementRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,41 +28,29 @@ public class EndpointTrackingService {
     @Autowired
     private SqlStatementRepository sqlStatementRepository;
 
+    @Autowired
+    private LdapStatementRepository ldapStatementRepository;
+
     @Transactional
     public void resetEnvironment(String env) {
-        // Delete logs for this environment (case insensitive prefix match would be better but we use standard lowercase)
-        repository.deleteByEndpointStartingWith("/api/query/" + env.toLowerCase() + "/");
-        // Also try uppercase just in case
-        repository.deleteByEndpointStartingWith("/api/query/" + env.toUpperCase() + "/");
+        String envLower = env.toLowerCase();
+        repository.deleteByEndpointStartingWith("/api/query/" + envLower + "/");
+        repository.deleteByEndpointStartingWith("/api/ldap/query/" + envLower + "/");
     }
 
     @Transactional
     public void cleanupEnvironment(String env) {
-        // We want to remove stats for endpoints that are NOT in the configured list.
-        // 1. Get all configured names for this env
-        var statements = sqlStatementRepository.findByEnvironment(env);
-        var configuredNames = statements.stream()
+        String normalizedEnv = env.toUpperCase();
+
+        var configuredSqlNames = sqlStatementRepository.findByEnvironment(normalizedEnv).stream()
                 .map(s -> s.getName().toLowerCase())
                 .toList();
+        cleanupTrackedEndpoints("/api/query/" + normalizedEnv.toLowerCase() + "/", configuredSqlNames);
 
-        // 2. Get all tracked endpoints for this env (lowercase prefix)
-        String prefix = "/api/query/" + env.toLowerCase() + "/";
-        var trackedEndpoints = getEndpointCounts(prefix, env); // This now returns union, but we only want to check keys from DB really.
-        // Actually getEndpointCounts returns the map. If we iterate the map keys:
-        
-        for (String endpoint : trackedEndpoints.keySet()) {
-            // endpoint format: /api/query/env/name
-            String[] parts = endpoint.split("/");
-            if (parts.length >= 5) {
-                String name = parts[4].toLowerCase();
-                if (!configuredNames.contains(name)) {
-                    repository.deleteByEndpoint(endpoint);
-                }
-            } else {
-                // Invalid format, delete it
-                repository.deleteByEndpoint(endpoint);
-            }
-        }
+        var configuredLdapNames = ldapStatementRepository.findByEnvironment(normalizedEnv).stream()
+                .map(s -> s.getName().toLowerCase())
+                .toList();
+        cleanupTrackedEndpoints("/api/ldap/query/" + normalizedEnv.toLowerCase() + "/", configuredLdapNames);
     }
 
     public void trackExecution(String endpoint, int statusCode) {
@@ -88,40 +77,58 @@ public class EndpointTrackingService {
 
     public Map<String, EnvironmentStat> getEnvironmentStats() {
         Map<String, EnvironmentStat> stats = new LinkedHashMap<>();
-        
-        // Use lowercase prefixes
-        long prodCount = safeCountByEndpointPrefix("/api/query/prod/");
-        long prodFailures = safeFailureCountByPrefix("/api/query/prod/");
-        stats.put("PROD", new EnvironmentStat(prodCount, prodFailures));
-        
-        long uatCount = safeCountByEndpointPrefix("/api/query/uat/");
-        long uatFailures = safeFailureCountByPrefix("/api/query/uat/");
-        stats.put("UAT", new EnvironmentStat(uatCount, uatFailures));
-        
-        long devCount = safeCountByEndpointPrefix("/api/query/dev/");
-        long devFailures = safeFailureCountByPrefix("/api/query/dev/");
-        stats.put("DEV", new EnvironmentStat(devCount, devFailures));
+
+        stats.put("PROD", getCombinedEnvironmentStat("prod"));
+        stats.put("UAT", getCombinedEnvironmentStat("uat"));
+        stats.put("DEV", getCombinedEnvironmentStat("dev"));
         
         return stats;
     }
 
     public Map<String, Map<String, EndpointStat>> getDetailedEnvironmentStats() {
         Map<String, Map<String, EndpointStat>> stats = new LinkedHashMap<>();
-        // Use lowercase prefixes because the frontend generates lowercase links
-        stats.put("PROD", getEndpointCounts("/api/query/prod/", "PROD"));
-        stats.put("UAT", getEndpointCounts("/api/query/uat/", "UAT"));
-        stats.put("DEV", getEndpointCounts("/api/query/dev/", "DEV"));
+        stats.put("PROD", getCombinedEndpointCounts("PROD"));
+        stats.put("UAT", getCombinedEndpointCounts("UAT"));
+        stats.put("DEV", getCombinedEndpointCounts("DEV"));
         return stats;
     }
 
-    private Map<String, EndpointStat> getEndpointCounts(String prefix, String env) {
+    private EnvironmentStat getCombinedEnvironmentStat(String envLower) {
+        long totalHits = safeCountByEndpointPrefix("/api/query/" + envLower + "/")
+                + safeCountByEndpointPrefix("/api/ldap/query/" + envLower + "/");
+        long failedHits = safeFailureCountByPrefix("/api/query/" + envLower + "/")
+                + safeFailureCountByPrefix("/api/ldap/query/" + envLower + "/");
+        return new EnvironmentStat(totalHits, failedHits);
+    }
+
+    private Map<String, EndpointStat> getCombinedEndpointCounts(String env) {
+        Map<String, EndpointStat> merged = new HashMap<>();
+        merged.putAll(getSqlEndpointCounts(env));
+        merged.putAll(getLdapEndpointCounts(env));
+        return merged;
+    }
+
+    private Map<String, EndpointStat> getSqlEndpointCounts(String env) {
+        String prefix = "/api/query/" + env.toLowerCase() + "/";
+        var configuredNames = sqlStatementRepository.findByEnvironment(env).stream()
+                .map(s -> s.getName().toLowerCase())
+                .toList();
+        return getEndpointCounts(prefix, configuredNames);
+    }
+
+    private Map<String, EndpointStat> getLdapEndpointCounts(String env) {
+        String prefix = "/api/ldap/query/" + env.toLowerCase() + "/";
+        var configuredNames = ldapStatementRepository.findByEnvironment(env).stream()
+                .map(s -> s.getName().toLowerCase())
+                .toList();
+        return getEndpointCounts(prefix, configuredNames);
+    }
+
+    private Map<String, EndpointStat> getEndpointCounts(String prefix, java.util.List<String> configuredNames) {
         Map<String, EndpointStat> map = new HashMap<>();
-        
-        // 1. Add all configured endpoints with 0 hits
-        var statements = sqlStatementRepository.findByEnvironment(env);
-        for (var stmt : statements) {
-            // Construct the expected endpoint path (lowercase to match frontend links)
-            String key = "/api/query/" + env.toLowerCase() + "/" + stmt.getName().toLowerCase();
+
+        for (String endpointName : configuredNames) {
+            String key = prefix + endpointName;
             map.put(key, new EndpointStat(0L, 0L, null));
         }
 
@@ -155,6 +162,23 @@ public class EndpointTrackingService {
         }
         
         return map;
+    }
+
+    private void cleanupTrackedEndpoints(String prefix, java.util.List<String> configuredNames) {
+        java.util.List<Object[]> tracked = safeCountEndpointsByPrefix(prefix);
+        for (Object[] entry : tracked) {
+            String endpoint = (String) entry[0];
+            String[] parts = endpoint.split("/");
+            if (parts.length < 2) {
+                repository.deleteByEndpoint(endpoint);
+                continue;
+            }
+
+            String endpointName = parts[parts.length - 1].toLowerCase();
+            if (!configuredNames.contains(endpointName)) {
+                repository.deleteByEndpoint(endpoint);
+            }
+        }
     }
 
     private long safeCountByEndpointPrefix(String prefix) {

@@ -6,15 +6,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api")
@@ -25,13 +27,20 @@ public class ApiController {
     @Autowired
     private SqlExecutionService sqlExecutionService;
 
-    @GetMapping("/query/{env}/{name}")
-    public ResponseEntity<?> executeQuery(@PathVariable String env, @PathVariable String name, @RequestParam Map<String, String> queryParams) {
-        logger.info("Received query request for env: {}, name: {}, params: {}", env, name, queryParams);
+    @RequestMapping(value = "/query/{env}/{name}", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<?> executeQuery(
+            @PathVariable String env,
+            @PathVariable String name,
+            @RequestParam Map<String, String> queryParams,
+            @RequestBody(required = false) Map<String, Object> bodyParams
+    ) {
+        logger.info("Received query request for env: {}, name: {}, queryParams: {}, hasBody: {}", env, name, queryParams, bodyParams != null);
         try {
-            // Convert Map<String, String> to Map<String, Object>
-            Map<String, Object> params = queryParams.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Map<String, Object> params = new HashMap<>();
+            params.putAll(queryParams);
+            if (bodyParams != null) {
+                params.putAll(bodyParams);
+            }
             List<Map<String, Object>> result = sqlExecutionService.executeSql(name, env.toUpperCase(), params);
             logger.debug("Query executed successfully, returning {} rows", result.size());
             

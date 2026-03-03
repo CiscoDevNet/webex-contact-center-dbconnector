@@ -1,5 +1,16 @@
 # Getting Started
 
+## v2.1.1 Documentation Update (2026-03-03)
+
+- Added end-to-end support for both SQL and LDAP endpoint management.
+- Test Console now documents and supports both endpoint patterns:
+  - `/api/query/{env}/{name}` (SQL)
+  - `/api/ldap/query/{env}/{name}` (LDAP)
+- Added LDAP deploy flow from DEV to UAT/PROD with overwrite confirmation.
+- Home dashboard stats now aggregate SQL and LDAP endpoint activity.
+- Runtime baseline remains Java 24.
+- Release notes: see `../CHANGELOG.md`.
+
 ## Network Architecture
 
 ```mermaid
