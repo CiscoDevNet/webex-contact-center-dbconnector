@@ -1,10 +1,15 @@
 package com.cisco.webexcc.dbconnector.controller;
 
 import com.cisco.webexcc.dbconnector.model.DbConnection;
+import com.cisco.webexcc.dbconnector.model.LdapStatement;
 import com.cisco.webexcc.dbconnector.model.SqlStatement;
 import com.cisco.webexcc.dbconnector.repository.DbConnectionRepository;
+import com.cisco.webexcc.dbconnector.repository.LdapStatementRepository;
 import com.cisco.webexcc.dbconnector.repository.SqlStatementRepository;
+import com.cisco.webexcc.dbconnector.ldap.LdapQueryService;
 import com.cisco.webexcc.dbconnector.service.SqlExecutionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +19,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
     private DbConnectionRepository dbConnectionRepository;
@@ -30,7 +39,13 @@ public class AdminController {
     private SqlStatementRepository sqlStatementRepository;
 
     @Autowired
+    private LdapStatementRepository ldapStatementRepository;
+
+    @Autowired
     private SqlExecutionService sqlExecutionService;
+
+    @Autowired
+    private LdapQueryService ldapQueryService;
 
     // --- Connections ---
 
@@ -58,8 +73,15 @@ public class AdminController {
     }
 
     @PostMapping("/connections/save")
-    public String saveConnection(@ModelAttribute DbConnection connection) {
-        dbConnectionRepository.save(connection);
+    public String saveConnection(@ModelAttribute DbConnection connection, RedirectAttributes redirectAttributes) {
+        try {
+            dbConnectionRepository.save(connection);
+            redirectAttributes.addFlashAttribute("successMessage", "Connection saved successfully.");
+        } catch (Exception ex) {
+            logger.error("Failed to save connection {}", connection.getName(), ex);
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to save connection: " + ex.getMessage());
+            return "redirect:/admin/connections/add";
+        }
         return "redirect:/admin/connections";
     }
 
@@ -72,11 +94,18 @@ public class AdminController {
         }
 
         List<SqlStatement> dependencies = sqlStatementRepository.findByDbConnection(connection);
-        if (!dependencies.isEmpty()) {
-            StringBuilder sb = new StringBuilder("Cannot delete connection. It is used by the following SQL endpoints: ");
+        List<LdapStatement> ldapDependencies = ldapStatementRepository.findByDbConnection(connection);
+        if (!dependencies.isEmpty() || !ldapDependencies.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Cannot delete connection. It is used by endpoints: ");
             for (int i = 0; i < dependencies.size(); i++) {
-                sb.append(dependencies.get(i).getName());
-                if (i < dependencies.size() - 1) {
+                sb.append("SQL:").append(dependencies.get(i).getName());
+                if (i < dependencies.size() - 1 || !ldapDependencies.isEmpty()) {
+                    sb.append(", ");
+                }
+            }
+            for (int i = 0; i < ldapDependencies.size(); i++) {
+                sb.append("LDAP:").append(ldapDependencies.get(i).getName());
+                if (i < ldapDependencies.size() - 1) {
                     sb.append(", ");
                 }
             }
@@ -266,7 +295,305 @@ public class AdminController {
 
     @GetMapping("/test")
     public String testPage(Model model) {
-        model.addAttribute("statements", sqlStatementRepository.findAll());
+        List<TestEndpointView> statements = new ArrayList<>();
+
+        for (SqlStatement stmt : sqlStatementRepository.findAll()) {
+            statements.add(new TestEndpointView(
+                    stmt.getName(),
+                    stmt.getEnvironment(),
+                    stmt.getParamNames(),
+                    stmt.getDbConnection() != null && stmt.getDbConnection().getType() != null
+                            ? stmt.getDbConnection().getType().name()
+                            : "SQL",
+                    "SQL",
+                    "/api/query/" + stmt.getEnvironment().toLowerCase() + "/" + stmt.getName().toLowerCase()
+            ));
+        }
+
+        for (LdapStatement stmt : ldapStatementRepository.findAll()) {
+            statements.add(new TestEndpointView(
+                    stmt.getName(),
+                    stmt.getEnvironment(),
+                    stmt.getParamNames(),
+                    stmt.getDbConnection() != null && stmt.getDbConnection().getType() != null
+                            ? stmt.getDbConnection().getType().name()
+                            : "LDAP",
+                    "LDAP",
+                    "/api/ldap/query/" + stmt.getEnvironment().toLowerCase() + "/" + stmt.getName().toLowerCase()
+            ));
+        }
+
+        statements.sort(Comparator
+                .comparing(TestEndpointView::getEnvironment, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(TestEndpointView::getType, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(TestEndpointView::getName, String.CASE_INSENSITIVE_ORDER));
+
+        model.addAttribute("statements", statements);
         return "admin/test-page";
+    }
+
+    public static class TestEndpointView {
+        private final String name;
+        private final String environment;
+        private final String paramNames;
+        private final String connectionType;
+        private final String type;
+        private final String apiPath;
+
+        public TestEndpointView(String name, String environment, String paramNames, String connectionType, String type, String apiPath) {
+            this.name = name;
+            this.environment = environment;
+            this.paramNames = paramNames;
+            this.connectionType = connectionType;
+            this.type = type;
+            this.apiPath = apiPath;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getEnvironment() {
+            return environment;
+        }
+
+        public String getParamNames() {
+            return paramNames;
+        }
+
+        public String getConnectionType() {
+            return connectionType;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public String getApiPath() {
+            return apiPath;
+        }
+    }
+
+    // --- LDAP Statements ---
+
+    @GetMapping("/ldap")
+    public String listLdap(Model model) {
+        model.addAttribute("statements", ldapStatementRepository.findAll());
+        model.addAttribute("hasConnections", !getAllLdapConnections().isEmpty());
+        return "admin/ldap-statements";
+    }
+
+    @GetMapping("/ldap/add")
+    public String addLdapForm(Model model) {
+        model.addAttribute("statement", new LdapStatement());
+        model.addAttribute("connections", getAllLdapConnections());
+        return "admin/ldap-form";
+    }
+
+    @GetMapping("/ldap/edit/{id}")
+    public String editLdapForm(@PathVariable UUID id, Model model) {
+        LdapStatement statement = ldapStatementRepository.findById(id).orElseThrow();
+        model.addAttribute("statement", statement);
+        model.addAttribute("connections", getAllLdapConnections());
+        return "admin/ldap-form";
+    }
+
+    @PostMapping("/ldap/save")
+    public String saveLdap(@ModelAttribute("statement") LdapStatement statement, Model model, RedirectAttributes redirectAttributes) {
+        if (statement.getDbConnection() == null || statement.getDbConnection().getId() == null) {
+            model.addAttribute("errorMessage", "Please select an LDAP connection.");
+            model.addAttribute("connections", getAllLdapConnections());
+            return "admin/ldap-form";
+        }
+
+        DbConnection selectedConnection = dbConnectionRepository.findById(statement.getDbConnection().getId()).orElse(null);
+        if (selectedConnection == null) {
+            model.addAttribute("errorMessage", "Selected connection was not found.");
+            model.addAttribute("connections", getAllLdapConnections());
+            return "admin/ldap-form";
+        }
+
+        if (selectedConnection.getType() != DbConnection.DbType.LDAP) {
+            model.addAttribute("errorMessage", "Selected connection must be of type LDAP.");
+            model.addAttribute("connections", getAllLdapConnections());
+            return "admin/ldap-form";
+        }
+
+        statement.setDbConnection(selectedConnection);
+        statement.setEnvironment(selectedConnection.getEnvironment());
+
+        java.util.Optional<LdapStatement> existing = ldapStatementRepository.findByNameIgnoreCaseAndEnvironment(statement.getName(), statement.getEnvironment());
+
+        if (existing.isPresent() && !existing.get().getId().equals(statement.getId())) {
+            model.addAttribute("errorMessage", "An LDAP endpoint with the name '" + statement.getName() + "' already exists in " + statement.getEnvironment() + ". Please choose a different name.");
+            model.addAttribute("connections", getAllLdapConnections());
+            return "admin/ldap-form";
+        }
+
+        ldapStatementRepository.save(statement);
+        redirectAttributes.addFlashAttribute("successMessage", "LDAP Statement saved successfully.");
+        return "redirect:/admin/ldap";
+    }
+
+    @GetMapping("/ldap/delete/{id}")
+    public String deleteLdap(@PathVariable UUID id) {
+        ldapStatementRepository.deleteById(id);
+        return "redirect:/admin/ldap";
+    }
+
+    @GetMapping({"/ldap/deploy/{id}", "/ldap/deploy/{id}/"})
+    public String deployLdapForm(@PathVariable UUID id, Model model) {
+        LdapStatement source = ldapStatementRepository.findById(id).orElseThrow();
+        model.addAttribute("source", source);
+        model.addAttribute("connections", getNonDevLdapConnections());
+        model.addAttribute("requiresConfirmation", false);
+        return "admin/ldap-deploy-form";
+    }
+
+    @GetMapping("/ldap/deploy")
+    public String deployLdapFormByQuery(@RequestParam UUID sourceId, Model model) {
+        return deployLdapForm(sourceId, model);
+    }
+
+    @PostMapping({"/ldap/deploy", "/ldap/deploy/"})
+    public String deployLdap(@RequestParam UUID sourceId,
+                             @RequestParam UUID connectionId,
+                             @RequestParam(required = false, defaultValue = "false") boolean confirmed,
+                             RedirectAttributes redirectAttributes,
+                             Model model) {
+        LdapStatement source = ldapStatementRepository.findById(sourceId).orElseThrow();
+        DbConnection targetConn = dbConnectionRepository.findById(connectionId).orElseThrow();
+
+        if (targetConn.getType() != DbConnection.DbType.LDAP) {
+            model.addAttribute("source", source);
+            model.addAttribute("connections", getNonDevLdapConnections());
+            model.addAttribute("errorMessage", "Selected connection must be LDAP.");
+            model.addAttribute("requiresConfirmation", false);
+            return "admin/ldap-deploy-form";
+        }
+
+        String targetEnv = targetConn.getEnvironment();
+
+        java.util.Optional<LdapStatement> existingTarget = ldapStatementRepository
+                .findByNameIgnoreCaseAndEnvironment(source.getName(), targetEnv);
+
+        if (existingTarget.isPresent() && !confirmed) {
+            model.addAttribute("source", source);
+            model.addAttribute("connections", getNonDevLdapConnections());
+            model.addAttribute("selectedConnectionId", connectionId);
+            model.addAttribute("warningMessage", "LDAP endpoint '" + source.getName() + "' already exists in " + targetEnv + ". Do you want to overwrite it?");
+            model.addAttribute("requiresConfirmation", true);
+            return "admin/ldap-deploy-form";
+        }
+
+        LdapStatement target = existingTarget.orElse(new LdapStatement());
+        boolean isNew = target.getId() == null;
+
+        target.setName(source.getName());
+        target.setDescription(source.getDescription());
+        target.setBaseDn(source.getBaseDn());
+        target.setFilterContent(source.getFilterContent());
+        target.setAttributes(source.getAttributes());
+        target.setParamNames(source.getParamNames());
+        target.setEnvironment(targetEnv);
+        target.setDbConnection(targetConn);
+
+        ldapStatementRepository.save(target);
+
+        String message = isNew ? "Deployed new LDAP endpoint to " : "Updated LDAP endpoint in ";
+        redirectAttributes.addFlashAttribute("successMessage", message + targetEnv + ": " + source.getName());
+
+        return "redirect:/admin/ldap";
+    }
+
+    private List<DbConnection> getAllLdapConnections() {
+        return dbConnectionRepository.findAll().stream()
+                .filter(Objects::nonNull)
+                .filter(conn -> conn.getType() == DbConnection.DbType.LDAP)
+                .sorted(Comparator
+                        .comparing(DbConnection::getEnvironment, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(DbConnection::getName, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+    }
+
+        private List<DbConnection> getNonDevLdapConnections() {
+        return getAllLdapConnections().stream()
+            .filter(conn -> !"DEV".equalsIgnoreCase(conn.getEnvironment()))
+            .toList();
+        }
+
+    @PostMapping("/ldap/test-ajax")
+    @ResponseBody
+    public Map<String, Object> testLdapAjax(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String connectionIdStr = (String) payload.get("connectionId");
+            String baseDn = (String) payload.get("baseDn");
+            String filter = (String) payload.get("filter");
+            String attributesCsv = (String) payload.get("attributes");
+            @SuppressWarnings("unchecked")
+            List<String> paramNames = (List<String>) payload.getOrDefault("paramNames", new ArrayList<>());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> paramValues = (Map<String, Object>) payload.getOrDefault("paramValues", new HashMap<>());
+
+            if (connectionIdStr == null || connectionIdStr.isEmpty()) {
+                throw new IllegalArgumentException("Connection ID is required");
+            }
+
+            UUID connectionId = UUID.fromString(connectionIdStr);
+            DbConnection connection = dbConnectionRepository.findById(connectionId)
+                    .orElseThrow(() -> new RuntimeException("Connection not found"));
+
+            if (connection.getType() != DbConnection.DbType.LDAP) {
+                throw new IllegalArgumentException("Selected connection must be LDAP");
+            }
+
+            List<String> args = new ArrayList<>();
+            for (String name : paramNames) {
+                Object value = paramValues.get(name);
+                args.add(value == null ? "" : String.valueOf(value));
+            }
+
+            List<String> attrs = new ArrayList<>();
+            if (attributesCsv != null && !attributesCsv.isBlank()) {
+                for (String token : attributesCsv.split(",")) {
+                    String trimmed = token.trim();
+                    if (!trimmed.isEmpty()) {
+                        attrs.add(trimmed);
+                    }
+                }
+            }
+
+            List<Map<String, Object>> results = ldapQueryService.search(
+                    connection.getUrl(),
+                    connection.getUsername(),
+                    connection.getPassword(),
+                    baseDn,
+                    filter,
+                    args,
+                    attrs,
+                    100,
+                    5000,
+                    "subtree"
+            );
+
+            response.put("status", "success");
+            if (results.isEmpty()) {
+                response.put("data", new HashMap<>());
+            } else if (results.size() == 1) {
+                response.put("data", results.get(0));
+            } else {
+                response.put("data", results);
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "Execution failed: " + e.getMessage());
+
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            response.put("stacktrace", sw.toString());
+        }
+        return response;
     }
 }

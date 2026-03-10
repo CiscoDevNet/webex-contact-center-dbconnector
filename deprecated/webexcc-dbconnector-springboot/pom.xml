@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.6</version>
+		<version>3.5.9</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cisco.app</groupId>
@@ -15,7 +15,11 @@
 	<name>webexcc-dbconnector-springboot</name>
 	<description>On premise Db to Rest Interface</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>24</java.version>
+		<commons-text.version>1.13.1</commons-text.version>
+		<c3p0.version>0.12.0</c3p0.version>
+		<mysql.version>9.6.0</mysql.version>
+		<mssql.version>13.2.1.jre11</mssql.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -36,28 +40,30 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk</artifactId>
-			<version>1.11.888</version>
+			<version>1.12.793</version>
 		</dependency>
 		<!-- connection pool -->
 		<dependency>
-			<groupId>c3p0</groupId>
+			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
+			<version>${c3p0.version}</version>
 		</dependency>
 		<!-- utility -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.9</version>
+			<version>${commons-text.version}</version>
 		</dependency>
 		<!-- db drivers -->
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>${mysql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
+			<version>${mssql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

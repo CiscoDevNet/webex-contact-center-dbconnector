@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>LDAP Management - Webex DB Connector</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cisco-blue: #049FD9;
+            --cisco-midnight: #002538;
+            --cisco-sky: #6ABF4B;
+            --cisco-red: #E2231A;
+            --cisco-gray-dark: #58585B;
+            --cisco-gray-light: #E1E4E8;
+            --cisco-bg: #F4F6F8;
+            --surface: #FFFFFF;
+            --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background: var(--cisco-bg);
+            color: #1B1B1B;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .main-content {
+            max-width: 1600px;
+            margin: 2.5rem auto;
+            padding: 0 3rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--cisco-gray-light);
+            padding-bottom: 1.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0 0 0.5rem 0;
+            color: var(--cisco-midnight);
+            letter-spacing: -0.02em;
+        }
+
+        .page-header p {
+            color: var(--cisco-gray-dark);
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-primary {
+            background-color: var(--cisco-blue);
+            color: white;
+            box-shadow: 0 2px 4px rgba(4, 159, 217, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #0086bf;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(4, 159, 217, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border-color: #cbd0d6;
+            color: var(--cisco-gray-dark);
+        }
+
+        .btn-outline:hover {
+            background-color: white;
+            border-color: var(--cisco-blue);
+            color: var(--cisco-blue);
+        }
+
+        .btn.disabled { opacity:.5; pointer-events:none; }
+
+        .card {
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+            border: none;
+            overflow: hidden;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: left;
+        }
+
+        th {
+            background-color: #fafbfc;
+            padding: 1.25rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6c757d;
+            border-bottom: 1px solid var(--cisco-gray-light);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--cisco-gray-light);
+            font-size: 0.95rem;
+            color: #212529;
+            vertical-align: top;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td { background-color: #f8f9fa; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-dev {
+            background-color: #e8f0fe;
+            color: #1967d2;
+            border: 1px solid rgba(25, 103, 210, 0.2);
+        }
+
+        .badge-prod {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+            border: 1px solid rgba(30, 142, 62, 0.2);
+        }
+
+        .endpoint {
+            color: var(--cisco-blue);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            border-bottom: 1px dashed rgba(4, 159, 217, 0.4);
+            transition: all 0.2s;
+        }
+
+        .endpoint:hover {
+            border-bottom-style: solid;
+            color: #0077a3;
+        }
+
+        .actions-cell { display:flex; gap:.25rem; justify-content:flex-end; }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--cisco-gray-dark);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            background: transparent;
+        }
+        .btn-icon:hover { background-color: #f0f4f8; color: var(--cisco-blue); }
+        .btn-icon.delete:hover { color: var(--cisco-red); background-color: rgba(226, 35, 26, 0.08); }
+        .btn-icon.deploy:hover { color: var(--cisco-sky); background-color: rgba(106, 191, 75, 0.1); }
+        .alert { padding:.8rem 1rem; border-radius:8px; margin-bottom:1rem; }
+        .alert-success { background:#e6f4ea; color:#137333; }
+        .alert-error { background:#fce8e6; color:#c5221f; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="main-content">
+    <div class="page-header">
+        <div>
+            <h1>LDAP Statements</h1>
+            <p>Manage LDAP query endpoints</p>
+        </div>
+        <div>
+            <a href="/home" class="btn btn-outline">Back to Dashboard</a>
+            <a th:if="${hasConnections}" href="/admin/ldap/add" class="btn btn-primary">Add LDAP Statement</a>
+            <span th:unless="${hasConnections}" class="btn btn-primary disabled" title="No LDAP connections available.">Add LDAP Statement</span>
+        </div>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+    <div class="card">
+        <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Environment</th>
+                <th>Connection</th>
+                <th>Base DN</th>
+                <th>Filter</th>
+                <th>Public URL</th>
+                <th style="text-align:right;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="stmt : ${statements}">
+                <td>
+                    <div style="font-weight:600;" th:text="${stmt.name}"></div>
+                    <div style="font-size:.85rem;color:#666;" th:if="${stmt.description}" th:text="${stmt.description}"></div>
+                </td>
+                <td><span th:text="${stmt.environment}" th:class="${stmt.environment == 'PROD' ? 'badge badge-prod' : 'badge badge-dev'}"></span></td>
+                <td th:text="${stmt.dbConnection.name}"></td>
+                <td th:text="${stmt.baseDn}"></td>
+                <td><code th:text="${stmt.filterContent}"></code></td>
+                <td>
+                    <a class="endpoint" th:href="@{'/api/ldap/query/' + ${#strings.toLowerCase(stmt.environment)} + '/' + ${#strings.toLowerCase(stmt.name)}}" target="_blank"
+                       th:text="'/api/ldap/query/' + ${#strings.toLowerCase(stmt.environment)} + '/' + ${#strings.toLowerCase(stmt.name)}"></a>
+                </td>
+                <td style="text-align:right;">
+                    <div class="actions-cell">
+                        <a th:href="@{/admin/ldap/edit/{id}(id=${stmt.id})}" class="btn-icon" title="Edit">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </a>
+                        <a th:if="${stmt.environment == 'DEV'}" th:href="@{/admin/ldap/deploy/{id}(id=${stmt.id})}" class="btn-icon deploy" title="Deploy">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 9l1.5 1.5"></path><path d="M15 15l1.5 1.5"></path></svg>
+                        </a>
+                        <a th:href="@{/admin/ldap/delete/{id}(id=${stmt.id})}" class="btn-icon delete" title="Delete" onclick="return confirm('Delete LDAP statement?')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(statements)}">
+                <td colspan="7" style="text-align:center; padding:2rem; color:#777;">No LDAP statements found.</td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -2,6 +2,23 @@
 
 latest version -> https://github.com/CiscoDevNet/webex-contact-center-dbconnector/tree/main/com.cisco.webexcc.dbconnector
 
+## v2.1.1 Documentation Update (2026-03-03)
+
+- Added SQL + LDAP endpoint support across admin, test, and deploy workflows.
+- Added LDAP deployment from DEV to UAT/PROD with overwrite confirmation.
+- Updated help and About pages for SQL/LDAP parity and version `v2.1.1`.
+- Fixed dashboard stats aggregation to include both SQL and LDAP endpoint traffic.
+- Java 24 remains the recommended runtime/build target.
+
+## Primary Documentation
+
+- `README_installationguide.md`
+- `README_userguide.md`
+- `README_developer.md`
+- `README_prompt.md`
+- `README_databases.md`
+- `CHANGELOG.md`
+
 ### Reference Documentation
 For further reference, please consider the following sections:
 
