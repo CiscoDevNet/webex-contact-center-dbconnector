@@ -9,9 +9,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
+import javax.naming.Context;
+import javax.naming.ldap.InitialLdapContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -77,10 +80,14 @@ public class SqlExecutionService {
     public void testConnection(DbConnection conn) throws Exception {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Void> future = executor.submit(() -> {
-            DataSource dataSource = createDataSource(conn);
-            try (Connection c = dataSource.getConnection()) {
-                if (!c.isValid(5)) {
-                    throw new RuntimeException("Connection is not valid.");
+            if (conn.getType() == DbConnection.DbType.LDAP) {
+                testLdapConnection(conn);
+            } else {
+                DataSource dataSource = createDataSource(conn);
+                try (Connection c = dataSource.getConnection()) {
+                    if (!c.isValid(5)) {
+                        throw new RuntimeException("Connection is not valid.");
+                    }
                 }
             }
             return null;
@@ -93,6 +100,34 @@ public class SqlExecutionService {
             throw new RuntimeException("Connection timed out after 5 seconds.");
         } finally {
             executor.shutdownNow();
+        }
+    }
+
+    private void testLdapConnection(DbConnection conn) throws Exception {
+        if (conn.getUrl() == null || conn.getUrl().isBlank()) {
+            throw new IllegalArgumentException("LDAP URL is required.");
+        }
+        if (conn.getUsername() == null || conn.getUsername().isBlank()) {
+            throw new IllegalArgumentException("LDAP Bind DN is required (use Username field).");
+        }
+        if (conn.getPassword() == null || conn.getPassword().isBlank()) {
+            throw new IllegalArgumentException("LDAP Bind Password is required.");
+        }
+
+        Hashtable<String, Object> env = new Hashtable<>();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+        env.put(Context.PROVIDER_URL, conn.getUrl());
+        env.put(Context.SECURITY_AUTHENTICATION, "simple");
+        env.put(Context.SECURITY_PRINCIPAL, conn.getUsername());
+        env.put(Context.SECURITY_CREDENTIALS, conn.getPassword());
+
+        InitialLdapContext ctx = null;
+        try {
+            ctx = new InitialLdapContext(env, null);
+        } finally {
+            if (ctx != null) {
+                ctx.close();
+            }
         }
     }
 
@@ -112,6 +147,8 @@ public class SqlExecutionService {
             case ORACLE:
                 dataSource.setDriverClassName("oracle.jdbc.OracleDriver");
                 break;
+            case LDAP:
+                throw new IllegalArgumentException("LDAP connections cannot be used for SQL execution.");
         }
         return dataSource;
     }

@@ -1,5 +1,17 @@
 # Developer Documentation
 
+## v2.1.1 Documentation Update (2026-03-03)
+
+### Major Functional Additions
+*   **LDAP Endpoints**: Added LDAP statement CRUD and `/api/ldap/query/{env}/{name}` execution support.
+*   **Unified Test Console**: Test UI supports both SQL and LDAP endpoint execution paths.
+*   **LDAP Deployment**: Added DEV → UAT/PROD deploy flow for LDAP endpoints with overwrite confirmation.
+*   **Dashboard Fix**: `/home` environment stats now aggregate both SQL and LDAP traffic.
+
+### Documentation/UI Sync
+*   Help docs updated for SQL + LDAP workflows.
+*   About page copy refreshed; version badge set to **v2.1.1**.
+
 This document outlines the development progress and configuration for the Webex Contact Center DB Connector project.
 
 ## Project Overview
