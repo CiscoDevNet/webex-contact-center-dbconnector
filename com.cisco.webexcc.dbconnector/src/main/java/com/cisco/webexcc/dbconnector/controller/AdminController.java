@@ -246,7 +246,7 @@ public class AdminController {
     public String deploySqlForm(@PathVariable UUID id, Model model) {
         SqlStatement source = sqlStatementRepository.findById(id).orElseThrow();
         model.addAttribute("source", source);
-        model.addAttribute("connections", dbConnectionRepository.findByEnvironmentNot("DEV"));
+        model.addAttribute("connections", getDeployableSqlConnections());
         model.addAttribute("requiresConfirmation", false);
         return "admin/deploy-form";
     }
@@ -259,6 +259,16 @@ public class AdminController {
                             Model model) {
         SqlStatement source = sqlStatementRepository.findById(sourceId).orElseThrow();
         DbConnection targetConn = dbConnectionRepository.findById(connectionId).orElseThrow();
+
+        if (targetConn.getType() == DbConnection.DbType.LDAP) {
+            model.addAttribute("source", source);
+            model.addAttribute("connections", getDeployableSqlConnections());
+            model.addAttribute("selectedConnectionId", connectionId);
+            model.addAttribute("warningMessage", "Only SQL database connections can be used for SQL deployment.");
+            model.addAttribute("requiresConfirmation", false);
+            return "admin/deploy-form";
+        }
+
         String targetEnv = targetConn.getEnvironment();
 
         // Check if version already exists in target environment
@@ -266,7 +276,7 @@ public class AdminController {
 
         if (existingTarget.isPresent() && !confirmed) {
             model.addAttribute("source", source);
-            model.addAttribute("connections", dbConnectionRepository.findByEnvironmentNot("DEV"));
+            model.addAttribute("connections", getDeployableSqlConnections());
             model.addAttribute("selectedConnectionId", connectionId);
             model.addAttribute("warningMessage", "Endpoint '" + source.getName() + "' already exists in " + targetEnv + ". Do you want to overwrite it?");
             model.addAttribute("requiresConfirmation", true);
@@ -289,6 +299,10 @@ public class AdminController {
         redirectAttributes.addFlashAttribute("successMessage", message + targetEnv + ": " + source.getName());
         
         return "redirect:/admin/sql";
+    }
+
+    private List<DbConnection> getDeployableSqlConnections() {
+        return dbConnectionRepository.findByEnvironmentNotAndTypeNot("DEV", DbConnection.DbType.LDAP);
     }
 
     // --- Testing ---

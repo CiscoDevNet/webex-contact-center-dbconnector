@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface DbConnectionRepository extends JpaRepository<DbConnection, UUID> {
     List<DbConnection> findByEnvironment(String environment);
     List<DbConnection> findByEnvironmentNot(String environment);
+    List<DbConnection> findByEnvironmentNotAndType(String environment, DbConnection.DbType type);
+    List<DbConnection> findByEnvironmentNotAndTypeNot(String environment, DbConnection.DbType type);
     List<DbConnection> findByEnvironmentAndType(String environment, DbConnection.DbType type);
     Optional<DbConnection> findByNameIgnoreCaseAndEnvironment(String name, String environment);
 }
