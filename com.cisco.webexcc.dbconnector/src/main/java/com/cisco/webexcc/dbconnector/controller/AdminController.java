@@ -201,14 +201,14 @@ public class AdminController {
     @GetMapping("/sql")
     public String listSql(Model model) {
         model.addAttribute("statements", sqlStatementRepository.findAll());
-        model.addAttribute("hasConnections", !dbConnectionRepository.findByEnvironment("DEV").isEmpty());
+        model.addAttribute("hasConnections", !getDevSqlConnections().isEmpty());
         return "admin/sql-statements";
     }
 
     @GetMapping("/sql/add")
     public String addSqlForm(Model model) {
         model.addAttribute("statement", new SqlStatement());
-        model.addAttribute("connections", dbConnectionRepository.findByEnvironment("DEV"));
+        model.addAttribute("connections", getDevSqlConnections());
         return "admin/sql-form";
     }
 
@@ -216,7 +216,7 @@ public class AdminController {
     public String editSqlForm(@PathVariable UUID id, Model model) {
         SqlStatement statement = sqlStatementRepository.findById(id).orElseThrow();
         model.addAttribute("statement", statement);
-        model.addAttribute("connections", dbConnectionRepository.findByEnvironment("DEV"));
+        model.addAttribute("connections", getDevSqlConnections());
         return "admin/sql-form";
     }
 
@@ -227,7 +227,7 @@ public class AdminController {
         
         if (existing.isPresent() && !existing.get().getId().equals(statement.getId())) {
             model.addAttribute("errorMessage", "An endpoint with the name '" + statement.getName() + "' already exists in " + statement.getEnvironment() + ". Please choose a different name.");
-            model.addAttribute("connections", dbConnectionRepository.findByEnvironment("DEV"));
+            model.addAttribute("connections", getDevSqlConnections());
             return "admin/sql-form";
         }
 
@@ -303,6 +303,13 @@ public class AdminController {
 
     private List<DbConnection> getDeployableSqlConnections() {
         return dbConnectionRepository.findByEnvironmentNotAndTypeNot("DEV", DbConnection.DbType.LDAP);
+    }
+
+    private List<DbConnection> getDevSqlConnections() {
+        return dbConnectionRepository.findByEnvironment("DEV").stream()
+                .filter(Objects::nonNull)
+                .filter(conn -> conn.getType() != DbConnection.DbType.LDAP)
+                .toList();
     }
 
     // --- Testing ---
