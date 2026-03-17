@@ -1,0 +1,20 @@
+services:
+  dbconnector:
+    build:
+      context: .
+      dockerfile: Containerfile
+    image: localhost/webex-dbconnector:latest
+    container_name: webex-dbconnector
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_WEBEX_CLIENT_ID: "YOUR_WEBEX_CLIENT_ID"
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_WEBEX_CLIENT_SECRET: "YOUR_WEBEX_CLIENT_SECRET"
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_WEBEX_REDIRECT_URI: "http://localhost:8080/login/oauth2/code/webex"
+      SPRING_CONFIG_IMPORT: "optional:file:/app/config/db-datasource.properties"
+      SPRING_DATASOURCE_USERNAME: "sa"
+      SPRING_DATASOURCE_PASSWORD: "password"
+    volumes:
+      - ${HOME}/dbconnector/data:/app/data:Z
+      - ./config/container-datasource.properties:/app/config/db-datasource.properties:ro,Z
+    restart: unless-stopped
