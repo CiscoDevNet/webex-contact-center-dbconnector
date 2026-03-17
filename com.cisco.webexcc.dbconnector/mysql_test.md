@@ -3,7 +3,12 @@
 ## Connection
 
 ```java
+// Local app run (non-container)
 String host = "jdbc:mysql://127.0.0.1:3306/MyTestDb";
+
+// Container app run (Docker/Podman)
+// String host = "jdbc:mysql://host.containers.internal:3306/MyTestDb";
+
 String username = "xxx";
 String password = "xxx";
 ```

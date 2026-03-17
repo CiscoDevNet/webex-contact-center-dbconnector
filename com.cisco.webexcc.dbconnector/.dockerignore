@@ -1,0 +1,12 @@
+target
+.git
+.idea
+.vscode
+logs
+data
+*.log
+*.iml
+README_*.md
+mysql_test.md
+oracle_test.md
+benchmark.py
