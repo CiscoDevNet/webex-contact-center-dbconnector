@@ -3,6 +3,7 @@ package com.cisco.webexcc.dbconnector.service;
 import com.cisco.webexcc.dbconnector.model.DbConnection;
 import com.cisco.webexcc.dbconnector.model.SqlStatement;
 import com.cisco.webexcc.dbconnector.repository.SqlStatementRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,9 +38,19 @@ import java.util.regex.Pattern;
 public class SqlExecutionService {
 
     private static final Pattern NOTES_EQUALS_PATTERN = Pattern.compile("(?i)\\bNOTES\\s*=\\s*(\\?|:[A-Za-z_][A-Za-z0-9_]*|'(?:''|[^'])*')");
+    private static final Pattern SQL_LEADING_COMMENTS_PATTERN = Pattern.compile("(?is)^\\s*(?:--.*?(?:\\r?\\n|$)|/\\*.*?\\*/\\s*)+");
 
     @Autowired
     private SqlStatementRepository sqlStatementRepository;
+
+    @Value("${can_update:false}")
+    private boolean canUpdate;
+
+    @Value("${can_delete:false}")
+    private boolean canDelete;
+
+    @Value("${can_insert:false}")
+    private boolean canInsert;
 
     public List<Map<String, Object>> executeSql(String name, String env, Map<String, Object> params) {
         SqlStatement statement = sqlStatementRepository.findByNameIgnoreCaseAndEnvironment(name, env)
@@ -105,6 +116,14 @@ public class SqlExecutionService {
     }
 
     private List<Map<String, Object>> runQuery(DataSource dataSource, String sql, Map<String, Object> namedParams, List<Object> positionalParams) {
+        SqlOperation operation = determineSqlOperation(sql);
+        ensureOperationAllowed(operation);
+
+        if (operation == SqlOperation.INSERT || operation == SqlOperation.UPDATE || operation == SqlOperation.DELETE) {
+            int affectedRows = runUpdate(dataSource, sql, namedParams, positionalParams);
+            return List.of(Map.of("rows_affected", affectedRows));
+        }
+
         if (positionalParams != null && !positionalParams.isEmpty()) {
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
             jdbcTemplate.setMaxRows(100);
@@ -114,6 +133,54 @@ public class SqlExecutionService {
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         jdbcTemplate.getJdbcTemplate().setMaxRows(100);
         return jdbcTemplate.query(sql, namedParams, this::mapRowSafely);
+    }
+
+    private int runUpdate(DataSource dataSource, String sql, Map<String, Object> namedParams, List<Object> positionalParams) {
+        if (positionalParams != null && !positionalParams.isEmpty()) {
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+            return jdbcTemplate.update(sql, positionalParams.toArray());
+        }
+
+        NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        return jdbcTemplate.update(sql, namedParams);
+    }
+
+    private SqlOperation determineSqlOperation(String sql) {
+        if (sql == null) {
+            return SqlOperation.OTHER;
+        }
+
+        String withoutComments = SQL_LEADING_COMMENTS_PATTERN.matcher(sql).replaceFirst("").trim();
+        if (withoutComments.isEmpty()) {
+            return SqlOperation.OTHER;
+        }
+
+        String firstToken = withoutComments.split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
+        return switch (firstToken) {
+            case "insert" -> SqlOperation.INSERT;
+            case "update" -> SqlOperation.UPDATE;
+            case "delete" -> SqlOperation.DELETE;
+            default -> SqlOperation.OTHER;
+        };
+    }
+
+    private void ensureOperationAllowed(SqlOperation operation) {
+        if (operation == SqlOperation.INSERT && !canInsert) {
+            throw new IllegalArgumentException("INSERT operations are disabled");
+        }
+        if (operation == SqlOperation.UPDATE && !canUpdate) {
+            throw new IllegalArgumentException("UPDATE operations are disabled");
+        }
+        if (operation == SqlOperation.DELETE && !canDelete) {
+            throw new IllegalArgumentException("DELETE operations are disabled");
+        }
+    }
+
+    private enum SqlOperation {
+        INSERT,
+        UPDATE,
+        DELETE,
+        OTHER
     }
 
     private String rewriteOracleClobEquals(String sql) {

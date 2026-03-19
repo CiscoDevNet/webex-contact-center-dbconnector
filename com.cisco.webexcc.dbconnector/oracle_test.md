@@ -140,3 +140,54 @@ SELECT * FROM test_data_types WHERE LAST_LOGIN_AT = ?;
 -- 10) NOTES (CLOB-safe exact match)
 SELECT * FROM test_data_types WHERE NOTES = ?;
 ```
+
+## DML Tests (Insert, Update, Delete)
+
+```sql
+-- INSERT
+INSERT INTO test_data_types (
+  username,
+  email,
+  age,
+  salary,
+  is_active,
+  rating,
+  last_login_at,
+  birth_date,
+  notes,
+  metadata_json
+) VALUES (
+  'nina',
+  'nina@example.com',
+  33,
+  73500.25,
+  TRUE,
+  4.4,
+  TIMESTAMP '2026-03-19 12:00:00',
+  DATE '1993-10-21',
+  'Inserted by DML test',
+  '{"dept":"Support","city":"Dallas"}'
+);
+
+-- Verify INSERT
+SELECT * FROM test_data_types WHERE EMAIL = 'nina@example.com';
+
+-- UPDATE
+UPDATE test_data_types
+SET salary = 78000.00,
+  notes = 'Updated by DML test',
+  metadata_json = '{"dept":"Support","city":"Dallas","status":"promoted"}'
+WHERE email = 'nina@example.com';
+
+-- Verify UPDATE
+SELECT * FROM test_data_types WHERE EMAIL = 'nina@example.com';
+
+-- DELETE
+DELETE FROM test_data_types
+WHERE email = 'nina@example.com';
+
+-- Verify DELETE
+SELECT * FROM test_data_types WHERE EMAIL = 'nina@example.com';
+
+COMMIT;
+```
