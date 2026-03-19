@@ -1,12 +1,12 @@
 # KEYTOOL Certificate Import Guide
 
-This guide explains how to import the certificate file webexapi.hdis.com.crt into the Java truststore (cacerts) located at /usr/java/latest/lib/security/cacerts.
+This guide explains how to import the certificate file YOUR.crt into the Java truststore (cacerts) located at /usr/java/latest/lib/security/cacerts.
 
 Use this process when a Java application must trust an internal or private TLS certificate.
 
 ## What You Need
 
-- Certificate file name: webexapi.hdis.com.crt
+- Certificate file name: YOUR.crt
 - Truststore path: /usr/java/latest/lib/security/cacerts
 - Access level: sudo/root access is usually required to update system-level cacerts
 - Java keytool command available in PATH
@@ -26,7 +26,7 @@ Run these checks first:
 
 If the certificate is in your current directory:
 
-    ls -l webexapi.hdis.com.crt
+    ls -l YOUR.crt
 
 If it is in another location, use the full path in later commands.
 
@@ -42,7 +42,7 @@ This allows quick rollback if needed.
 
 Review subject, issuer, and validity:
 
-    keytool -printcert -file webexapi.hdis.com.crt
+    keytool -printcert -file YOUR.crt
 
 Confirm this is the correct certificate for your target endpoint.
 
@@ -60,7 +60,7 @@ Import command:
 
     sudo keytool -importcert \
       -alias webexapi-hdis-com \
-      -file webexapi.hdis.com.crt \
+      -file YOUR.crt \
       -keystore /usr/java/latest/lib/security/cacerts
 
 When prompted:
@@ -72,7 +72,7 @@ Non-interactive version (if approved by your security policy):
 
     sudo keytool -importcert -noprompt \
       -alias webexapi-hdis-com \
-      -file webexapi.hdis.com.crt \
+      -file YOUR.crt \
       -keystore /usr/java/latest/lib/security/cacerts \
       -storepass changeit
 
@@ -107,7 +107,7 @@ Options:
 - Replace by deleting then re-importing:
 
     sudo keytool -delete -alias webexapi-hdis-com -keystore /usr/java/latest/lib/security/cacerts
-    sudo keytool -importcert -alias webexapi-hdis-com -file webexapi.hdis.com.crt -keystore /usr/java/latest/lib/security/cacerts
+    sudo keytool -importcert -alias webexapi-hdis-com -file YOUR.crt -keystore /usr/java/latest/lib/security/cacerts
 
 ### Keystore was tampered with, or password incorrect
 
@@ -131,7 +131,7 @@ Replace YYYYMMDD_HHMMSS with your actual backup suffix.
 
 Instead of modifying global cacerts, create a dedicated truststore for one app:
 
-    keytool -importcert -alias webexapi-hdis-com -file webexapi.hdis.com.crt -keystore ./app-truststore.jks
+    keytool -importcert -alias webexapi-hdis-com -file YOUR.crt -keystore ./app-truststore.jks
 
 Then run Java with:
 
