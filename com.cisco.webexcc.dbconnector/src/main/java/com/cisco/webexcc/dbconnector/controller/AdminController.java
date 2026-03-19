@@ -187,11 +187,7 @@ public class AdminController {
         } catch (Exception e) {
             response.put("status", "error");
             response.put("message", "Execution failed: " + e.getMessage());
-            
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            response.put("stacktrace", sw.toString());
+            logger.warn("SQL test execution failed", e);
         }
         return response;
     }

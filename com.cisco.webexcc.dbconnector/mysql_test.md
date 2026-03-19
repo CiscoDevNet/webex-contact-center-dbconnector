@@ -154,3 +154,54 @@ SELECT * FROM test_data_types WHERE notes = ?;
 
 ```
 
+## DML Tests (Insert, Update, Delete)
+
+```sql
+-- INSERT
+INSERT INTO test_data_types (
+    username,
+    email,
+    age,
+    salary,
+    is_active,
+    rating,
+    created_at,
+    last_login_at,
+    birth_date,
+    notes,
+    metadata_json
+) VALUES (
+    'nina',
+    'nina@example.com',
+    33,
+    73500.25,
+    TRUE,
+    4.4,
+    NOW(6),
+    NOW(),
+    '1993-10-21',
+    'Inserted by DML test',
+    JSON_OBJECT('dept','Support','city','Dallas')
+);
+
+-- Verify INSERT
+SELECT * FROM test_data_types WHERE email = 'nina@example.com';
+
+-- UPDATE
+UPDATE test_data_types
+SET salary = 78000.00,
+    notes = 'Updated by DML test',
+    metadata_json = JSON_OBJECT('dept','Support','city','Dallas','status','promoted')
+WHERE email = 'nina@example.com';
+
+-- Verify UPDATE
+SELECT * FROM test_data_types WHERE email = 'nina@example.com';
+
+-- DELETE
+DELETE FROM test_data_types
+WHERE email = 'nina@example.com';
+
+-- Verify DELETE
+SELECT * FROM test_data_types WHERE email = 'nina@example.com';
+```
+
