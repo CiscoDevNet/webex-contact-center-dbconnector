@@ -1,6 +1,7 @@
 # Oracle Test Notes
 
 ## Connection
+https://freesql.com/
 
 ```java
 String host = "jdbc:oracle:thin:@db.freesql.com:1521/xxx";
