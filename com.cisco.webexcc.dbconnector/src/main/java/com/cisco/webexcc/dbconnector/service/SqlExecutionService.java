@@ -20,7 +20,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
@@ -39,6 +42,11 @@ public class SqlExecutionService {
 
     private static final Pattern NOTES_EQUALS_PATTERN = Pattern.compile("(?i)\\bNOTES\\s*=\\s*(\\?|:[A-Za-z_][A-Za-z0-9_]*|'(?:''|[^'])*')");
     private static final Pattern SQL_LEADING_COMMENTS_PATTERN = Pattern.compile("(?is)^\\s*(?:--.*?(?:\\r?\\n|$)|/\\*.*?\\*/\\s*)+");
+        private static final Pattern ORACLE_TEXT_LIKE_BIND_PATTERN = Pattern.compile("(?i)\\b(?:telephone|phone|mobile|msisdn|username|email|notes|metadata_json)\\b\\s*=\\s*\\?");
+    private static final Pattern ORACLE_TEXT_LIKE_NUMERIC_LITERAL_PATTERN = Pattern.compile("(?i)\\b(telephone|phone|mobile|msisdn|username|email|notes|metadata_json)\\b\\s*=\\s*(-?\\d+(?:\\.\\d+)?)\\b");
+        private static final Set<String> ORACLE_STRING_PARAM_HINTS = Set.of(
+            "telephone", "phone", "mobile", "msisdn", "username", "email", "notes", "metadata", "json", "name"
+        );
 
     @Autowired
     private SqlStatementRepository sqlStatementRepository;
@@ -88,14 +96,23 @@ public class SqlExecutionService {
 
     public List<Map<String, Object>> executeRawSql(DbConnection conn, String sql, Map<String, Object> params, List<Object> positionalParams) {
         String effectiveSql = normalizeSqlForJdbc(sql);
-        DataSource dataSource = createDataSource(conn);
         boolean isOracle = conn.getType() == DbConnection.DbType.ORACLE;
+        if (isOracle) {
+            effectiveSql = normalizeOracleTextComparisons(effectiveSql);
+        }
+        DataSource dataSource = createDataSource(conn);
+        List<Object> oraclePositionalParams = isOracle
+            ? coerceOraclePositionalStringParams(effectiveSql, positionalParams)
+            : positionalParams;
+        Map<String, Object> oracleNamedParams = isOracle
+            ? coerceOracleNamedStringParams(params)
+            : params;
         List<Object> effectivePositionalParams = isOracle
-                ? normalizeOraclePositionalParams(positionalParams)
-                : positionalParams;
+            ? normalizeOraclePositionalParams(oraclePositionalParams)
+            : oraclePositionalParams;
         Map<String, Object> effectiveNamedParams = isOracle
-                ? normalizeOracleNamedParams(params)
-                : params;
+            ? normalizeOracleNamedParams(oracleNamedParams)
+            : oracleNamedParams;
         try {
             return runQuery(dataSource, effectiveSql, effectiveNamedParams, effectivePositionalParams);
         } catch (DataAccessException ex) {
@@ -110,6 +127,9 @@ public class SqlExecutionService {
                         "for exact match, or DBMS_LOB.INSTR(clob_col, ?) > 0 for contains.",
                         ex
                 );
+            }
+            if (isOracle && message != null && message.contains("ORA-01722")) {
+                throw new IllegalArgumentException(buildOracleInvalidNumberMessage(effectiveSql, effectiveNamedParams, effectivePositionalParams), ex);
             }
             throw ex;
         }
@@ -192,6 +212,14 @@ public class SqlExecutionService {
         }
         return NOTES_EQUALS_PATTERN.matcher(sql)
                 .replaceAll("DBMS_LOB.COMPARE(NOTES, TO_CLOB($1)) = 0");
+    }
+
+    private String normalizeOracleTextComparisons(String sql) {
+        if (sql == null || sql.isBlank()) {
+            return sql;
+        }
+        return ORACLE_TEXT_LIKE_NUMERIC_LITERAL_PATTERN.matcher(sql)
+                .replaceAll("$1 = '$2'");
     }
 
     private String normalizeSqlForJdbc(String sql) {
@@ -371,5 +399,128 @@ public class SqlExecutionService {
         } catch (DateTimeParseException ignored) {
             return value;
         }
+    }
+
+    private List<Object> coerceOraclePositionalStringParams(String sql, List<Object> positionalParams) {
+        if (positionalParams == null || positionalParams.isEmpty()) {
+            return positionalParams;
+        }
+
+        Set<Integer> stringParamIndexes = findTextLikePositionalParamIndexes(sql);
+        if (stringParamIndexes.isEmpty()) {
+            return positionalParams;
+        }
+
+        List<Object> coerced = new ArrayList<>(positionalParams.size());
+        for (int i = 0; i < positionalParams.size(); i++) {
+            Object value = positionalParams.get(i);
+            if (stringParamIndexes.contains(i) && value instanceof Number) {
+                coerced.add(String.valueOf(value));
+            } else {
+                coerced.add(value);
+            }
+        }
+        return coerced;
+    }
+
+    private Map<String, Object> coerceOracleNamedStringParams(Map<String, Object> namedParams) {
+        if (namedParams == null || namedParams.isEmpty()) {
+            return namedParams;
+        }
+
+        Map<String, Object> coerced = new LinkedHashMap<>();
+        for (Map.Entry<String, Object> entry : namedParams.entrySet()) {
+            Object value = entry.getValue();
+            if (value instanceof Number && isTextLikeParamName(entry.getKey())) {
+                coerced.put(entry.getKey(), String.valueOf(value));
+            } else {
+                coerced.put(entry.getKey(), value);
+            }
+        }
+        return coerced;
+    }
+
+    private Set<Integer> findTextLikePositionalParamIndexes(String sql) {
+        if (sql == null || sql.isBlank()) {
+            return Collections.emptySet();
+        }
+
+        List<Integer> placeholderPositions = findPlaceholderPositions(sql);
+        if (placeholderPositions.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<Integer> indexes = new HashSet<>();
+        var matcher = ORACLE_TEXT_LIKE_BIND_PATTERN.matcher(sql);
+        while (matcher.find()) {
+            int bindPosition = matcher.end() - 1;
+            int placeholderIndex = placeholderPositions.indexOf(bindPosition);
+            if (placeholderIndex >= 0) {
+                indexes.add(placeholderIndex);
+            }
+        }
+        return indexes;
+    }
+
+    private List<Integer> findPlaceholderPositions(String sql) {
+        List<Integer> positions = new ArrayList<>();
+        boolean inSingleQuote = false;
+
+        for (int i = 0; i < sql.length(); i++) {
+            char ch = sql.charAt(i);
+            if (ch == '\'') {
+                if (inSingleQuote && i + 1 < sql.length() && sql.charAt(i + 1) == '\'') {
+                    i++;
+                    continue;
+                }
+                inSingleQuote = !inSingleQuote;
+                continue;
+            }
+
+            if (!inSingleQuote && ch == '?') {
+                positions.add(i);
+            }
+        }
+
+        return positions;
+    }
+
+    private boolean isTextLikeParamName(String paramName) {
+        if (paramName == null || paramName.isBlank()) {
+            return false;
+        }
+        String lowered = paramName.toLowerCase(Locale.ROOT);
+        return ORACLE_STRING_PARAM_HINTS.stream().anyMatch(lowered::contains);
+    }
+
+    private String buildOracleInvalidNumberMessage(String sql, Map<String, Object> namedParams, List<Object> positionalParams) {
+        return "Oracle ORA-01722 (invalid number): a numeric conversion failed while evaluating your SQL. " +
+                "This usually means a NUMBER bind was compared to a VARCHAR2/CHAR column (or vice versa), " +
+            "for example username/email/phone filters. Ensure text fields are sent as strings and avoid implicit conversions. " +
+                "SQL=" + sql + "; " + summarizeParamTypes(namedParams, positionalParams);
+    }
+
+    private String summarizeParamTypes(Map<String, Object> namedParams, List<Object> positionalParams) {
+        if (positionalParams != null && !positionalParams.isEmpty()) {
+            List<String> typedValues = new ArrayList<>();
+            for (Object value : positionalParams) {
+                typedValues.add(typeName(value));
+            }
+            return "positionalParamTypes=" + typedValues;
+        }
+
+        if (namedParams != null && !namedParams.isEmpty()) {
+            Map<String, String> typedValues = new LinkedHashMap<>();
+            for (Map.Entry<String, Object> entry : namedParams.entrySet()) {
+                typedValues.put(entry.getKey(), typeName(entry.getValue()));
+            }
+            return "namedParamTypes=" + typedValues;
+        }
+
+        return "no bind parameters provided";
+    }
+
+    private String typeName(Object value) {
+        return value == null ? "null" : value.getClass().getSimpleName();
     }
 }
