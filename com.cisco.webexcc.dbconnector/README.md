@@ -266,3 +266,13 @@ While most of the inheritance is fine, it also inherits unwanted elements like `
 To prevent this, the project POM contains empty overrides for these elements.
 If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
 
+
+## v2.1.2 Documentation Update (2026-03-23)
+
+- Added LDAP Help button coverage across LDAP admin pages for consistency:
+  - `/admin/ldap` (statements list)
+  - `/admin/ldap/add` and `/admin/ldap/edit/{id}` (add/edit form)
+  - `/admin/ldap/deploy/{id}` (deploy form)
+- Added new LDAP help content pages:
+  - `/help_ldap.html`
+  - `/help_ldap_edit.html`
