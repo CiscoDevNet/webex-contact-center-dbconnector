@@ -8,6 +8,8 @@ import com.cisco.webexcc.dbconnector.repository.LdapStatementRepository;
 import com.cisco.webexcc.dbconnector.repository.SqlStatementRepository;
 import com.cisco.webexcc.dbconnector.ldap.LdapQueryService;
 import com.cisco.webexcc.dbconnector.service.SqlExecutionService;
+import com.cisco.webexcc.dbconnector.util.LogSanitizer;
+import com.cisco.webexcc.dbconnector.util.UserFacingErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +80,7 @@ public class AdminController {
             dbConnectionRepository.save(connection);
             redirectAttributes.addFlashAttribute("successMessage", "Connection saved successfully.");
         } catch (Exception ex) {
-            logger.error("Failed to save connection {}", connection.getName(), ex);
+            logger.error("Failed to save connection. message: {}", LogSanitizer.sanitize(ex));
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to save connection: " + ex.getMessage());
             return "redirect:/admin/connections/add";
         }
@@ -186,8 +188,8 @@ public class AdminController {
             }
         } catch (Exception e) {
             response.put("status", "error");
-            response.put("message", "Execution failed: " + e.getMessage());
-            logger.warn("SQL test execution failed", e);
+            response.put("message", UserFacingErrorMessage.fromException(e));
+            logger.warn("SQL test execution failed: {}", LogSanitizer.sanitize(e));
         }
         return response;
     }
@@ -604,7 +606,7 @@ public class AdminController {
             }
         } catch (Exception e) {
             response.put("status", "error");
-            response.put("message", "Execution failed: " + e.getMessage());
+            response.put("message", UserFacingErrorMessage.fromException(e));
 
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
