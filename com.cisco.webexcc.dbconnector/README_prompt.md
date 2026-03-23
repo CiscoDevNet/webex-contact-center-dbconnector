@@ -93,3 +93,13 @@ This document outlines a sequence of prompts that could be used to recreate the 
 
 ## 10. Startup Debugging
 > "Modify the main `DbConnectorApplication` class to implement `CommandLineRunner`. Inject the `redirect-uri`, `server.port`, and `server.servlet.context-path` properties. In the `run` method, calculate and print the expected Base URL and the full Redirect URI to the console to assist with Webex integration configuration."
+
+## v2.1.2 Documentation Update (2026-03-23)
+
+- Added LDAP Help button coverage across LDAP admin pages for consistency:
+  - `/admin/ldap` (statements list)
+  - `/admin/ldap/add` and `/admin/ldap/edit/{id}` (add/edit form)
+  - `/admin/ldap/deploy/{id}` (deploy form)
+- Added new LDAP help content pages:
+  - `/help_ldap.html`
+  - `/help_ldap_edit.html`

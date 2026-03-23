@@ -146,3 +146,13 @@ lsof -nP -iTCP:3306 -sTCP:LISTEN
 # Container: verify host alias resolves
 podman exec webex-dbconnector getent hosts host.containers.internal
 ```
+
+## v2.1.2 Documentation Update (2026-03-23)
+
+- Added LDAP Help button coverage across LDAP admin pages for consistency:
+  - `/admin/ldap` (statements list)
+  - `/admin/ldap/add` and `/admin/ldap/edit/{id}` (add/edit form)
+  - `/admin/ldap/deploy/{id}` (deploy form)
+- Added new LDAP help content pages:
+  - `/help_ldap.html`
+  - `/help_ldap_edit.html`
