@@ -145,7 +145,13 @@
                     <h1 style="margin: 0; border: none; padding: 0; font-size: 2rem; font-weight: 700;">Webex DB Connector</h1>
                     <p style="margin: 0.5rem 0 0 0; font-size: 1.1rem; color: var(--text-secondary);">Enterprise-grade middleware for Webex Contact Center</p>
                 </div>
-                <span class="version-badge">v2.1.1</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;">
+                    <span class="version-badge">v2.1.2</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);"
+                          th:text="'Updated: ' + ${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
+                        Updated: 2026-03-24 00:00:00
+                    </span>
+                </div>
             </div>
             
             <p class="lead">The Webex Contact Center DB Connector bridges Webex Contact Center flows with enterprise data systems by exposing secure, managed SQL and LDAP endpoints.</p>
