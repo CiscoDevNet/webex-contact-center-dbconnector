@@ -1,7 +1,7 @@
 # Threat Model - Webex Contact Center DB Connector
 
-**Document Version:** 1.1  
-**Date:** February 19, 2026  
+**Document Version:** 1.2  
+**Date:** March 23, 2026  
 **Application:** Webex Contact Center DB Connector  
 **Framework:** STRIDE Threat Modeling
 
@@ -28,7 +28,7 @@ The Webex Contact Center DB Connector is a Spring Boot application that exposes 
 
 ## Recent Security Updates (February 2026)
 
-## Recent Functional Surface Updates (March 2026)
+### Recent Functional Surface Updates (March 2026)
 
 ### ✅ Expanded API Surface: LDAP Endpoint Family
 - Added LDAP execution endpoint family: `/api/ldap/query/{env}/{name}` in addition to existing SQL route family.
@@ -147,6 +147,21 @@ The DB Connector bridges Webex Contact Center with backend databases, allowing r
 - **Entry Points**: All HTTP/HTTPS endpoints
 - **Controls**: Load balancer, IP whitelisting (customer-managed), TLS
 
+### Compensating Controls and Risk Acceptance
+- **Decision ID**: RA-2026-03-23-API-AUTH
+- **Accepted Scope**: Unauthenticated access to execution routes (`/api/query/**`, `/api/ldap/**`) is accepted for current deployment.
+- **Justification**: Service is deployed behind customer-managed firewall controls with source IP allowlisting.
+- **Required Controls**:
+  - Inbound access restricted to approved source IP ranges only.
+  - No direct public internet exposure of application nodes.
+  - TLS termination/encryption remains enforced at the edge.
+  - Firewall and allowlist changes are change-controlled and auditable.
+- **Review Triggers**:
+  - Any internet exposure (directly or via proxy/load balancer).
+  - New consumer integrations outside currently allowlisted ranges.
+  - Security incident involving API endpoint abuse.
+  - Annual security review cycle.
+
 ### Boundary 2: Application → External Databases
 - **Entry Points**: JDBC connections to MySQL, SQL Server, Oracle
 - **Controls**: Database credentials, network firewall rules
@@ -184,12 +199,13 @@ The DB Connector bridges Webex Contact Center with backend databases, allowing r
 - **Attack Vector**: `/api/query/{env}/{name}` has permitAll() access
 - **Impact**: HIGH - Unauthorized data access from databases
 - **Likelihood**: MEDIUM
+- **Risk Decision**: **Accepted with compensating controls** for current deployment boundary (firewall + IP allowlist).
 - **Current Controls**: 
   - Documentation recommends IP whitelisting (customer-managed)
   - No application-level authentication on API endpoints
 - **Gaps**: No built-in IP validation or API key authentication
 - **Mitigation**:
-  - ✅ **PRIORITY 1**: Implement API key/token authentication for `/api/*` endpoints
+  - ✅ **Conditional PRIORITY 1**: Implement API key/token authentication for `/api/*` endpoints if deployment boundary changes (internet exposure, non-allowlisted consumers, or control drift)
   - ✅ Configure application-level IP whitelisting in SecurityConfig
   - ✅ Add request signature validation (HMAC-based)
   - ✅ Implement rate limiting per IP/API key
@@ -596,7 +612,7 @@ The DB Connector bridges Webex Contact Center with backend databases, allowing r
 ### Phase 1: Critical Security Hardening (Weeks 1-2)
 
 #### 1.1 API Endpoint Authentication
-- [ ] Implement API key authentication for `/api/query/**`
+- [ ] Implement API key authentication for `/api/query/**` (required if RA-2026-03-23-API-AUTH conditions are not met)
 - [ ] Add API key management in admin panel
 - [ ] Configure request signing (HMAC-SHA256)
 - [ ] Implement rate limiting (100 req/min per key)
@@ -814,3 +830,13 @@ if (!sql.trim().toUpperCase().startsWith("SELECT")) {
 - All critical and high-severity CVEs addressed
 - Database schema protection implemented
 - Technology stack updated to latest secure versions
+
+## v2.1.2 Documentation Update (2026-03-23)
+
+- Added LDAP Help button coverage across LDAP admin pages for consistency:
+  - `/admin/ldap` (statements list)
+  - `/admin/ldap/add` and `/admin/ldap/edit/{id}` (add/edit form)
+  - `/admin/ldap/deploy/{id}` (deploy form)
+- Added new LDAP help content pages:
+  - `/help_ldap.html`
+  - `/help_ldap_edit.html`

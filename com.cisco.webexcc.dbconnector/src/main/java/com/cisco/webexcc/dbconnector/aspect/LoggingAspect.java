@@ -1,5 +1,6 @@
 package com.cisco.webexcc.dbconnector.aspect;
 
+import com.cisco.webexcc.dbconnector.util.LogSanitizer;
 import jakarta.annotation.PostConstruct;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -31,7 +32,12 @@ public class LoggingAspect {
             result = joinPoint.proceed();
         } catch (Throwable e) {
             long executionTime = System.currentTimeMillis() - start;
-            logger.error("Method {} failed after {} ms with exception: {}", methodName, executionTime, e.getMessage());
+            logger.error(
+                    "Method {} failed after {} ms with exception: {}",
+                    methodName,
+                    executionTime,
+                    LogSanitizer.sanitize(e)
+            );
             throw e;
         }
 

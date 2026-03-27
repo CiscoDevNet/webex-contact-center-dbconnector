@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Edit LDAP Statement - Help Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        h2 {
+            margin-top: 2rem;
+            color: #34495e;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 0.3rem;
+        }
+        ul {
+            padding-left: 2rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        strong {
+            color: #2c3e50;
+        }
+        .note {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Add/Edit LDAP Statement - Help Guide</h1>
+
+    <h2>Overview</h2>
+    <p>This form creates or updates LDAP statements used by API endpoints for directory lookups.</p>
+
+    <h2>Form Fields</h2>
+    <ul>
+        <li><strong>Name</strong>: Endpoint identifier appended to <code>/api/ldap/query/{environment}/{name}</code>.</li>
+        <li><strong>Description</strong>: Optional explanation for administrators.</li>
+        <li><strong>LDAP Connection</strong>: Directory source used for the query.</li>
+        <li><strong>Base DN</strong>: Search root DN (for example, <code>dc=example,dc=com</code>).</li>
+        <li><strong>Attributes</strong>: Optional comma-separated attributes to return.</li>
+        <li><strong>LDAP Filter</strong>: Query filter with optional placeholders such as <code>{0}</code> and <code>{1}</code>.</li>
+    </ul>
+
+    <h2>Parameter Placeholders</h2>
+    <p>When placeholders are present in the filter, the page will generate parameter rows where you can map each index to a query parameter name and provide test values.</p>
+
+    <h2>Testing</h2>
+    <p>Use <strong>Test LDAP</strong> to validate the filter and connection before saving. Save stays disabled until a successful test run.</p>
+
+    <div class="note">
+        <strong>Tip:</strong> Keep filter names and parameters stable to avoid breaking API clients that consume this endpoint.
+    </div>
+
+</body>
+</html>

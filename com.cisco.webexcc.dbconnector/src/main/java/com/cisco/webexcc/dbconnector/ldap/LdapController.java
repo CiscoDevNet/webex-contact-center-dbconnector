@@ -4,6 +4,7 @@ import com.cisco.webexcc.dbconnector.model.DbConnection;
 import com.cisco.webexcc.dbconnector.model.LdapStatement;
 import com.cisco.webexcc.dbconnector.repository.DbConnectionRepository;
 import com.cisco.webexcc.dbconnector.repository.LdapStatementRepository;
+import com.cisco.webexcc.dbconnector.util.LogSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -110,7 +111,7 @@ public class LdapController {
             }
             return ResponseEntity.ok(data);
         } catch (Exception ex) {
-            logger.error("Saved LDAP query execution failed", ex);
+            logger.error("Saved LDAP query execution failed: {}", LogSanitizer.sanitize(ex));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("status", "error", "message", ex.getMessage()));
         }
@@ -159,9 +160,9 @@ public class LdapController {
 
         logger.info(
                 "LDAP search request baseDn={}, filter={}, args={}, attrs={}, scope={}",
-                effectiveBaseDn,
+            LogSanitizer.sanitize(effectiveBaseDn),
                 effectiveFilter,
-                effectiveFilterArgs,
+            LogSanitizer.maskValues(effectiveFilterArgs),
                 effectiveAttributes,
                 effectiveScope
         );
@@ -181,11 +182,11 @@ public class LdapController {
             );
             return ResponseEntity.ok(Map.of("count", data.size(), "results", data));
         } catch (IllegalArgumentException ex) {
-            logger.error("LDAP request invalid", ex);
+            logger.error("LDAP request invalid: {}", LogSanitizer.sanitize(ex));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("status", "error", "message", ex.getMessage()));
         } catch (NamingException ex) {
-            logger.error("LDAP search failed", ex);
+            logger.error("LDAP search failed: {}", LogSanitizer.sanitize(ex));
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                     .body(Map.of("status", "error", "message", ex.getMessage()));
         }
