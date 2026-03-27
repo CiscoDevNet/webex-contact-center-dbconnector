@@ -8,6 +8,8 @@ import com.cisco.webexcc.dbconnector.repository.LdapStatementRepository;
 import com.cisco.webexcc.dbconnector.repository.SqlStatementRepository;
 import com.cisco.webexcc.dbconnector.ldap.LdapQueryService;
 import com.cisco.webexcc.dbconnector.service.SqlExecutionService;
+import com.cisco.webexcc.dbconnector.util.LogSanitizer;
+import com.cisco.webexcc.dbconnector.util.UserFacingErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +80,7 @@ public class AdminController {
             dbConnectionRepository.save(connection);
             redirectAttributes.addFlashAttribute("successMessage", "Connection saved successfully.");
         } catch (Exception ex) {
-            logger.error("Failed to save connection {}", connection.getName(), ex);
+            logger.error("Failed to save connection. message: {}", LogSanitizer.sanitize(ex));
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to save connection: " + ex.getMessage());
             return "redirect:/admin/connections/add";
         }
@@ -186,12 +188,8 @@ public class AdminController {
             }
         } catch (Exception e) {
             response.put("status", "error");
-            response.put("message", "Execution failed: " + e.getMessage());
-            
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            response.put("stacktrace", sw.toString());
+            response.put("message", UserFacingErrorMessage.fromException(e));
+            logger.warn("SQL test execution failed: {}", LogSanitizer.sanitize(e));
         }
         return response;
     }
@@ -201,14 +199,14 @@ public class AdminController {
     @GetMapping("/sql")
     public String listSql(Model model) {
         model.addAttribute("statements", sqlStatementRepository.findAll());
-        model.addAttribute("hasConnections", !dbConnectionRepository.findByEnvironment("DEV").isEmpty());
+        model.addAttribute("hasConnections", !getDevSqlConnections().isEmpty());
         return "admin/sql-statements";
     }
 
     @GetMapping("/sql/add")
     public String addSqlForm(Model model) {
         model.addAttribute("statement", new SqlStatement());
-        model.addAttribute("connections", dbConnectionRepository.findByEnvironment("DEV"));
+        model.addAttribute("connections", getDevSqlConnections());
         return "admin/sql-form";
     }
 
@@ -216,7 +214,7 @@ public class AdminController {
     public String editSqlForm(@PathVariable UUID id, Model model) {
         SqlStatement statement = sqlStatementRepository.findById(id).orElseThrow();
         model.addAttribute("statement", statement);
-        model.addAttribute("connections", dbConnectionRepository.findByEnvironment("DEV"));
+        model.addAttribute("connections", getDevSqlConnections());
         return "admin/sql-form";
     }
 
@@ -227,7 +225,7 @@ public class AdminController {
         
         if (existing.isPresent() && !existing.get().getId().equals(statement.getId())) {
             model.addAttribute("errorMessage", "An endpoint with the name '" + statement.getName() + "' already exists in " + statement.getEnvironment() + ". Please choose a different name.");
-            model.addAttribute("connections", dbConnectionRepository.findByEnvironment("DEV"));
+            model.addAttribute("connections", getDevSqlConnections());
             return "admin/sql-form";
         }
 
@@ -303,6 +301,13 @@ public class AdminController {
 
     private List<DbConnection> getDeployableSqlConnections() {
         return dbConnectionRepository.findByEnvironmentNotAndTypeNot("DEV", DbConnection.DbType.LDAP);
+    }
+
+    private List<DbConnection> getDevSqlConnections() {
+        return dbConnectionRepository.findByEnvironment("DEV").stream()
+                .filter(Objects::nonNull)
+                .filter(conn -> conn.getType() != DbConnection.DbType.LDAP)
+                .toList();
     }
 
     // --- Testing ---
@@ -601,7 +606,7 @@ public class AdminController {
             }
         } catch (Exception e) {
             response.put("status", "error");
-            response.put("message", "Execution failed: " + e.getMessage());
+            response.put("message", UserFacingErrorMessage.fromException(e));
 
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

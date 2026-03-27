@@ -128,6 +128,94 @@ http://localhost:8080
 
 You should see the application home page. Check the console output for any errors or warnings.
 
+## Docker
+
+The project includes a multi-stage [Dockerfile](Dockerfile) and a [docker-compose.yml](docker-compose.yml) for local containerized runs.
+
+### Prerequisites
+
+- Docker Desktop (or Docker Engine + Compose plugin)
+
+### Build and Start
+
+From the project root, run:
+
+```bash
+docker compose up --build -d
+```
+
+Application URL:
+
+```text
+http://localhost:8080
+```
+
+### Stop
+
+```bash
+docker compose down
+```
+
+### Logs
+
+```bash
+docker compose logs -f
+```
+
+### Required Property Values
+
+These values are configured in [src/main/resources/application.properties](src/main/resources/application.properties) and are also passed via Docker Compose environment variables:
+
+```properties
+spring.security.oauth2.client.registration.webex.client-id=YOUR_WEBEX_CLIENT_ID
+spring.security.oauth2.client.registration.webex.client-secret=YOUR_WEBEX_CLIENT_SECRET
+spring.security.oauth2.client.registration.webex.redirect-uri=http://localhost:8080/login/oauth2/code/webex
+spring.datasource.username=sa
+spring.datasource.password=password
+```
+
+### Data Persistence
+
+Compose mounts `${HOME}/dbconnector/data` to `/app/data` so H2 file-based data survives container restarts on your host filesystem.
+
+### External Datasource URL For Containers
+
+Both compose files mount `config/container-datasource.properties` into the container and load it via `SPRING_CONFIG_IMPORT`.
+
+Edit this file to change the datasource URL used in containers:
+
+```properties
+spring.datasource.url=jdbc:h2:file:/app/data/dbconnector
+```
+
+The container path remains `/app/data`; host persistence location is controlled by compose volume mapping (`${HOME}/dbconnector/data:/app/data`).
+
+### Container To MySQL Connectivity
+
+When running inside Docker or Podman, `127.0.0.1` points to the container itself, not your host machine.
+
+If your MySQL server runs on the host, use:
+
+```properties
+jdbc:mysql://host.containers.internal:3306/MyTestDb
+```
+
+Also ensure MySQL is listening on a non-loopback address. If MySQL only listens on `127.0.0.1:3306`, containers cannot connect.
+
+Quick checks:
+
+```bash
+# Host: verify MySQL listening address
+lsof -nP -iTCP:3306 -sTCP:LISTEN
+
+# Container: verify host alias resolves
+podman exec webex-dbconnector getent hosts host.containers.internal
+```
+
+## Podman Desktop
+
+For Podman Desktop deployment steps, see [PODMAN_DESKTOP_README.md](PODMAN_DESKTOP_README.md).
+
 ### Common Configuration Tips
 
 **Database Drivers:**
@@ -159,17 +247,17 @@ Or use the VS Code task "Run Spring Boot App".
 ### Reference Documentation
 For further reference, please consider the following sections:
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.0.0/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/4.0.0/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/4.0.0/reference/web/servlet.html)
+- [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
+- [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.0.0/maven-plugin)
+- [Create an OCI image](https://docs.spring.io/spring-boot/4.0.0/maven-plugin/build-image.html)
+- [Spring Web](https://docs.spring.io/spring-boot/4.0.0/reference/web/servlet.html)
 
 ### Guides
 The following guides illustrate how to use some features concretely:
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+- [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
+- [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
+- [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
 
 ### Maven Parent overrides
 
@@ -178,3 +266,13 @@ While most of the inheritance is fine, it also inherits unwanted elements like `
 To prevent this, the project POM contains empty overrides for these elements.
 If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
 
+
+## v2.1.2 Documentation Update (2026-03-23)
+
+- Added LDAP Help button coverage across LDAP admin pages for consistency:
+  - `/admin/ldap` (statements list)
+  - `/admin/ldap/add` and `/admin/ldap/edit/{id}` (add/edit form)
+  - `/admin/ldap/deploy/{id}` (deploy form)
+- Added new LDAP help content pages:
+  - `/help_ldap.html`
+  - `/help_ldap_edit.html`

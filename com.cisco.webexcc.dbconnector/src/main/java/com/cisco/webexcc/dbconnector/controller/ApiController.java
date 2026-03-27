@@ -1,6 +1,8 @@
 package com.cisco.webexcc.dbconnector.controller;
 
 import com.cisco.webexcc.dbconnector.service.SqlExecutionService;
+import com.cisco.webexcc.dbconnector.util.LogSanitizer;
+import com.cisco.webexcc.dbconnector.util.UserFacingErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,13 @@ public class ApiController {
             @RequestParam Map<String, String> queryParams,
             @RequestBody(required = false) Map<String, Object> bodyParams
     ) {
-        logger.info("Received query request for env: {}, name: {}, queryParams: {}, hasBody: {}", env, name, queryParams, bodyParams != null);
+        logger.info(
+            "Received query request for env: {}, name: {}, queryParams: {}, bodyParams: {}",
+            env,
+            name,
+            LogSanitizer.maskValues(queryParams),
+            LogSanitizer.maskValues(bodyParams)
+        );
         try {
             Map<String, Object> params = new HashMap<>();
             params.putAll(queryParams);
@@ -52,9 +60,14 @@ public class ApiController {
                 return ResponseEntity.ok(result);
             }
         } catch (Exception e) {
-            logger.error("Error executing query for env: {}, name: {}", env, name, e);
+            logger.error(
+                    "Error executing query for env: {}, name: {}, message: {}",
+                    env,
+                    name,
+                    LogSanitizer.sanitize(e)
+            );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("status", "error", "message", e.getMessage()));
+                    .body(Map.of("status", "error", "message", UserFacingErrorMessage.fromException(e)));
         }
     }
 }

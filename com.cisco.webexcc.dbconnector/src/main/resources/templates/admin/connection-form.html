@@ -375,7 +375,9 @@
         </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
+        const testConnectionUrl = /*[[@{/admin/connections/test}]]*/ '/admin/connections/test';
+
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -404,15 +406,40 @@
             
             const formData = new FormData(document.getElementById('connectionForm'));
             const data = Object.fromEntries(formData.entries());
+
+            if (data.type === 'ORACLE') {
+                const normalizedOracleUrl = normalizeOracleJdbcUrl(data.url);
+                if (normalizedOracleUrl !== data.url) {
+                    consoleBody.innerHTML += `<div class="log-info">> Oracle URL normalized to: ${normalizedOracleUrl}</div>`;
+                }
+                data.url = normalizedOracleUrl;
+            }
             
-            fetch('/admin/connections/test', {
+            fetch(testConnectionUrl, {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(async response => {
+                if (response.redirected && response.url.includes('/oauth2/authorization/')) {
+                    throw new Error('Session expired. Please sign in again and retry.');
+                }
+
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok) {
+                    const body = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${body || response.statusText}`);
+                }
+                if (!contentType.includes('application/json')) {
+                    const body = await response.text();
+                    throw new Error(`Unexpected response from server. ${body ? 'Details: ' + body : ''}`);
+                }
+
+                return response.json();
+            })
             .then(result => {
                 if (result.success) {
                     consoleBody.innerHTML += `<div class="log-success">> Success: ${result.message}</div>`;
@@ -428,11 +455,29 @@
                 }
             })
             .catch(error => {
-                consoleBody.innerHTML += `<div class="log-error">> System Error: ${error}</div>`;
+                const message = error && error.message ? error.message : String(error);
+                consoleBody.innerHTML += `<div class="log-error">> System Error: ${message}</div>`;
                 testStatus.textContent = 'Error';
                 testStatus.style.color = 'var(--cisco-red)';
                 saveButton.disabled = true;
             });
+        }
+
+        function normalizeOracleJdbcUrl(url) {
+            const trimmed = (url || '').trim();
+            if (!trimmed) {
+                return trimmed;
+            }
+            if (trimmed.startsWith('jdbc:oracle:thin:@')) {
+                return trimmed;
+            }
+            if (trimmed.startsWith('//')) {
+                return `jdbc:oracle:thin:@${trimmed}`;
+            }
+            if (trimmed.startsWith('@')) {
+                return `jdbc:oracle:thin:${trimmed}`;
+            }
+            return `jdbc:oracle:thin:@${trimmed}`;
         }
 
         // Disable save button when any input changes
@@ -441,6 +486,7 @@
             const saveButton = document.getElementById('saveButton');
             const inputs = form.querySelectorAll('input, select');
             const typeSelect = document.getElementById('type');
+            const urlInput = document.getElementById('url');
 
             function updateFieldHints() {
                 const selectedType = typeSelect.value;
@@ -456,6 +502,12 @@
                     urlHelp.textContent = 'LDAP server URL (for example ldap://host:389 or ldaps://host:636).';
                     usernameLabel.textContent = 'Bind DN';
                     passwordLabel.textContent = 'Bind Password';
+                } else if (selectedType === 'ORACLE') {
+                    urlLabel.textContent = 'Oracle JDBC URL';
+                    urlInput.placeholder = 'jdbc:oracle:thin:@db.freesql.com:1521/23ai_34ui2';
+                    urlHelp.textContent = 'Use Oracle Thin JDBC format, for example jdbc:oracle:thin:@host:1521/service_name.';
+                    usernameLabel.textContent = 'Username';
+                    passwordLabel.textContent = 'Password';
                 } else {
                     urlLabel.textContent = 'Connection URL';
                     urlInput.placeholder = 'jdbc:mysql://localhost:3306/mydb';
@@ -467,6 +519,12 @@
 
             updateFieldHints();
             typeSelect.addEventListener('change', updateFieldHints);
+
+            form.addEventListener('submit', function() {
+                if (typeSelect.value === 'ORACLE') {
+                    urlInput.value = normalizeOracleJdbcUrl(urlInput.value);
+                }
+            });
 
             inputs.forEach(input => {
                 input.addEventListener('input', () => {
