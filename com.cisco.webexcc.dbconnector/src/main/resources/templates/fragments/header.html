@@ -112,6 +112,28 @@
                 height: 28px;
                 stroke-width: 2.5;
             }
+
+            .session-warning {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                max-width: 320px;
+                background: #fff4e5;
+                color: #663c00;
+                border: 1px solid #ffd8a8;
+                border-radius: 8px;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+                padding: 0.75rem 0.9rem;
+                font-size: 0.86rem;
+                line-height: 1.35;
+                z-index: 10001;
+                display: none;
+            }
+
+            .session-warning strong {
+                display: block;
+                margin-bottom: 0.2rem;
+            }
         </style>
         <div class="app-header">
             <a href="/about" class="header-brand">
@@ -136,6 +158,85 @@
                 </form>
             </div>
         </div>
+        <div id="sessionWarning" class="session-warning" role="status" aria-live="polite">
+            <strong>Session Expiring Soon</strong>
+            <span id="sessionWarningText">Less than 2 minutes remaining.</span>
+        </div>
+        <script>
+            (function () {
+                const warningEl = document.getElementById('sessionWarning');
+                const warningTextEl = document.getElementById('sessionWarningText');
+                if (!warningEl || !warningTextEl) {
+                    return;
+                }
+
+                let remainingSeconds = null;
+                let tickTimer = null;
+
+                function formatTime(seconds) {
+                    if (seconds < 0) {
+                        return 'unknown';
+                    }
+                    const minutes = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    return `${minutes}:${String(secs).padStart(2, '0')}`;
+                }
+
+                function renderWarning() {
+                    if (remainingSeconds === null || remainingSeconds < 0 || remainingSeconds > 120) {
+                        warningEl.style.display = 'none';
+                        return;
+                    }
+
+                    warningTextEl.textContent = `Your session will expire in ${formatTime(remainingSeconds)}.`;
+                    warningEl.style.display = 'block';
+                }
+
+                function redirectToLogout() {
+                    window.location.href = '/logout';
+                }
+
+                async function loadInitialSessionRemaining() {
+                    try {
+                        const response = await fetch('/api/session/remaining', {
+                            credentials: 'same-origin',
+                            cache: 'no-store'
+                        });
+
+                        if (!response.ok) {
+                            warningEl.style.display = 'none';
+                            return;
+                        }
+
+                        const payload = await response.json();
+                        if (typeof payload.remainingSeconds === 'number') {
+                            remainingSeconds = Math.max(0, Math.floor(payload.remainingSeconds));
+                            renderWarning();
+                        }
+                    } catch (e) {
+                        warningEl.style.display = 'none';
+                    }
+                }
+
+                tickTimer = window.setInterval(function () {
+                    if (remainingSeconds !== null && remainingSeconds > 0) {
+                        remainingSeconds -= 1;
+                        renderWarning();
+                        if (remainingSeconds === 0) {
+                            redirectToLogout();
+                        }
+                    }
+                }, 1000);
+
+                window.addEventListener('beforeunload', function () {
+                    if (tickTimer) {
+                        clearInterval(tickTimer);
+                    }
+                });
+
+                loadInitialSessionRemaining();
+            })();
+        </script>
     </div>
 </body>
 </html>
