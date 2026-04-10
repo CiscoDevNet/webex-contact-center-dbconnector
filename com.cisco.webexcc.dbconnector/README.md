@@ -1,5 +1,12 @@
 # Getting Started
 
+## v2.1.3 Session Management Update (2026-04-10)
+
+- Added configurable HTTP session timeout via `server.servlet.session.timeout` in `src/main/resources/application.properties`.
+- Added in-app warning banner on authenticated pages when less than 2 minutes remain in the current session.
+- Added automatic redirect to `/logout` when the session countdown reaches 0.
+- Runtime baseline remains Java 24.
+
 ## v2.1.1 Documentation Update (2026-03-03)
 
 - Added end-to-end support for both SQL and LDAP endpoint management.
@@ -77,6 +84,14 @@ src/main/resources/application.properties
 ```
 
 Update the database connection settings and other configuration values as needed for your environment.
+
+Session timeout is configured with:
+
+```properties
+server.servlet.session.timeout=30m
+```
+
+For test scenarios, you can temporarily reduce this value (for example, `3m`) and then restore it.
 
 ### Step 3: Compile the Application
 

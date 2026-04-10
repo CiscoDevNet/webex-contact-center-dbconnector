@@ -12,6 +12,14 @@
 - Updated help pages to cover SQL + LDAP test/deploy workflows.
 - Updated About page copy and version badge to **v2.1.1**.
 
+## v2.1.3 Session Management Update (2026-04-10)
+
+- Added server-side session remaining endpoint: `/api/session/remaining`.
+- Added shared header client logic to:
+    - Display warning banner when session has under 2 minutes remaining.
+    - Redirect to `/logout` when countdown reaches 0.
+- Session duration is controlled by `server.servlet.session.timeout` in `application.properties` (currently `30m`).
+
 This document outlines the development progress and configuration for the Webex Contact Center DB Connector project.
 
 ## Project Overview
@@ -49,15 +57,15 @@ This is a Spring Boot application designed to integrate with Webex Contact Cente
 - All other requests require authentication.
 - **Login Flow**:
     - Initiated via `/oauth2/authorization/webex`.
-    - On success, redirects to `/welcome`.
-- **Logout**: Clears session and redirects to root `/`.
+    - On success, redirects to `/home`.
+- **Logout**: Clears session and invokes configured IdP logout flow.
 
 ### 4. Web Controller (`WebController.java`)
 - **`/` (Root)**: Checks authentication status.
-    - If authenticated: Redirects to `/welcome`.
+    - If authenticated: Redirects to `/home`.
     - If anonymous: Renders `index.html` (Login page).
-- **`/welcome`**: Displays a welcome message to the authenticated user.
 - **`/home`**: Displays detailed user attributes (Dashboard).
+- **`/api/session/remaining`**: Returns session remaining seconds for authenticated clients.
 
 ### 5. UI Templates
 - **`index.html`**: Simple landing page with a "Login with Webex" button.

@@ -220,7 +220,7 @@ The DB Connector bridges Webex Contact Center with backend databases, allowing r
   - Session cookies
 - **Gaps**: 
   - CSRF disabled (`csrf.disable()`)
-  - No session timeout visible
+  - Session timeout warning is client-side only (can be bypassed if JavaScript is disabled)
   - Logout redirects to HTTP (not HTTPS) localhost
 - **Mitigation**:
   - ✅ **PRIORITY 1**: Enable CSRF protection for admin endpoints

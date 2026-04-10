@@ -9,6 +9,12 @@ Welcome to the Webex Contact Center DB Connector. This application provides a se
 - Added LDAP deploy action (DEV → UAT/PROD) with overwrite confirmation.
 - Dashboard environment stats now include both SQL and LDAP endpoint activity.
 
+## v2.1.3 Session Management Update (2026-04-10)
+
+- Authenticated pages now show a **Session Expiring Soon** banner when less than 2 minutes remain.
+- When the countdown reaches 0, the browser automatically navigates to `/logout`.
+- Session duration is configured by administrators using `server.servlet.session.timeout`.
+
 ## Table of Contents
 1. [Getting Started](#1-getting-started)
 2. [Dashboard](#2-dashboard)
@@ -26,6 +32,8 @@ Welcome to the Webex Contact Center DB Connector. This application provides a se
 - **Access**: Navigate to the root URL (e.g., `http://localhost:8080/`).
 - **Action**: Click the **"Login with Webex"** button.
 - **Process**: You will be redirected to the Webex sign-in page. Enter your credentials. Upon successful authentication, you will be redirected to the Dashboard.
+- **Session Behavior**: During active authenticated sessions, a warning appears when less than 2 minutes remain before timeout.
+- **Timeout Behavior**: When the timer reaches 0, you are automatically redirected to `/logout` and must sign in again.
 
 ---
 
